@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Test cps</title>
+	<meta charset="utf-8">
+</head>
+<body>
+	<header>
+		<h1>Test clicks per second</h1>
+		<p>Test how many click events the browser can register per second using an auto clicker macro/script.<br>
+		The speed of the CPU, how the click event is programmed and how the macro/script is written can all influence the value.</p>
+	</header>
+	<main>
+		<p><mark id="cpsValue">0.00</mark><strong>cps</strong></p>
+		<button style="font: 2em monospace;border: thin solid;padding: 3px;" id="clickArea">Click here</button>
+	</main>
+	<script>
+		"use strict";
+		(() => {
+			let clicks = 0;
+			const cpsDisplay = document.getElementById("cpsValue");
+			const updateTimerID = window.setInterval(() => {
+				const cps = clicks / 2;
+				clicks = 0;
+				cpsDisplay.innerHTML = cps.toFixed(2);
+			}, 2000);
+			document.getElementById("clickArea").addEventListener("click", () => {++clicks;}, {passive: true, capture: false});
+		})();
+	</script>
+</body>
+</html>
