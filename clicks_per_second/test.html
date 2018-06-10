@@ -1,18 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Test cps</title>
 	<meta charset="utf-8">
+	<title>Test clicks per second</title>
+	<style>
+		body {
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+			cursor: default;
+		}
+		:focus {
+			outline: none;
+		}
+		#cpsValue {
+			font-family: monospace;
+			overflow: hidden;
+		}
+		#clickArea {
+			font: 2em monospace;
+			border: thin solid;
+			padding: 3px;
+		}
+	</style>
 </head>
 <body>
 	<header>
 		<h1>Test clicks per second</h1>
 		<p>Test how many click events the browser can register per second using an auto clicker macro/script.<br>
-		The speed of the CPU, how the click event is programmed and how the macro/script is written can all influence the value.</p>
+		How fast your CPU is, how the click event is programmed and how the macro/script is written can all influence the value.</p>
 	</header>
 	<main>
 		<p><mark id="cpsValue">0.00</mark><strong>cps</strong></p>
-		<button style="font: 2em monospace;border: thin solid;padding: 3px;" id="clickArea">Click here</button>
+		<button id="clickArea" type="button" autofocus>Click here</button>
 	</main>
 	<script>
 		"use strict";
