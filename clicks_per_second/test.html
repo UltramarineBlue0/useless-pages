@@ -14,12 +14,16 @@
 		:focus {
 			outline: none;
 		}
-		#cpsValue {
-			font-family: monospace;
+		.valueDisplay {
+			font: 1.5em monospace;
 			overflow: hidden;
+			box-sizing: content-box;
+			height: 1.5em;
+			width: 9.5em;
+			text-align: right;
 		}
 		#clickArea {
-			font: 2em monospace;
+			font: 2.5em sans-serif;
 			border: thin solid;
 			padding: 3px;
 		}
@@ -32,7 +36,7 @@
 		How fast your CPU is, how the click event is programmed and how the macro/script is written can all influence the value.</p>
 	</header>
 	<main>
-		<p><mark id="cpsValue">0.00</mark><strong>cps</strong></p>
+		<p class="valueDisplay"><mark id="cpsValue">0.00</mark><strong> cps</strong></p>
 		<button id="clickArea" type="button" autofocus>Click here</button>
 	</main>
 	<script>
