@@ -1,6 +1,6 @@
 "use strict";
-(() => {
-	// IIFE to limit scope. Act like a anonymous namespace
+Object.freeze(() => {
+	// IIFE closure to limit scope. Act like a anonymous namespace
 	const cpsDisplay = document.getElementById("cpsValue");
 	const maxDisplay = document.getElementById("maxCps");
 	const avgDisplay = document.getElementById("avgCps");
@@ -8,98 +8,144 @@
 	const startButton = document.getElementById("startGenerate");
 	const switchButton = document.getElementById("switchMode");
 
-	const eventOption = {passive: true, capture: true};
-	const perf = window.performance;
+	// I'm just curious. This is intentionally overdone
+	const F = Object.freeze(anyObj => Object.freeze(anyObj));
+
+	const eventOption = F({ passive: true, capture: true });
+	const ticker = F(() => performance.now());
 
 	const displayNone = "none";
-	const switchTextGenerated = "Switch to generated clicks";
-	const switchTextExternal = "Switch to clicks by user";
 	const clickEventName = "click";
-	const initialValue = "0.00";
 
-	let previous = perf.now();
+	let previous = ticker();
 	let clicks = 0;
 	let maxCps = 0;
 	let totalClicks = 0;
 	let seconds = 0;
 
-	const fmtNum = value => value.toFixed(2);
-	
+	let cancelID = null;
+
+	const fmtNum = F(value => value.toFixed(2));
+
 	// Check status roughly once every second
-	const updateID = window.setInterval(() => {
+	// In order to minimize the click event as much as possible, the status is polled here, instead of
+	// activated at the start of the first click event. This way the click event itself can be a simple increment
+	// Since the polling frequency is roughly once every 1.5 seconds, this shouldn't have a noticeable performance impact
+	const updateID = setInterval(F(() => {
 		const current = clicks;
 		clicks = 0;
-		const now = perf.now();
+		const now = ticker();
 
 		totalClicks += current;
 		// Only update if the user clicked at least once
 		if (totalClicks > 0) {
+			// Because of JS's event loop, the browser cannot guarantee that it'll execute after exactly 1.5 seconds
+			// Another benefit: the polling frequency can be changed independently from the stats calculation
 			const elapsedTime = (now - previous) / 1000;
 			const currentCps = current / elapsedTime;
 			if (maxCps < currentCps) {
 				maxCps = currentCps;
-				maxDisplay.innerHTML = fmtNum(maxCps);
+				maxDisplay.textContent = fmtNum(maxCps);
 			}
 			seconds += elapsedTime;
-			avgDisplay.innerHTML = fmtNum(totalClicks / seconds);
-			cpsDisplay.innerHTML = fmtNum(currentCps);
+			avgDisplay.textContent = fmtNum(totalClicks / seconds);
+			cpsDisplay.textContent = fmtNum(currentCps);
 		}
 
 		previous = now;
-	}, 1000);
+	}), 1500);
+
+	// Compose events
+	const increment = F(event => {
+		event.stopImmediatePropagation();
+		++clicks;
+	});
+
+	// Afaik, despite the event loop, a call to click will be immediately trigger a click event.
+	// If click is called in a loop, it'll block everything else, since you're effectively executing a long running function
+	// setTimeout seems to be the only reliable way. I couldn't get it working with async function and promise
+	const triggerClick = F(() => {
+		clickButton.click();
+	});
+
+	const incrementThenClick = F(event => {
+		event.stopImmediatePropagation();
+		if (cancelID !== null) {
+			++clicks;
+			setTimeout(triggerClick);
+		}
+	});
+
+	const testFinish = F(() => {
+		clearTimeout(cancelID);
+		cancelID = null;
+
+		startButton.disabled = false;
+		startButton.textContent = "Start generating clicks";
+	});
+
+	// Start generating clicks for 30 seconds
+	startButton.addEventListener(clickEventName, F(event => {
+		event.stopImmediatePropagation();
+
+		startButton.disabled = true;
+		startButton.textContent = "Testing …";
+
+		cancelID = setTimeout(testFinish, 30000);
+
+		// update with precise start time: more accurate stats
+		previous = ticker();
+
+		setTimeout(triggerClick); // Start test
+	}), eventOption);
+
+	// Default action: Click button increment counter once per click
+	clickButton.addEventListener(clickEventName, increment, eventOption);
 
 	// Reset all fields and internal counters, stops the test until user clicks again
-	const resetAll = () => {
+	const resetAll = F(() => {
+		if (cancelID !== null) {
+			testFinish();
+		}
+
 		clicks = 0;
 		maxCps = 0;
 		totalClicks = 0;
 		seconds = 0;
 
-		avgDisplay.innerHTML = initialValue;
-		maxDisplay.innerHTML = initialValue;
-		cpsDisplay.innerHTML = initialValue;
-	};
-	
+		const initialValue = "0.00";
+		avgDisplay.textContent = initialValue;
+		maxDisplay.textContent = initialValue;
+		cpsDisplay.textContent = initialValue;
+	});
+
 	// Stop and reset
-	document.getElementById("resetStats").addEventListener(clickEventName, event => {
+	document.getElementById("resetStats").addEventListener(clickEventName, F(event => {
 		event.stopImmediatePropagation();
 		resetAll();
-	}, eventOption);
+	}), eventOption);
 
 	// Reset and switch between user clicks and generated clicks
-	switchButton.addEventListener(clickEventName, event => {
+	switchButton.addEventListener(clickEventName, F(event => {
 		event.stopImmediatePropagation();
 		resetAll();
 
 		if (startButton.style.display === displayNone) {
+			// Switch to generated clicks
 			startButton.style.display = null;
 			clickButton.style.display = displayNone;
-			switchButton.innerHTML = switchTextExternal;
+			switchButton.textContent = "Switch to clicks by user";
+			// Test mode: click event on the button starts a chain of clicks
+			clickButton.removeEventListener(clickEventName, increment, eventOption);
+			clickButton.addEventListener(clickEventName, incrementThenClick, eventOption);
 		} else {
+			// Switch to user clicks
 			startButton.style.display = displayNone;
 			clickButton.style.display = null;
-			switchButton.innerHTML = switchTextGenerated;
+			switchButton.textContent = "Switch to generated clicks";
+			// User mode: one increment per click
+			clickButton.removeEventListener(clickEventName, incrementThenClick, eventOption);
+			clickButton.addEventListener(clickEventName, increment, eventOption);
 		}
-	}, eventOption);
-
-	// Start generating clicks for 30 seconds
-	startButton.addEventListener(clickEventName, event => {
-		event.stopImmediatePropagation();
-
-		const start = perf.now();
-
-		// Ideally the clicks can be generated in a another thread and stopped by the main thread
-		// But since web worker can't use the DOM, this has to be on the main thread and periodically check the time
-		while ((perf.now() - start) < 30000) {
-			for (let i = 0; i < 1000; ++i) {
-				clickButton.click();
-			}
-		}
-	}, eventOption);
-	
-	// Click button increment counter once per click
-	clickButton.addEventListener(clickEventName, event => {
-		event.stopImmediatePropagation();
-		++clicks;
-	}, eventOption);
+	}), eventOption);
 })();

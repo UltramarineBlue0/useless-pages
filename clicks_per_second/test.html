@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
@@ -19,48 +20,60 @@
 			user-select: none;
 			cursor: default;
 		}
+
 		:focus {
 			outline: none;
 		}
+
 		.valueDisplay {
 			font: 1.5em monospace;
 		}
+
 		button {
 			font-family: sans-serif;
 			border: thin solid;
 			padding: 3px;
 			margin: 3px;
 		}
+
 		.start {
 			font-size: 2.5em;
 		}
 	</style>
 </head>
+
 <body>
 	<header>
 		<h1>Test clicks per second</h1>
-		<p>Test how many click events the browser can register per second using an auto clicker macro/script.<br>
-		How fast your system is, which browser and OS you're using and how the macro is scripted can all influence the value.<br>
-		This test can also generate click events in browser using js for around 30 seconds.<br>
-		But this is less interesting since, on real websites, most click events comes from the user (external to the browser).</p>
+		<p>Test how many click events the browser can register per second using an auto clicker macro/script.
+			<br> How fast your system is, which browser and OS you're using and how the macro is scripted can all influence the value.
+			<br> This test can also generate click events in browser using js for around 30 seconds.
+			<br> But this is less interesting since on real websites, most click events comes from the user (external to the browser).</p>
 	</header>
 	<main>
 		<section>
-			<p class="valueDisplay"><strong>Current: </strong><mark id="cpsValue">0.00</mark><strong> cps</strong></p>
+			<p class="valueDisplay">
+				<strong>Current: </strong>
+				<mark id="cpsValue">0.00</mark>
+				<strong>&nbsp;cps</strong>
+			</p>
 			<button class="start" id="clickArea" type="button" autofocus>Click here</button>
 			<button class="start" id="startGenerate" type="button" style="display: none;">Start generating clicks</button>
 		</section>
 		<section>
-			<p class="valueDisplay">Average: <strong id="avgCps">0.00</strong> cps</p>
-			<p class="valueDisplay">Maximum: <strong id="maxCps">0.00</strong> cps</p>
+			<p class="valueDisplay">Average:
+				<strong id="avgCps">0.00</strong>&nbsp;cps</p>
+			<p class="valueDisplay">Maximum:
+				<strong id="maxCps">0.00</strong>&nbsp;cps</p>
 			<button id="resetStats" type="button">Stop and reset</button>
 			<button id="switchMode" type="button">Switch to generated clicks</button>
 		</section>
 		<aside>
-			<p>The value isn't an instantaneous measurement, it's the amount of clicks collected over roughly a second.<br>
-			The collection of statistics start with the first click event on the button.<br>
-			"Reset" stops the collection of statistics and resets their value.</p>
+			<p>The value isn't an instantaneous measurement, it's the amount of clicks collected over roughly 1.5 seconds.
+				<br> The collection of statistics start with the first click event on the button.
+				<br> "Reset" stops the collection of statistics and resets their value.</p>
 		</aside>
 	</main>
 </body>
+
 </html>
