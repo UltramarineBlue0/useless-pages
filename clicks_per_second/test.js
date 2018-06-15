@@ -1,6 +1,33 @@
 "use strict";
+// IIFE closure to limit scope. Act like a anonymous namespace
 Object.freeze(() => {
-	// IIFE closure to limit scope. Act like a anonymous namespace
+
+	// I'm just curious. This is intentionally overdone
+	const F = Object.freeze(anyObj => Object.freeze(anyObj));
+
+	const eventOption = F({ passive: true, capture: true });
+
+	// Minimal delay setTimeout. Modified from
+	// https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout#Timeouts_throttled_to_%3E4ms
+	// https://dbaron.org/log/20100309-faster-timeouts
+	const queuedFuncs = [];
+	const randomID = crypto.getRandomValues(new Int32Array(1))[0];
+	
+	window.addEventListener("message", F(event => {
+		event.stopImmediatePropagation();
+		if (event.source === window && event.data === randomID) {
+			const func = queuedFuncs.pop();
+			if (func !== undefined) {
+				func();
+			}
+		}
+	}), eventOption);
+
+	const queueTask = F(func => {
+		queuedFuncs.push(func);
+		window.postMessage(randomID, window.location.origin);
+	});
+
 	const cpsDisplay = document.getElementById("cpsValue");
 	const maxDisplay = document.getElementById("maxCps");
 	const avgDisplay = document.getElementById("avgCps");
@@ -8,11 +35,7 @@ Object.freeze(() => {
 	const startButton = document.getElementById("startGenerate");
 	const switchButton = document.getElementById("switchMode");
 
-	// I'm just curious. This is intentionally overdone
-	const F = Object.freeze(anyObj => Object.freeze(anyObj));
-
-	const eventOption = F({ passive: true, capture: true });
-	const ticker = F(() => performance.now());
+	const ticker = F(() => window.performance.now());
 
 	const displayNone = "none";
 	const clickEventName = "click";
@@ -55,7 +78,7 @@ Object.freeze(() => {
 		previous = now;
 	}), 1500);
 
-	// Compose events
+	// Click events
 	const increment = F(event => {
 		event.stopImmediatePropagation();
 		++clicks;
@@ -63,7 +86,9 @@ Object.freeze(() => {
 
 	// Afaik, despite the event loop, a call to click will be immediately trigger a click event.
 	// If click is called in a loop, it'll block everything else, since you're effectively executing a long running function
-	// setTimeout seems to be the only reliable way. I couldn't get it working with async function and promise
+	// setTimeout's delay is clamped to 4ms after a few recursive calls
+	// Promises start microtasks. Afaik, they'll block the UI since they are executed before regular tasks in the event loop
+	// postMessage seems to be the only reliable delayöess solution
 	const triggerClick = F(() => {
 		clickButton.click();
 	});
@@ -72,7 +97,7 @@ Object.freeze(() => {
 		event.stopImmediatePropagation();
 		if (cancelID !== null) {
 			++clicks;
-			setTimeout(triggerClick);
+			queueTask(triggerClick);
 		}
 	});
 
@@ -96,7 +121,7 @@ Object.freeze(() => {
 		// update with precise start time: more accurate stats
 		previous = ticker();
 
-		setTimeout(triggerClick); // Start test
+		queueTask(triggerClick); // Start test
 	}), eventOption);
 
 	// Default action: Click button increment counter once per click
