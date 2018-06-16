@@ -109,21 +109,6 @@ Object.freeze(() => {
 		startButton.textContent = "Start generating clicks";
 	});
 
-	// Start generating clicks for 30 seconds
-	startButton.addEventListener(clickEventName, F(event => {
-		event.stopImmediatePropagation();
-
-		startButton.disabled = true;
-		startButton.textContent = "Testing …";
-
-		cancelID = setTimeout(testFinish, 30000);
-
-		// update with precise start time: more accurate stats
-		previous = ticker();
-
-		queueTask(triggerClick); // Start test
-	}), eventOption);
-
 	// Default action: Click button increment counter once per click
 	clickButton.addEventListener(clickEventName, increment, eventOption);
 
@@ -143,6 +128,19 @@ Object.freeze(() => {
 		maxDisplay.textContent = initialValue;
 		cpsDisplay.textContent = initialValue;
 	});
+
+	// Start generating clicks for 30 seconds
+	startButton.addEventListener(clickEventName, F(event => {
+		event.stopImmediatePropagation();
+
+		startButton.disabled = true;
+		startButton.textContent = "Testing …";
+
+		resetAll();
+		cancelID = window.setTimeout(testFinish, 30000);
+
+		queueTask(triggerClick); // Start test
+	}), eventOption);
 
 	// Stop and reset
 	document.getElementById("resetStats").addEventListener(clickEventName, F(event => {
