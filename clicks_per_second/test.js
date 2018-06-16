@@ -8,8 +8,8 @@ Object.freeze(() => {
 	const eventOption = F({ passive: true, capture: true });
 
 	// Minimal delay setTimeout. Modified from
-	// https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout#Timeouts_throttled_to_%3E4ms
 	// https://dbaron.org/log/20100309-faster-timeouts
+	// https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout#Timeouts_throttled_to_%3E4ms
 	const queuedFuncs = [];
 	const randomID = crypto.getRandomValues(new Int32Array(1))[0];
 	
@@ -87,8 +87,8 @@ Object.freeze(() => {
 	// Afaik, despite the event loop, a call to click will be immediately trigger a click event.
 	// If click is called in a loop, it'll block everything else, since you're effectively executing a long running function
 	// setTimeout's delay is clamped to 4ms after a few recursive calls
-	// Promises start microtasks. Afaik, they'll block the UI since they are executed before regular tasks in the event loop
-	// postMessage seems to be the only reliable delayöess solution
+	// Promises enqueue microtasks. Afaik, they'll block the UI since they have higher priority than regular tasks and are executed before them
+	// postMessage seems to be the only reliable minimal delay solution
 	const triggerClick = F(() => {
 		clickButton.click();
 	});
