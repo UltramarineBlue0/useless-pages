@@ -11,8 +11,8 @@ Object.freeze(() => {
 	// https://dbaron.org/log/20100309-faster-timeouts
 	// https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout#Timeouts_throttled_to_%3E4ms
 	const queuedFuncs = [];
-	const randomID = crypto.getRandomValues(new Int32Array(1))[0];
-	
+	const randomID = window.crypto.getRandomValues(new Int32Array(1))[0];
+
 	window.addEventListener("message", F(event => {
 		event.stopImmediatePropagation();
 		if (event.source === window && event.data === randomID) {
@@ -54,7 +54,7 @@ Object.freeze(() => {
 	// In order to minimize the click event as much as possible, the status is polled here, instead of
 	// activated at the start of the first click event. This way the click event itself can be a simple increment
 	// Since the polling frequency is roughly once every 1.5 seconds, this shouldn't have a noticeable performance impact
-	const updateID = setInterval(F(() => {
+	window.setInterval(F(() => {
 		const current = clicks;
 		clicks = 0;
 		const now = ticker();
@@ -102,7 +102,7 @@ Object.freeze(() => {
 	});
 
 	const testFinish = F(() => {
-		clearTimeout(cancelID);
+		window.clearTimeout(cancelID);
 		cancelID = null;
 
 		startButton.disabled = false;
