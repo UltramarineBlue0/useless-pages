@@ -1,9 +1,9 @@
 "use strict";
 // IIFE closure to limit scope. Act like a anonymous namespace
-Object.freeze(() => {
+Object.freeze(Object.setPrototypeOf(() => {
 
 	// I'm just curious. This is intentionally overdone
-	const F = Object.freeze(anyObj => Object.freeze(anyObj));
+	const F = Object.freeze(Object.setPrototypeOf(anyObj => Object.freeze(Object.setPrototypeOf(anyObj, null)), null));
 
 	const eventOption = F({ passive: true, capture: true });
 
@@ -105,6 +105,10 @@ Object.freeze(() => {
 		window.clearTimeout(cancelID);
 		cancelID = null;
 
+		// Stop updating stats
+		clicks = 0;
+		totalClicks = 0;
+
 		startButton.disabled = false;
 		startButton.textContent = "Start generating clicks";
 	});
@@ -118,6 +122,7 @@ Object.freeze(() => {
 			testFinish();
 		}
 
+		previous = ticker();
 		clicks = 0;
 		maxCps = 0;
 		totalClicks = 0;
@@ -171,4 +176,4 @@ Object.freeze(() => {
 			clickButton.addEventListener(clickEventName, increment, eventOption);
 		}
 	}), eventOption);
-})();
+}, null))();

@@ -3,20 +3,73 @@
 
 <head>
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Test timer resolution</title>
 	<script src="test.js" defer></script>
 	<style>
-
+		table,
+		th,
+		td {
+			border: thin solid;
+			border-collapse: collapse;
+			padding: 10px;
+		}
 	</style>
 </head>
 
 <body>
 	<header>
 		<h1>Test timer resolution</h1>
-		<p></p>
+		<p>This test can only test the resolution of timers, not their accuracy</p>
 	</header>
 	<main>
+		<p><button id="startTest" type="button" autofocus>Start test</button></p>
+		<table>
+			<thead>
+				<tr>
+					<th></th>
+					<th>performance.now()</th>
+					<th>Date.now()</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Elapsed time of<br>one test run</td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>Unique values</td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>% of total</td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>Avg diff</td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>Max diff</td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>Min diff</td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>Diff variance</td>
+					<td></td>
+					<td></td>
+				</tr>
+			</tbody>
+		</table>
 	</main>
 </body>
 

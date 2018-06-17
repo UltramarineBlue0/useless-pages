@@ -16,8 +16,11 @@
 		}
 	};
 
-	document.getElementById("startTest").addEventListener(clickEvent, event => {
+	const startButton = document.getElementById("startTest");
+	startButton.addEventListener(clickEvent, event => {
 		event.stopImmediatePropagation();
+		startButton.disabled = true;
+		startButton.textContent = "Testing …";
 		if (Math.random() < 0.5) {
 			test(dateTimestamp, dateResult);
 			test(perfTimestamp, perfResult);
@@ -25,5 +28,7 @@
 			test(perfTimestamp, perfResult);
 			test(dateTimestamp, dateResult);
 		}
+		startButton.disabled = false;
+		startButton.textContent = "Retest";
 	}, eventOption);
 })();
