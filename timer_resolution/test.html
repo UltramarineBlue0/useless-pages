@@ -23,7 +23,9 @@
 		<p>This test can only test the resolution of timers, not their accuracy</p>
 	</header>
 	<main>
-		<p><button id="startTest" type="button" autofocus>Start test</button></p>
+		<p>
+			<button id="startTest" type="button" autofocus>Start test</button>
+		</p>
 		<table>
 			<thead>
 				<tr>
@@ -34,42 +36,60 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td>Elapsed time of<br>one test run</td>
-					<td></td>
-					<td></td>
+					<td>Elapsed time of
+						<br>one test run</td>
+					<td id="perfTotal"></td>
+					<td id="dateTotal"></td>
 				</tr>
 				<tr>
 					<td>Unique values</td>
-					<td></td>
-					<td></td>
+					<td id="perfUnique"></td>
+					<td id="dateUnique"></td>
 				</tr>
 				<tr>
 					<td>% of total</td>
-					<td></td>
-					<td></td>
+					<td id="perfPerc"></td>
+					<td id="datePerc"></td>
 				</tr>
 				<tr>
-					<td>Avg diff</td>
-					<td></td>
-					<td></td>
+					<td>Avg diff (ms)</td>
+					<td id="perfAvg"></td>
+					<td id="dateAvg"></td>
 				</tr>
 				<tr>
-					<td>Max diff</td>
-					<td></td>
-					<td></td>
+					<td>Max diff (ms)</td>
+					<td id="perfMax"></td>
+					<td id="dateMax"></td>
 				</tr>
 				<tr>
-					<td>Min diff</td>
-					<td></td>
-					<td></td>
+					<td>Min diff (ms)</td>
+					<td id="perfMin"></td>
+					<td id="dateMin"></td>
 				</tr>
 				<tr>
-					<td>Diff variance</td>
-					<td></td>
-					<td></td>
+					<td>Max jitter (ms)</td>
+					<td id="perfMaxJitter"></td>
+					<td id="dateMaxJitter"></td>
+				</tr>
+				<tr>
+					<td>Min jitter (ms)</td>
+					<td id="perfMinJitter"></td>
+					<td id="dateMinJitter"></td>
+				</tr>
+				<tr>
+					<td>Diff std deviation (ms)</td>
+					<td id="perfStdDev"></td>
+					<td id="dateStdDev"></td>
 				</tr>
 			</tbody>
 		</table>
+		<aside>
+			Unique values: number of distinct timestamps
+			<br> Diff is the difference between two adjacent distinct timestamps
+			<br> diff = (timestamp_n+1 - timestamp_n)
+			<br> Here, "Jitter" is difference between the diffs of three adjacent distinct timestamps
+			<br> jitter = (timestamp_n+2 - timestamp_n+1) - (timestamp_n+1 - timestamp_n)
+		</aside>
 	</main>
 </body>
 

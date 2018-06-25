@@ -110,7 +110,7 @@ Object.freeze(Object.setPrototypeOf(() => {
 		totalClicks = 0;
 
 		startButton.disabled = false;
-		startButton.textContent = "Start generating clicks";
+		startButton.textContent = "Generate click events";
 	});
 
 	// Default action: Click button increment counter once per click
