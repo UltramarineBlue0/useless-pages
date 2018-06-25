@@ -14,13 +14,19 @@
 			border-collapse: collapse;
 			padding: 10px;
 		}
+
+		aside {
+			margin: 10px;
+		}
 	</style>
 </head>
 
 <body>
 	<header>
 		<h1>Test timer resolution</h1>
-		<p>This test can only test the resolution of timers, not their accuracy</p>
+		<p>This test can only test the resolution of timers, not their accuracy.
+			<br> A test run generates 25 million (25165824) timestamps
+			<br> Checks for monotony and if the clock skips ahead</p>
 	</header>
 	<main>
 		<p>
@@ -85,6 +91,7 @@
 		</table>
 		<aside>
 			Unique values: number of distinct timestamps
+			<br> % of total is the ratio of the number of distinct timestamps to all generated timestamps
 			<br> Diff is the difference between two adjacent distinct timestamps
 			<br> diff = (timestamp_n+1 - timestamp_n)
 			<br> Here, "Jitter" is difference between the diffs of three adjacent distinct timestamps

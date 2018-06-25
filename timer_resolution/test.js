@@ -58,7 +58,7 @@
 
 			perfTotal.textContent = result.testDuration.toFixed(2);
 			perfUnique.textContent = result.uniques.toFixed(0);
-			perfPerc.textContent = fmtNum(result.uniques / result.testLength);
+			perfPerc.textContent = fmtNum((result.uniques / result.testLength) * 100);
 			perfAvg.textContent = fmtNum(result.totalDiff / result.uniques);
 			perfMax.textContent = fmtNum(result.maxDiff);
 			perfMin.textContent = fmtNum(result.minDiff);
@@ -70,7 +70,7 @@
 
 			dateTotal.textContent = result.testDuration.toFixed(2);
 			dateUnique.textContent = result.uniques.toFixed(0);
-			datePerc.textContent = fmtNum(result.uniques / result.testLength);
+			datePerc.textContent = fmtNum((result.uniques / result.testLength) * 100);
 			dateAvg.textContent = fmtNum(result.totalDiff / result.uniques);
 			dateMax.textContent = fmtNum(result.maxDiff);
 			dateMin.textContent = fmtNum(result.minDiff);

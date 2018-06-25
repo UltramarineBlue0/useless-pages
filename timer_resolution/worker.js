@@ -69,7 +69,9 @@
 		resultArray[testLength - 1] = 0;
 
 		// if the sum of all diffs is not the same as the test duration and the clock is monotone, the clock is skipping ahead
-		if (Math.abs(testDuration - totalDiff) > (Number.EPSILON * 10)) {
+		// floating point comparison with epsilon is needed since totalDiff is a sum of many values, while testDuration is the difference of two values
+		// testDuration is always positive and larger than zero
+		if (Math.abs(testDuration - totalDiff) > (Number.EPSILON * testDuration)) {
 			throw testType + " skips ahead";
 		}
 
