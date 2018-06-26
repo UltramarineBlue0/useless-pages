@@ -15,6 +15,8 @@
 	const perfMaxJitter = document.getElementById("perfMaxJitter");
 	const perfMinJitter = document.getElementById("perfMinJitter");
 	const perfStdDev = document.getElementById("perfStdDev");
+	const perfMAD = document.getElementById("perfMAD");
+	const perfIQR = document.getElementById("perfIQR");
 
 	const dateTotal = document.getElementById("dateTotal");
 	const dateUnique = document.getElementById("dateUnique");
@@ -27,6 +29,8 @@
 	const dateMaxJitter = document.getElementById("dateMaxJitter");
 	const dateMinJitter = document.getElementById("dateMinJitter");
 	const dateStdDev = document.getElementById("dateStdDev");
+	const dateMAD = document.getElementById("dateMAD");
+	const dateIQR = document.getElementById("dateIQR");
 
 	// Message body
 	const perfTest = "perf";
@@ -71,6 +75,8 @@
 			perfMaxJitter.textContent = fmtNum(result.maxJitter);
 			perfMinJitter.textContent = fmtNum(result.minJitter);
 			perfStdDev.textContent = fmtNum(result.stdDeviation);
+			perfMAD.textContent = fmtNum(result.mad);
+			perfIQR.textContent = fmtNum(result.interquartileRange);
 		} else if (result.type === dateTest) {
 			dateDone = true;
 
@@ -85,6 +91,8 @@
 			dateMaxJitter.textContent = fmtNum(result.maxJitter);
 			dateMinJitter.textContent = fmtNum(result.minJitter);
 			dateStdDev.textContent = fmtNum(result.stdDeviation);
+			dateMAD.textContent = fmtNum(result.mad);
+			dateIQR.textContent = fmtNum(result.interquartileRange);
 		} else {
 			alert("Impossible error");
 			throw "Impossible";
@@ -106,6 +114,6 @@
 
 	// Crude error handling
 	testWorker.onerror = event => {
-		alert(event.message + "\n" + event.error);
+		alert(event.message + "\n\nIn " + event.filename + "; Line: "+ event.lineno);
 	};
 })();

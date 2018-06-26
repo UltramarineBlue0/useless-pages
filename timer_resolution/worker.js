@@ -16,19 +16,19 @@
 		return resultArray[testLength - 1] - resultArray[0];
 	};
 
-	// First pass through resultArray
+	// First pass through resultArray. Transforms the timestamps to diffs
 	// This test uses a lot of ram. Try to calculate stats in place. Throws if clock is not monotonic
 	// Jitter: abs((timestamp_n+2 - timestamp_n+1) - (timestamp_n+1 - timestamp_n))
 	// n here means next unique timestamp
 	const calcStats1 = (testType, testDuration) => {
-		let uniques = 0,
-			minDiff = Number.MAX_VALUE,
-			maxDiff = - Number.MAX_VALUE,
-			totalDiff = 0,
-			minJitter = Number.MAX_VALUE,
-			maxJitter = - Number.MAX_VALUE,
-			totalJitter = 0,
-			lastDiff = 0;
+		let uniques = 0;
+		let minDiff = Number.MAX_VALUE;
+		let maxDiff = - Number.MAX_VALUE;
+		let totalDiff = 0;
+		let minJitter = Number.MAX_VALUE;
+		let maxJitter = - Number.MAX_VALUE;
+		let totalJitter = 0;
+		let lastDiff = 0;
 
 		for (let i = 1; i < testLength; ++i) {
 			const diff = resultArray[i] - resultArray[i - 1];
@@ -71,8 +71,8 @@
 		resultArray[testLength - 1] = 0;
 
 		// if the sum of all diffs is not the same as the test duration and the clock is monotonic, the clock is skipping ahead
-		// floating point comparison with epsilon is necessary since totalDiff is a sum of many values, while testDuration is the difference of two values
-		// testDuration is always positive and larger than zero
+		// comparison with epsilon is necessary since totalDiff is a sum of many values, epsilon can accommodate for floating point inaccuracies
+		// using testDuration as scale, it's always positive and larger than zero
 		if (Math.abs(testDuration - totalDiff) > (Number.EPSILON * testDuration)) {
 			throw testType + " skips ahead";
 		}
@@ -88,9 +88,23 @@
 		};
 	};
 
+	// both indices are inclusive
+	const getMiddle = (startIndex, endIndex) => {
+		return {
+			left: Math.floor((startIndex + endIndex) / 2),
+			right: Math.ceil((startIndex + endIndex) / 2),
+		};
+	}
+
+	const getMedian = (array, startIndex, endIndex) => {
+		const middle = getMiddle(startIndex, endIndex);
+		return (array[middle.left] + array[middle.right]) / 2;
+	}
+
 	// Second pass through resultArray, now containing diffs instead of timestamps
 	// Standard deviation: sqrt(sum((value - avg)^2) / count)
 	const calcStats2 = average => {
+		// sort low to high, no compare function is the fast path
 		resultArray.sort();
 
 		const lastIndex = testLength - 1;
@@ -98,11 +112,10 @@
 		let count = 0;
 		let index = lastIndex;
 
-		// Sorted diffs: walk backwards towards the last 0 in array
+		// Sorted diffs: walk backwards until the last 0 in array which is the end of diffs
 		for (; index > -1; --index) {
 			const current = resultArray[index];
 
-			// Hit the end of actual diffs
 			if (current === 0) {
 				break;
 			}
@@ -111,14 +124,43 @@
 			++count;
 		}
 
-		const medianIndex1 = Math.floor((lastIndex + index) / 2);
-		const medianIndex2 = Math.ceil((lastIndex + index) / 2);
-		const median = (resultArray[medianIndex1] + resultArray[medianIndex2]) / 2;
+		const firstIndex = index + 1;
+
+		const median = getMedian(resultArray, firstIndex, lastIndex);
+
+		// interquartile range = median(higher half of samples) - median(lower half of samples)
+		const middle = getMiddle(firstIndex, lastIndex);
+		let iqrIndexLeft = 0;
+		let iqrIndexRight = 0;
+
+		if (middle.left === middle.right) {
+			iqrIndexLeft = middle.left - 1;
+			iqrIndexRight = middle.left + 1;
+		} else {
+			iqrIndexLeft = middle.left;
+			iqrIndexRight = middle.right;
+		}
+
+		const interquartileRange = getMedian(resultArray, iqrIndexRight, lastIndex) - getMedian(resultArray, firstIndex, iqrIndexLeft);
 
 		return {
 			stdDeviation: Math.sqrt(sum / count),
 			median,
+			interquartileRange,
+			firstIndex,
 		};
+	};
+
+	// Expects the resultArray to contain a sorted list of diffs
+	const calcMAD = (median, firstIndex) => {
+		const resultView = resultArray.subarray(firstIndex);
+		for (let i = 0; i < resultView.length; ++i) {
+			resultView[i] = Math.abs(resultView[i] - median);
+		}
+
+		resultView.sort();
+
+		return getMedian(resultView, 0, resultView.length - 1);
 	};
 
 	onmessage = event => {
@@ -135,12 +177,14 @@
 		const testDuration = fillValues(currentTest);
 		const result1 = calcStats1(event.data + ".now()", testDuration);
 		const result2 = calcStats2(result1.totalDiff / result1.uniques);
+		const mad = calcMAD(result2.median, result2.firstIndex);
 
 		// Construct result. The type is needed for the other end to distinguish between test types
 		const msgValue = Object.assign({
 			type: event.data,
 			testDuration,
 			testLength,
+			mad,
 		}, result1, result2);
 
 		postMessage(msgValue);
