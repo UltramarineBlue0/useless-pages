@@ -42,13 +42,13 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td>Elapsed time of
-						<br>one test run</td>
+					<td>Duration (ms)
+						<br>of this test run</td>
 					<td id="perfTotal"></td>
 					<td id="dateTotal"></td>
 				</tr>
 				<tr>
-					<td>Unique values</td>
+					<td>Distinct values</td>
 					<td id="perfUnique"></td>
 					<td id="dateUnique"></td>
 				</tr>
@@ -56,6 +56,11 @@
 					<td>% of total</td>
 					<td id="perfPerc"></td>
 					<td id="datePerc"></td>
+				</tr>
+				<tr>
+					<td>Median diff (ms)</td>
+					<td id="perfMedian"></td>
+					<td id="dateMedian"></td>
 				</tr>
 				<tr>
 					<td>Avg diff (ms)</td>
@@ -73,6 +78,11 @@
 					<td id="dateMin"></td>
 				</tr>
 				<tr>
+					<td>Avg jitter (ms)</td>
+					<td id="perfAvgJitter"></td>
+					<td id="dateAvgJitter"></td>
+				</tr>
+				<tr>
 					<td>Max jitter (ms)</td>
 					<td id="perfMaxJitter"></td>
 					<td id="dateMaxJitter"></td>
@@ -83,19 +93,19 @@
 					<td id="dateMinJitter"></td>
 				</tr>
 				<tr>
-					<td>Diff std deviation (ms)</td>
+					<td>Diff standard
+						<br>deviation (ms)</td>
 					<td id="perfStdDev"></td>
 					<td id="dateStdDev"></td>
 				</tr>
 			</tbody>
 		</table>
 		<aside>
-			Unique values: number of distinct timestamps
-			<br> % of total is the ratio of the number of distinct timestamps to all generated timestamps
-			<br> Diff is the difference between two adjacent distinct timestamps
+			% of total: the ratio of the number of distinct timestamps to all generated timestamps
+			<br> Diff is the difference between two consecutive distinct timestamps
 			<br> diff = (timestamp_n+1 - timestamp_n)
-			<br> Here, "Jitter" is difference between the diffs of three adjacent distinct timestamps
-			<br> jitter = (timestamp_n+2 - timestamp_n+1) - (timestamp_n+1 - timestamp_n)
+			<br> Here, "Jitter" is absolute difference between the diffs of three consecutive distinct timestamps
+			<br> jitter = abs((timestamp_n+2 - timestamp_n+1) - (timestamp_n+1 - timestamp_n))
 		</aside>
 	</main>
 </body>
