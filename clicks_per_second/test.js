@@ -1,11 +1,7 @@
 "use strict";
 // IIFE closure to limit scope. Act like a anonymous namespace
-Object.freeze(Object.setPrototypeOf(() => {
-
-	// I'm just curious. This is intentionally overdone
-	const F = Object.freeze(Object.setPrototypeOf(anyObj => Object.freeze(Object.setPrototypeOf(anyObj, null)), null));
-
-	const eventOption = F({ passive: true, capture: true });
+(() => {
+	const eventOption = Object.freeze({ passive: true, capture: true });
 
 	// Minimal delay setTimeout. Modified from
 	// https://dbaron.org/log/20100309-faster-timeouts
@@ -13,7 +9,7 @@ Object.freeze(Object.setPrototypeOf(() => {
 	const queuedFuncs = [];
 	const randomID = window.crypto.getRandomValues(new Int32Array(1))[0];
 
-	window.addEventListener("message", F(event => {
+	window.addEventListener("message", event => {
 		event.stopImmediatePropagation();
 		if (event.source === window && event.data === randomID) {
 			const func = queuedFuncs.pop();
@@ -21,12 +17,12 @@ Object.freeze(Object.setPrototypeOf(() => {
 				func();
 			}
 		}
-	}), eventOption);
+	}, eventOption);
 
-	const queueTask = F(func => {
+	const queueTask = func => {
 		queuedFuncs.push(func);
 		window.postMessage(randomID, window.location.origin);
-	});
+	};
 
 	const cpsDisplay = document.getElementById("cpsValue");
 	const maxDisplay = document.getElementById("maxCps");
@@ -35,7 +31,7 @@ Object.freeze(Object.setPrototypeOf(() => {
 	const startButton = document.getElementById("startGenerate");
 	const switchButton = document.getElementById("switchMode");
 
-	const ticker = F(() => window.performance.now());
+	const ticker = () => window.performance.now();
 
 	const displayNone = "none";
 	const clickEventName = "click";
@@ -48,13 +44,13 @@ Object.freeze(Object.setPrototypeOf(() => {
 
 	let cancelID = null;
 
-	const fmtNum = F(value => value.toFixed(2));
+	const fmtNum = value => value.toFixed(2);
 
 	// Check status roughly once every second
 	// In order to minimize the click event as much as possible, the status is polled here, instead of
 	// activated at the start of the first click event. This way the click event itself can be a simple increment
 	// Since the polling frequency is roughly once every 1.5 seconds, this shouldn't have a noticeable performance impact
-	window.setInterval(F(() => {
+	window.setInterval(() => {
 		const current = clicks;
 		clicks = 0;
 		const now = ticker();
@@ -76,32 +72,32 @@ Object.freeze(Object.setPrototypeOf(() => {
 		}
 
 		previous = now;
-	}), 1500);
+	}, 1500);
 
 	// Click events
-	const increment = F(event => {
+	const increment = event => {
 		event.stopImmediatePropagation();
 		++clicks;
-	});
+	};
 
 	// Afaik, despite the event loop, a call to click will be immediately trigger a click event.
 	// If click is called in a loop, it'll block everything else, since you're effectively executing a long running function
 	// setTimeout's delay is clamped to 4ms after a few recursive calls
 	// Promises enqueue microtasks. Afaik, they'll block the UI since they have higher priority than regular tasks and are executed before them
 	// postMessage seems to be the only reliable minimal delay solution
-	const triggerClick = F(() => {
+	const triggerClick = () => {
 		clickButton.click();
-	});
+	};
 
-	const incrementThenClick = F(event => {
+	const incrementThenClick = event => {
 		event.stopImmediatePropagation();
 		if (cancelID !== null) {
 			++clicks;
 			queueTask(triggerClick);
 		}
-	});
+	};
 
-	const testFinish = F(() => {
+	const testFinish = () => {
 		window.clearTimeout(cancelID);
 		cancelID = null;
 
@@ -111,13 +107,13 @@ Object.freeze(Object.setPrototypeOf(() => {
 
 		startButton.disabled = false;
 		startButton.textContent = "Generate click events";
-	});
+	};
 
 	// Default action: Click button increment counter once per click
 	clickButton.addEventListener(clickEventName, increment, eventOption);
 
 	// Reset all fields and internal counters, stops the test until user clicks again
-	const resetAll = F(() => {
+	const resetAll = () => {
 		if (cancelID !== null) {
 			testFinish();
 		}
@@ -132,10 +128,10 @@ Object.freeze(Object.setPrototypeOf(() => {
 		avgDisplay.textContent = initialValue;
 		maxDisplay.textContent = initialValue;
 		cpsDisplay.textContent = initialValue;
-	});
+	};
 
 	// Start generating clicks for 30 seconds
-	startButton.addEventListener(clickEventName, F(event => {
+	startButton.addEventListener(clickEventName, event => {
 		event.stopImmediatePropagation();
 
 		startButton.disabled = true;
@@ -145,16 +141,16 @@ Object.freeze(Object.setPrototypeOf(() => {
 		cancelID = window.setTimeout(testFinish, 30000);
 
 		queueTask(triggerClick); // Start test
-	}), eventOption);
+	}, eventOption);
 
 	// Stop and reset
-	document.getElementById("resetStats").addEventListener(clickEventName, F(event => {
+	document.getElementById("resetStats").addEventListener(clickEventName, event => {
 		event.stopImmediatePropagation();
 		resetAll();
-	}), eventOption);
+	}, eventOption);
 
 	// Reset and switch between user clicks and generated clicks
-	switchButton.addEventListener(clickEventName, F(event => {
+	switchButton.addEventListener(clickEventName, event => {
 		event.stopImmediatePropagation();
 		resetAll();
 
@@ -175,5 +171,5 @@ Object.freeze(Object.setPrototypeOf(() => {
 			clickButton.removeEventListener(clickEventName, incrementThenClick, eventOption);
 			clickButton.addEventListener(clickEventName, increment, eventOption);
 		}
-	}), eventOption);
-}, null))();
+	}, eventOption);
+})();

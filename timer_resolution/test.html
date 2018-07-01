@@ -14,6 +14,10 @@
 			border-collapse: collapse;
 			padding: 10px;
 		}
+
+		button {
+			font: 2em sans-serif;
+		}
 	</style>
 </head>
 
@@ -23,7 +27,7 @@
 		<p>This test generates timestamps in a dedicated web worker and compiles a few statistics
 			<br> It can only test the resolution of timers, not their accuracy.
 			<br> A test run generates 25 million (25165824) timestamps
-			<br> Checks for monotony and if the clock skips ahead</p>
+			<br> Checks if the clock is monotonic</p>
 	</header>
 	<main>
 		<p>

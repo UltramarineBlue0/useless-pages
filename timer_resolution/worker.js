@@ -5,10 +5,9 @@
 
 	// uses 192 MiB of ram
 	const testLength = 24 * 1024 * 1024;
-	const resultArray = new Float64Array(testLength);
 
 	//returns test run duration according to supplier
-	const fillValues = supplier => {
+	const fillValues = (resultArray, supplier) => {
 		for (let i = 0; i < testLength; ++i) {
 			resultArray[i] = supplier();
 		}
@@ -20,7 +19,7 @@
 	// This test uses a lot of ram. Try to calculate stats in place. Throws if clock is not monotonic
 	// Jitter: abs((timestamp_n+2 - timestamp_n+1) - (timestamp_n+1 - timestamp_n))
 	// n here means next unique timestamp
-	const calcStats1 = (testType, testDuration) => {
+	const calcStats1 = (resultArray, testType, testDuration) => {
 		let uniques = 0;
 		let minDiff = Number.MAX_VALUE;
 		let maxDiff = - Number.MAX_VALUE;
@@ -70,11 +69,11 @@
 		// remove last value, the array only contains diffs now
 		resultArray[testLength - 1] = 0;
 
-		// if the sum of all diffs is not the same as the test duration and the clock is monotonic, the clock is skipping ahead
+		// if the sum of all diffs is not the same as the test duration and the clock is monotonic, something is very wrong
 		// comparison with epsilon is necessary since totalDiff is a sum of many values, epsilon can accommodate for floating point inaccuracies
 		// using testDuration as scale, it's always positive and larger than zero
 		if (Math.abs(testDuration - totalDiff) > (Number.EPSILON * testDuration)) {
-			throw testType + " skips ahead";
+			throw testType + ": test duration != accumulated diffs";
 		}
 
 		return {
@@ -103,7 +102,7 @@
 
 	// Second pass through resultArray, now containing diffs instead of timestamps
 	// Standard deviation: sqrt(sum((value - avg)^2) / count)
-	const calcStats2 = average => {
+	const calcStats2 = (resultArray, average) => {
 		// sort low to high, no compare function is the fast path
 		resultArray.sort();
 
@@ -152,7 +151,7 @@
 	};
 
 	// Expects the resultArray to contain a sorted list of diffs
-	const calcMAD = (median, firstIndex) => {
+	const calcMAD = (resultArray, median, firstIndex) => {
 		const resultView = resultArray.subarray(firstIndex);
 		for (let i = 0; i < resultView.length; ++i) {
 			resultView[i] = Math.abs(resultView[i] - median);
@@ -174,10 +173,12 @@
 			throw "Unknown event";
 		}
 
-		const testDuration = fillValues(currentTest);
-		const result1 = calcStats1(event.data + ".now()", testDuration);
-		const result2 = calcStats2(result1.totalDiff / result1.uniques);
-		const mad = calcMAD(result2.median, result2.firstIndex);
+		const testArray = new Float64Array(testLength);
+
+		const testDuration = fillValues(testArray, currentTest);
+		const result1 = calcStats1(testArray, event.data + ".now()", testDuration);
+		const result2 = calcStats2(testArray, result1.totalDiff / result1.uniques);
+		const mad = calcMAD(testArray, result2.median, result2.firstIndex);
 
 		// Construct result. The type is needed for the other end to distinguish between test types
 		const msgValue = Object.assign({
