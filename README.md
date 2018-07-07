@@ -4,5 +4,5 @@
 
 ###### [Link to the hosted website](https://ultramarineblue0.github.io/useless-pages/)
 
-- [Test clicks per second in a browser](clicks_per_second/test.html)
-- [Test clocks in js](timer_resolution/test.html)
+- [Test clicks per second in browser](clicks_per_second/test.html)
+- [Test clocks in JavaScript](timer_resolution/test.html)

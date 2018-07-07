@@ -27,7 +27,7 @@
 		<p>This test generates timestamps in a dedicated web worker and compiles a few statistics
 			<br> It can only test the resolution of timers, not their accuracy.
 			<br> A test run generates 25 million (25165824) timestamps
-			<br> Checks if the clock is monotonic</p>
+			<br> Test checks if the clock is monotonic</p>
 	</header>
 	<main>
 		<p>
@@ -121,11 +121,11 @@
 			<br> Here, "Jitter" is absolute difference between two consecutive diffs
 			<br> jitter = abs((timestamp_n+2 - timestamp_n+1) - (timestamp_n+1 - timestamp_n))</p>
 		<p>Aside from the standard statistics like the mean and standard deviation of the samples,
-			<br>the test also calculates few more robust statistics.
+			<br>this test also calculates a few more robust statistics.
 			<br>The sampling process can be easily disturbed by a lot of external factors,
-			<br>many of which can't be controlled within the test environment.
+			<br>many of which can't be controlled from within the test environment.
 			<br>Things like the load on the system and fore-/background tab/window and how
-			<br>the browser reacts to those changes can all influence the values.
+			<br>the browser reacts to those changes can all influence the test result.
 			<br>The more robust stats ignores outliers and can be a better indicator of the behavior of the clock</p>
 	</aside>
 </body>
