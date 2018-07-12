@@ -10,8 +10,8 @@
 	const randomID = window.crypto.getRandomValues(new Int32Array(1))[0];
 
 	window.addEventListener("message", event => {
-		event.stopImmediatePropagation();
 		if (event.source === window && event.data === randomID) {
+			event.stopImmediatePropagation();
 			const func = queuedFuncs.pop();
 			if (func !== undefined) {
 				func();
