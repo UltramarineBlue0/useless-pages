@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Stress the CPU</title>
+	<script src="../common/µ.js" defer></script>
+	<script src="test.js" defer></script>
+	<style>
+		input, 
+		button {
+			font: 2em sans-serif;
+		}
+	</style>
+</head>
+
+<body>
+	<form autocomplete="on">
+		<p>
+			<input type="number" id="input" autofocus min="0" max="2147483647" maxlength="10" required size="10" value="8">
+		</p>
+		<p>
+			<button id="button" type="button">Start</button>
+		</p>
+	</form>
+</body>
+
+</html>
