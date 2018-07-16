@@ -3,27 +3,6 @@
 (() => {
 	const eventOption = Object.freeze({ passive: true, capture: true });
 
-	// Minimal delay setTimeout. Modified from
-	// https://dbaron.org/log/20100309-faster-timeouts
-	// https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout#Timeouts_throttled_to_%3E4ms
-	const queuedFuncs = [];
-	const randomID = window.crypto.getRandomValues(new Int32Array(1))[0];
-
-	window.addEventListener("message", event => {
-		if (event.source === window && event.data === randomID) {
-			event.stopImmediatePropagation();
-			const func = queuedFuncs.pop();
-			if (func !== undefined) {
-				func();
-			}
-		}
-	}, eventOption);
-
-	const queueTask = func => {
-		queuedFuncs.push(func);
-		window.postMessage(randomID, window.location.origin);
-	};
-
 	const cpsDisplay = document.getElementById("cpsValue");
 	const maxDisplay = document.getElementById("maxCps");
 	const avgDisplay = document.getElementById("avgCps");
@@ -93,7 +72,7 @@
 		event.stopImmediatePropagation();
 		if (cancelID !== null) {
 			++clicks;
-			queueTask(triggerClick);
+			µ.queueTask(triggerClick);
 		}
 	};
 
@@ -140,7 +119,7 @@
 		resetAll();
 		cancelID = window.setTimeout(testFinish, 30000);
 
-		queueTask(triggerClick); // Start test
+		µ.queueTask(triggerClick); // Start test
 	}, eventOption);
 
 	// Stop and reset

@@ -43,18 +43,18 @@
 	(() => {
 		// The limit of integers in two's complement representation
 		µ.freezeAssign(µ, {
-			minInt8: ((2 ** 7) - 1) | 0,
-			maxInt8: (-(2 ** 7)) | 0,
+			minInt8: (-(2 ** 7)) | 0,
+			maxInt8: ((2 ** 7) - 1) | 0,
 			minUInt8: 0 >>> 0,
 			maxUInt8: ((2 ** 8) - 1) >>> 0,
 
-			minInt16: ((2 ** 15) - 1) | 0,
-			maxInt16: (-(2 ** 15)) | 0,
+			minInt16: (-(2 ** 15)) | 0,
+			maxInt16: ((2 ** 15) - 1) | 0,
 			minUInt16: 0 >>> 0,
 			maxUInt16: ((2 ** 16) - 1) >>> 0,
 
-			minInt32: ((2 ** 31) - 1) | 0,
-			maxInt32: (-(2 ** 31)) | 0,
+			minInt32: (-(2 ** 31)) | 0,
+			maxInt32: ((2 ** 31) - 1) | 0,
 			minUInt32: 0 >>> 0,
 			maxUInt32: ((2 ** 32) - 1) >>> 0,
 		});
@@ -111,7 +111,7 @@
 			return result;
 		};
 
-		const caution_setSeed = array => {
+		const CAUTION_SET_SEED = array => {
 			for (let i = 0; i < 4; ++i) {
 				rndState[i] = array[i];
 			}
@@ -162,7 +162,7 @@
 			randInt,
 			randBool,
 			randIntGenerator,
-			caution_setSeed,
+			CAUTION_SET_SEED,
 		});
 	})();
 
