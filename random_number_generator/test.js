@@ -31,39 +31,22 @@
 
 	const testSize = 100000;
 
-	const testXor = (minInclusive, maxExclusive) => {
-		const rnd = µ.randIntGenerator(minInclusive, maxExclusive);
+	const testRandom = randIntSupplier => {
 		let num = 0;
 		const startTime = performance.now();
 		for (let i = 0; i < testSize; ++i) {
-			num ^= rnd();
+			num ^= randIntSupplier();
 		}
 		const testDuration = performance.now() - startTime;
 		µ.absorbInt(num);
 		return testDuration;
 	};
 
-	const testMath = (minInclusive, maxExclusive) => {
-		let num = 0;
-		const startTime = performance.now();
-		for (let i = 0; i < testSize; ++i) {
-			num ^= getRandomInt(minInclusive, maxExclusive);
-		}
-		const testDuration = performance.now() - startTime;
-		µ.absorbInt(num);
-		return testDuration;
-	};
+	const testXor = (minInclusive, maxExclusive) => µ.getRandomInt(minInclusive, maxExclusive);
 
-	const testLodash = (minInclusive, maxExclusive) => {
-		let num = 0;
-		const startTime = performance.now();
-		for (let i = 0; i < testSize; ++i) {
-			num ^= _.random(minInclusive, maxExclusive - 1); // In lodash both bounds are inclusive
-		}
-		const testDuration = performance.now() - startTime;
-		µ.absorbInt(num);
-		return testDuration;
-	};
+	const testMath = (minInclusive, maxExclusive) => getRandomInt(minInclusive, maxExclusive);
+
+	const testLodash = (minInclusive, maxExclusive) => _.random(minInclusive, maxExclusive - 1); // In lodash both bounds are inclusive
 
 	const dispatchTask = () => {
 
