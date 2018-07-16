@@ -175,15 +175,15 @@
 		const receiver = channel.port1;
 		const sender = channel.port2;
 
-		const queuedFuncs = new Map();
-		let nextTaskID = µ.minInt32;
+		const queuedTasks = new Map(); // Here, Map is faster than array or plain object
+		let nextTaskID = 0;
 
 		receiver.onmessage = event => {
 			const taskID = event.data;
-			const task = queuedFuncs.get(taskID);
+			const task = queuedTasks.get(taskID);
 			// Make sure below that the map can't contain explicitly set undefined values
 			if (task !== undefined) {
-				queuedFuncs.delete(taskID);
+				queuedTasks.delete(taskID);
 				task();
 			}
 		};
@@ -196,7 +196,7 @@
 
 			const currentID = nextTaskID;
 			++nextTaskID;
-			queuedFuncs.set(currentID, func);
+			queuedTasks.set(currentID, func);
 			sender.postMessage(currentID);
 
 			return currentID;
@@ -204,11 +204,11 @@
 
 		// Returns true if the task was in the queue and is now removed, false if the id doesn't correspond to any tasks in the queue
 		const cancelTask = taskID => {
-			if (!Number.isSafeInteger(taskID)) {
-				throw new Error("Invalid task id");
+			if ((!Number.isSafeInteger(taskID)) || (taskID < 0)) {
+				return false;
 			}
 
-			return queuedFuncs.delete(taskID);
+			return queuedTasks.delete(taskID);
 		};
 
 		µ.freezeAssign(µ, {
