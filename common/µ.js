@@ -143,7 +143,7 @@
 			if ((d & m) === 0) {
 				// 1. case: the range is a power of two
 				// -> use bit mask. always generates a number in one iteration
-				return (randInt() & m) + l;
+				return (randInt() & m) + l; // Highest possible mask is 0x7F_FF_FF_FF
 			} else {
 				// 2. case: range is not a power of two
 				// -> loop to reject over-represented values. expected number of iterations are between 1 and 2, depending on the range
@@ -175,7 +175,7 @@
 		const receiver = channel.port1;
 		const sender = channel.port2;
 
-		const queuedTasks = new Map(); // Here, Map is faster than array or plain object
+		const queuedTasks = new Map(); // Here, Map is faster than array or plain object in both Firefox and Chrome
 		let nextTaskID = 0;
 
 		receiver.onmessage = event => {
@@ -223,38 +223,49 @@
 	// Don't call an of the functions in a hot loop. While they shouldn't take long to execute, they'll still affect the performance
 	// The caller has to make sure that the correct function is called depending on the type, otherwise it might not work reliably or at all
 	(() => {
-		const trashCan = Int32Array.of(µ.minInt32);
-		const int16Bin = new Int16Array(trashCan.buffer);
-		const writeOnly = new Float64Array(1);
-		const readOnly = new Int32Array(writeOnly.buffer);
+		const trashCan = new ArrayBuffer(4);
+		const int32Bin = new Int32Array(trashCan);
+		const int16Bin = new Int16Array(trashCan);
+
+		const floatConvert = new ArrayBuffer(8);
+		const writeOnly = new Float64Array(floatConvert);
+		const readOnly = new Int32Array(floatConvert);
 
 		// Retry every 24 days and 20 hours to see if crypto returns 65536 bytes of zero. In theory this should never happen
+		// This creates a data dependency from test code to something that in practice never runs
+		// console seems to be the only somewhat acceptable way to create such a dependence, which is available in both web workers and the main window
+		const notZero = new Uint32Array(16384);
 		self.setInterval(() => {
-			const testArray = new Uint32Array(16384);
-			self.crypto.getRandomValues(testArray);
-			if (testArray.every(value => value === 0)) {
-				console.error("This should never appear: %o", trashCan);
-				console.dir(trashCan);
+			self.crypto.getRandomValues(notZero);
+			if (notZero.every(value => value === 0)) {
+				console.error("This should never appear: %o", int32Bin);
+				console.dir(int16Bin);
 			}
 		}, µ.maxInt32);
 
+		// Bit-wise AND, OR, XOR and arithmetic operations ADD, SUB are the fastest instructions on most of the CPUs
+		// If fed with random values, AND and OR gravitate towards all 0s and all 1s
+		// XOR is best suited for the job, because, unlike ADD and SUB, it doesn't have any obvious issues with NaNs and Infinities
+		// Looking at the "BlackHole" class in the Java Micro-Benchmark Harness, these operations are more expensive (here: read then write)
+		// However, in Java, they use the "threat of data race under concurrency" (volatile field) to trick the VM. I'm not aware of
+		// anything remotely similar in functionality and speed that is both available in main window and web workers
+		// It would be ｖｅｒｙ  ｎｉｃｅ, if any of core developers of V8 and SpiderMonkey can comment on this and suggest any improvements
 		const absorbInt = num => {
-			trashCan[0] ^= num;
+			int32Bin[0] ^= num;
 		};
 
 		const absorbFloat = num => {
 			writeOnly[0] = num;
-			trashCan[0] ^= readOnly[0];
-			trashCan[0] ^= readOnly[1];
+			int32Bin[0] ^= readOnly[0];
+			int32Bin[0] ^= readOnly[1];
 		};
 
 		const absorbString = str => {
-			int16Bin[0] ^= str.charCodeAt(0);
 			int16Bin[1] ^= str.charCodeAt(str.length - 1);
 		};
 
 		const absorbBool = bool => {
-			trashCan[0] ^= (bool << 31);
+			int16Bin[1] ^= (bool << 15);
 		};
 
 		µ.freezeAssign(µ, {
@@ -262,6 +273,46 @@
 			absorbFloat,
 			absorbString,
 			absorbBool,
+		});
+	})();
+
+
+	// Tools for light statistical analysis of arrays of numbers
+	(() => {
+		// both indices are inclusive
+		const getCenter = (startIndex, endIndex) => {
+			return {
+				left: Math.floor((startIndex + endIndex) / 2),
+				right: Math.ceil((startIndex + endIndex) / 2),
+			};
+		};
+
+		// array has to be already sorted
+		const median = (array, startIndex = 0, endIndex = (array.length - 1)) => {
+			const middle = getCenter(startIndex, endIndex);
+			return (array[middle.left] + array[middle.right]) / 2;
+		};
+
+		// interquartile range = median(higher half of samples) - median(lower half of samples)
+		const interquartileRange = (array, startIndex = 0, endIndex = (array.length - 1)) => {
+			const middle = getCenter(startIndex, endIndex);
+			let iqrIndexLeft = 0;
+			let iqrIndexRight = 0;
+
+			if (middle.left === middle.right) {
+				iqrIndexLeft = middle.left - 1;
+				iqrIndexRight = middle.left + 1;
+			} else {
+				iqrIndexLeft = middle.left;
+				iqrIndexRight = middle.right;
+			}
+
+			return median(array, iqrIndexRight, endIndex) - median(array, startIndex, iqrIndexLeft);
+		};
+
+		µ.freezeAssign(µ, {
+			median,
+			interquartileRange,
 		});
 	})();
 
