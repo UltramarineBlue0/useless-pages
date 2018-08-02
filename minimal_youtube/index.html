@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Minimalist YouTube</title>
+	<script src="script.js" defer></script>
+	<style>
+		form {
+			border: thin solid;
+			margin: 5px 0px;
+			padding: 5px;
+		}
+
+		button {
+			font: 1em sans-serif;
+		}
+	</style>
+</head>
+
+<body>
+	<h2>Minimalist YouTube Interface</h2>
+	This is minimalist for minimalist's sake, it's intentionally unreasonable.
+	<form id="form" autocomplete="on">
+		<label for="type">Query type: </label>
+		<select id="type" required>
+			<option value="user_uploads">Channel name</option>
+			<option value="search" selected>Search query</option>
+		</select>
+		<br>
+		<label for="query">Query text: </label>
+		<input id="query" type="text" size="30" minlength="1" maxlength="1024" inputmode="search" autocomplete="on" autofocus required>
+		<br>
+		<button type="submit">Load videos</button>
+	</form>
+	<iframe id="yt-iframe" lang="en" width="1600" height="720" contenteditable="false" referrerpolicy="no-referrer" allowfullscreen sandbox="allow-scripts allow-same-origin" src="about:blank"></iframe>
+</body>
+
+</html>
