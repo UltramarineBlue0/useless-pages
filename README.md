@@ -4,7 +4,7 @@
 
 ###### [Link to the hosted website](https://ultramarineblue0.github.io/useless-pages/)
 
-- [Minimalist YouTube](minimal_youtube/index.html)
+- [YouTube in an iframe](minimal_youtube/index.html)
 
 - [Test clicks per second in browser](clicks_per_second/test.html)
 - [Test clocks in JavaScript](timer_resolution/test.html)
