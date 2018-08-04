@@ -1,16 +1,13 @@
 "use strict";
 self.onYouTubeIframeAPIReady = () => {
 	// Selected video resolution
-	const preferredRes = document.getElementById("resolution");
+	const resolutionOverride = document.getElementById("resolution");
 
 	const onPlayerStateChange = event => {
-		// when a video first started playing, change quality to the selected quality
-		// somehow doesn't work, even if I set the quality on every state change event
-		const playerState = event.data;
-		if (playerState === -1 || playerState === 5) {
-			const player = event.target;
-			player.setPlaybackQuality(preferredRes.value);
-		}
+		// when a video first started playing, override the video resolution to the selected quality
+		// somehow it doesn't work, even if this sets the quality on every state change event
+		const player = event.target;
+		player.setPlaybackQuality(resolutionOverride.value);
 	};
 
 	const onPlayerError = event => {
@@ -85,7 +82,7 @@ self.onYouTubeIframeAPIReady = () => {
 			event.preventDefault();
 			event.stopImmediatePropagation();
 
-			const resolution = preferredRes.value;
+			const resolution = resolutionOverride.value;
 			const type = queryType.value;
 			const query = queryInput.value.trim().normalize();
 
