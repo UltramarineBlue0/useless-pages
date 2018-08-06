@@ -3,7 +3,7 @@
 	const clipsHost = "clips.twitch.tv";
 	const twitchHost = "twitch.tv";
 
-	const twitchPlayer = "http://player." + twitchHost + "/?";
+	const twitchPlayer = "https://player." + twitchHost + "/?";
 	const playerParams = "&autoplay=false";
 	const clipsPlayer = "https://" + clipsHost + "/embed?";
 
