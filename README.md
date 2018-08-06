@@ -5,6 +5,7 @@
 ###### [Link to the hosted website](https://ultramarineblue0.github.io/useless-pages/)
 
 - [YouTube in an iframe](minimal_youtube/index.html)
+- [Twitch in an iframe](minimal_twitch/index.html)
 
 
 - [Test clicks per second in browser](clicks_per_second/test.html)

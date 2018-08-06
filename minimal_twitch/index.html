@@ -7,13 +7,14 @@
 	<title>Twitch in an iframe</title>
 	<script src="script.js" defer></script>
 	<style>
-		html {
+		body {
 			background-color: #424242;
 			color: #EEEEEE;
 			font-size: 16px;
-			margin: 1ex auto 0px;
+			margin: 1ch auto 0px;
 			max-width: 1200px;
 			line-height: 1.333;
+			padding: 0px;
 		}
 
 		form {
@@ -45,24 +46,23 @@
 
 <body>
 	<header>
-		<strong>Minimalist Twitch UI using the embedded player, faster than Twitch's website</strong>
+		<strong>Minimalist Twitch UI using the embedded player</strong>
 		<form id="form" autocomplete="on" target="_self">
 			<label for="type">Query type: </label>
 			<select id="type" autocomplete="on" required>
-				<option value="url">YouTube video URL</option>
-				<option value="playlist">YouTube playlist URL</option>
-				<option value="search" selected>Search query</option>
-				<option value="user_uploads">Channel name</option>
+				<option value="channel" selected>Channel name</option>
+				<option value="clip">Clip URL</option>
+				<option value="video">VOD URL</option>
 			</select>
 			<br>
 			<label for="query">Query text: </label>
-			<input id="query" type="search" size="30" minlength="1" maxlength="4096" inputmode="search" autocomplete="on" autofocus required>
+			<input id="query" type="search" size="30" minlength="1" maxlength="512" inputmode="search" autocomplete="on" autofocus required>
 			<br>
 			<button type="submit">Load video</button>
 		</form>
 	</header>
 	<main>
-		<iframe id="yt-iframe" lang="en" contenteditable="false" referrerpolicy="no-referrer" allowfullscreen sandbox="allow-scripts allow-same-origin"></iframe>
+		<iframe id="ttv-iframe" lang="en" contenteditable="false" referrerpolicy="no-referrer" allowfullscreen sandbox="allow-scripts allow-same-origin"></iframe>
 	</main>
 </body>
 
