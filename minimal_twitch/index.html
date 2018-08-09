@@ -10,11 +10,10 @@
 		body {
 			background-color: #424242;
 			color: #EEEEEE;
-			font-size: 16px;
-			margin: 1ch auto 0px;
-			max-width: 1200px;
-			line-height: 1.333;
-			padding: 0px;
+			font: 16px/1.4 sans-serif;
+			margin: 1em auto;
+			padding: 0px 1vmin;
+			max-width: 1000px;
 		}
 
 		form {
@@ -38,15 +37,15 @@
 		}
 
 		button {
-			margin: 1ex 0px;
-			font: 1em sans-serif;
+			margin: 0.8ex 0px;
+			font-size: 110%;
 		}
 	</style>
 </head>
 
 <body>
 	<header>
-		<strong>Minimalist Twitch UI using the embedded player</strong>
+		<h3>Twitch in an iframe</h3>
 		<form id="form" autocomplete="on" target="_self">
 			<label for="type">Query type: </label>
 			<select id="type" autocomplete="on" required>
@@ -56,7 +55,7 @@
 			</select>
 			<br>
 			<label for="query">Query text: </label>
-			<input id="query" type="search" size="30" minlength="1" maxlength="512" inputmode="search" autocomplete="on" autofocus required>
+			<input id="query" type="search" size="30" minlength="1" maxlength="768" inputmode="search" autocomplete="on" autofocus required>
 			<br>
 			<button type="submit">Load video</button>
 		</form>
