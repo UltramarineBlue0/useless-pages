@@ -3,18 +3,15 @@
 
 <head>
 	<meta charset="utf-8">
+	<meta http-equiv="content-security-policy" content="block-all-mixed-content; form-action 'none'; base-uri 'none'; default-src *; style-src * 'unsafe-inline'; object-src 'none';">
+	<meta name="referrer" content="no-referrer">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+
 	<title>Test timer resolution</title>
+
+	<link href="../common/style.css" rel="stylesheet">
 	<script src="test.js" defer></script>
 	<style>
-		table,
-		th,
-		td {
-			border: thin solid;
-			border-collapse: collapse;
-			padding: 10px;
-		}
-
 		button {
 			font: 2em sans-serif;
 		}
@@ -24,10 +21,9 @@
 <body>
 	<header>
 		<h1>Test timer resolution</h1>
-		<p>This test generates timestamps in a dedicated web worker and compiles a few statistics
-			<br> It can only test the resolution of timers, not their accuracy.
-			<br> A test run generates 25 million (25165824) timestamps
-			<br> Test checks if the clock is monotonic</p>
+		<p>This test generates timestamps in a dedicated web worker and compiles a few statistics. A test run generates 25 million
+			(25165824) timestamps and also checks if the clock is monotonic. This can only test the resolution of timers, not their
+			accuracy.</p>
 	</header>
 	<main>
 		<p>
@@ -115,18 +111,18 @@
 		</table>
 	</main>
 	<aside>
-		<p>% of total: the ratio of the number of distinct timestamps to all generated timestamps
-			<br> Diff is the difference between two consecutive distinct timestamps
-			<br> diff = timestamp_n+1 - timestamp_n
-			<br> Here, "Jitter" is absolute difference between two consecutive diffs
-			<br> jitter = abs((timestamp_n+2 - timestamp_n+1) - (timestamp_n+1 - timestamp_n))</p>
-		<p>Aside from the standard statistics like the mean and standard deviation of the samples,
-			<br>this test also calculates a few more robust statistics.
-			<br>The sampling process can be easily disturbed by a lot of external factors,
-			<br>many of which can't be controlled from within the test environment.
-			<br>Things like the load on the system and fore-/background tab/window and how
-			<br>the browser reacts to those changes can all influence the test result.
-			<br>The more robust stats ignores outliers and can be a better indicator of the behavior of the clock</p>
+		<ul>
+			<li>% of total: the ratio of the number of distinct timestamps to all generated timestamps</li>
+			<li>Diff is the difference between two consecutive distinct timestamps
+				<br>diff = timestamp_n+1 - timestamp_n</li>
+			<li>Here, "Jitter" is absolute difference between two consecutive diffs
+				<br>jitter = abs((timestamp_n+2 - timestamp_n+1) - (timestamp_n+1 - timestamp_n))</li>
+		</ul>
+		<p>Aside from the standard statistics like the mean and standard deviation of the samples, this test also calculates a few
+			more robust statistics. The sampling process can be easily disturbed by a lot of external factors, many of which can't
+			be controlled from within the test environment. Things like the load on the system and fore-/background tab/window and
+			how the browser reacts to those changes can all influence the test result. The more robust stats ignores outliers and
+			can be a better indicator of the behavior of the clock</p>
 	</aside>
 </body>
 

@@ -3,44 +3,14 @@
 
 <head>
 	<meta charset="utf-8">
+	<meta http-equiv="content-security-policy" content="block-all-mixed-content; form-action 'none'; base-uri 'none'; default-src *; style-src * 'unsafe-inline'; object-src 'none';">
+	<meta name="referrer" content="no-referrer">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+
 	<title>Twitch in an iframe</title>
+
+	<link href="../common/style.css" rel="stylesheet">
 	<script src="script.js" defer></script>
-	<style>
-		body {
-			background-color: #424242;
-			color: #EEEEEE;
-			font: 16px/1.4 sans-serif;
-			margin: 1em auto;
-			padding: 0px 1vmin;
-			max-width: 1000px;
-		}
-
-		form {
-			margin: 1em 0px;
-		}
-
-		main {
-			position: relative;
-			overflow: hidden;
-			padding-top: 56.25%;
-			height: 0;
-		}
-
-		main iframe {
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			border: none;
-		}
-
-		button {
-			margin: 0.8ex 0px;
-			font-size: 110%;
-		}
-	</style>
 </head>
 
 <body>
@@ -60,8 +30,9 @@
 			<button type="submit">Load video</button>
 		</form>
 	</header>
-	<main>
-		<iframe id="ttv-iframe" lang="en" contenteditable="false" referrerpolicy="no-referrer" allowfullscreen sandbox="allow-scripts allow-same-origin"></iframe>
+	<main class="iframe-box">
+		<iframe class="iframe" id="ttv-iframe" lang="en" contenteditable="false" referrerpolicy="no-referrer" allowfullscreen allow="encrypted-media"
+		 sandbox="allow-scripts allow-same-origin" src="https://player.twitch.tv/?channel=twitchpresents&autoplay=false"></iframe>
 	</main>
 </body>
 

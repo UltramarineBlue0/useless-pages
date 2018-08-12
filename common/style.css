@@ -1,0 +1,47 @@
+body {
+	background-color: #424242;
+	color: #ECEFF1;
+	font: 16px/1.4 sans-serif;
+	margin: 1em auto;
+	padding: 0px 0.5ex;
+	max-width: 1000px;
+}
+
+h1, h2, h3 {
+	line-height: 1.2;
+}
+
+a {
+	color: #B3E5FC;
+}
+
+form {
+	margin: 1em 0px;
+}
+
+button {
+	margin: 0.7ex 0px;
+	font-size: 120%;
+}
+
+.iframe-box {
+	position: relative;
+	overflow: hidden;
+	padding-top: 56.25%;
+	height: 0;
+}
+
+.iframe {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	border: none;
+}
+
+table, th, td {
+	border: thin solid;
+	border-collapse: collapse;
+	padding: 10px;
+}

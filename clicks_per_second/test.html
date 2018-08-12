@@ -3,8 +3,13 @@
 
 <head>
 	<meta charset="utf-8">
+	<meta http-equiv="content-security-policy" content="block-all-mixed-content; form-action 'none'; base-uri 'none'; default-src *; style-src * 'unsafe-inline'; object-src 'none';">
+	<meta name="referrer" content="no-referrer">
 	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+
 	<title>Test clicks per second</title>
+
+	<link href="../common/style.css" rel="stylesheet">
 	<script src="../common/µ.js" defer></script>
 	<script src="test.js" defer></script>
 	<!--
@@ -22,23 +27,25 @@
 			cursor: default;
 		}
 
-		:focus {
-			outline: none;
-		}
-
 		.valueDisplay {
 			font: 1.5em monospace;
 		}
 
-		button {
-			font-family: sans-serif;
-			border: thin solid;
-			padding: 3px;
-			margin: 3px;
-		}
-
-		.start {
-			font-size: 2.5em;
+		.start,
+		.start:focus,
+		.start:hover,
+		.start:active {
+			cursor: default;
+			background-color: #ECEFF1;
+			color: #424242;
+			padding: 0.3ex;
+			margin: 0.5ex 0px;
+			outline: none;
+			border: none;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 3em;
 		}
 	</style>
 </head>
@@ -46,10 +53,10 @@
 <body>
 	<header>
 		<h1>Test clicks per second</h1>
-		<p>Test how many click events the browser can register per second using an auto clicker macro/script.
-			<br> How fast your system is, which browser and OS you're using and how the macro is scripted can all influence the value.
-			<br> This test can also generate click events in browser using js for around 30 seconds.
-			<br> But this is probably less interesting since on real websites, most click events comes from the user (external to the browser).</p>
+		<p>Test how many click events the browser can register per second using an auto clicker macro/script. How fast your system
+			is, which browser and OS you're using and how the macro is scripted can all influence the value. This test can also generate
+			click events in browser using js for around 30 seconds. But this is probably less interesting since on real websites,
+			most click events comes from the user (external to the browser).</p>
 	</header>
 	<main>
 		<section>
@@ -70,9 +77,11 @@
 			<button id="switchMode" type="button">Switch to generated clicks</button>
 		</section>
 		<aside>
-			<p>The value isn't an instantaneous measurement, it's the amount of clicks collected over roughly 1.5 seconds.
-				<br> In external click event test the stats continue to update after the first click.
-				<br> The stats stop updating after a test run with generated events.</p>
+			<ul>
+				<li>The value isn't an instantaneous measurement, it's the amount of clicks collected over roughly 1.5 seconds.</li>
+				<li>In external click event test the stats continue to update after the first click.</li>
+				<li>The stats stop updating after a test run with generated events.</li>
+			</ul>
 		</aside>
 	</main>
 </body>
