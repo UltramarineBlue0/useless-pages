@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="content-security-policy" content="block-all-mixed-content; form-action 'none'; base-uri 'none'; object-src 'none';">
+	<meta name="referrer" content="no-referrer">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Benchmark JavaScript</title>
+
+	<link href="../common/style.css" rel="stylesheet">
+	<script src="script.js" defer></script>
+	<style>
+		.iframe-box{
+			padding-top: 75%;
+		}
+	</style>
+</head>
+
+<body>
+	<header>
+
+	</header>
+	<main class="iframe-box">
+		<iframe class="iframe" id="test-iframe" contenteditable="false" referrerpolicy="no-referrer" sandbox="allow-scripts" src="about:blank" srcdoc=""></iframe>
+	</main>
+</body>
+
+</html>
