@@ -19,7 +19,7 @@
 		<h3>YouTube in an iframe</h3>
 		<form id="form" autocomplete="on" target="_self">
 			<label for="type">Query type: </label>
-			<select id="type" autocomplete="on" required>
+			<select id="type" required>
 				<option value="url">YouTube video URL</option>
 				<option value="playlist">YouTube playlist URL</option>
 				<option value="search" selected>Search query</option>
@@ -27,7 +27,7 @@
 			</select>
 			<br>
 			<label for="query">Query text: </label>
-			<input id="query" type="search" size="30" minlength="1" maxlength="768" inputmode="search" autocomplete="on" autofocus required>
+			<input id="query" type="search" size="30" minlength="1" maxlength="768" inputmode="search" autofocus required>
 			<br>
 			<button type="submit">Load video</button>
 			<br>

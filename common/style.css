@@ -15,6 +15,10 @@ a {
 	color: #B3E5FC;
 }
 
+a:visited {
+	color: #E1BEE7;
+}
+
 form {
 	margin: 1em 0px;
 }
@@ -22,6 +26,13 @@ form {
 button {
 	margin: 0.7ex 0px;
 	font-size: 120%;
+}
+
+.input-area {
+	resize: vertical;
+	overflow: auto;
+	white-space: pre;
+	width: 100%;
 }
 
 .iframe-box {

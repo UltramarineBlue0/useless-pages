@@ -40,13 +40,16 @@
 		throw "Unsupported URL";
 	};
 
+	const onlyDigits = /^\d+$/;
+
 	const getVideoID = input => {
 		// get video id: https://www.twitch.tv/videos/{a large number}?t=1h20m5s
 		const url = new URL(input);
 		const hostname = url.hostname;
 		const pathArray = url.pathname.split("/");
-		if (hostname.endsWith(twitchHost) && pathArray[1] === "videos") {
-			const id = "v" + checkNotEmpty(pathArray[2]);
+		const lastPath = pathArray[pathArray.length - 1];
+		if (hostname.endsWith(twitchHost) && onlyDigits.test(lastPath)) {
+			const id = "v" + lastPath;
 			let timestamp = url.searchParams.get("t");
 			if (isEmpty(timestamp)) {
 				timestamp = "0s";
