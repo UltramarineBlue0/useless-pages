@@ -11,16 +11,19 @@
 		}
 	};
 
-	const executeTests = (testsArray, testContext, index) => {
+	const executeTests = (testsArray, index) => {
 		const test = testsArray[index];
 		const testName = test.name;
 		try {
-			const testFunc = new Function("testTarget", "'use strict';\n" + test.func);
-			testFunc(testContext);
+			const testFunc = new Function("'use strict';\n" + test.func);
+			testFunc();
+			executorPort.postMessage(testName + " done");
 
 			const nextIndex = index + 1;
 			if (nextIndex < testsArray.length) {
-				µ.queueTask(() => executeTests(testsArray, testContext, nextIndex));
+				µ.queueTask(() => executeTests(testsArray, nextIndex));
+			} else {
+				executorPort.postMessage("finished");
 			}
 		} catch (error) {
 			notifyError(testName, error);
@@ -29,9 +32,15 @@
 
 	const run = (before, tests) => {
 		try {
-			const beforeFunc = new Function("'use strict';\n" + before);
-			const testContext = beforeFunc();
-			µ.queueTask(() => executeTests(tests, testContext, 0));
+			const beforeFunc = µ.newAsyncFunc("'use strict';\n" + before);
+			beforeFunc()
+				.then(() => {
+					executorPort.postMessage("Before done");
+					µ.queueTask(() => executeTests(tests, 0));
+				})
+				.catch(error => {
+					notifyError("Before", error);
+				});
 		} catch (error) {
 			notifyError("Before", error);
 		}
@@ -52,6 +61,7 @@
 		if (msg.source === self.parent && msg.ports.length === 1 && msg.ports[0] instanceof MessagePort) {
 			executorPort = msg.ports[0];
 			executorPort.onmessage = listener;
+			executorPort.postMessage("ready");
 		} else {
 			self.display = document.getElementById("display");
 			console.error("Unexpected message: %o", msg);

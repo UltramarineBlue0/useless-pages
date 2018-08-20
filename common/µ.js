@@ -35,13 +35,13 @@
 	assignConst(self, "µ", µ);
 
 	if (!("micro" in self)) {
-		self.micro = self.µ;
+		self.micro = µ;
 	}
 
 
 	// A few useful integer constants
 	(() => {
-		// The limit of integers in two's complement representation
+		// The limit of two's complement integers
 		µ.freezeAssign(µ, {
 			minInt8: (-(2 ** 7)) | 0,
 			maxInt8: ((2 ** 7) - 1) | 0,
@@ -76,9 +76,17 @@
 			return false;
 		};
 
+		const AsyncFunc = Object.getPrototypeOf(async () => { }).constructor;
+
+		// same signature as new Function()
+		const newAsyncFunc = (...args) => {
+			return new AsyncFunc(...args);
+		};
+
 		µ.freezeAssign(µ, {
 			isFunction,
 			floatEquals,
+			newAsyncFunc,
 		});
 	})();
 
@@ -317,22 +325,50 @@
 	})();
 
 
+	// loads external resources like js or css files in the given order
+	// returns a promise so that caller can subscribe to the event when all files has been loaded, or if any of them failed to load
 	(() => {
-		const loadJS = url => {
-			const jsElement = document.createElement("script");
-			jsElement.async = false;
-			jsElement.defer = false;
-			jsElement.crossOrigin = "anonymous";
-			jsElement.src = url;
-			document.head.appendChild(jsElement);
+		class ResourceLoadError extends Error {
+			constructor(url, message) {
+				super(message + ": " + url);
+				this.name = ResourceLoadError.name;
+				this.url = url;
+			}
+		}
+
+		const loadJS = (...urls) => {
+			const promises = urls.map(url => new Promise((resolve, reject) => {
+				const jsElement = document.createElement("script");
+
+				jsElement.addEventListener("load", () => resolve());
+				jsElement.addEventListener("error", () => reject(new ResourceLoadError(url, "JS failed to load")));
+
+				jsElement.async = false;
+				jsElement.defer = true;
+				jsElement.crossOrigin = "anonymous";
+				jsElement.src = url;
+
+				document.head.appendChild(jsElement);
+			}));
+
+			return Promise.all(promises);
 		};
 
-		const loadCSS = url => {
-			const cssElement = document.createElement("link");
-			cssElement.rel="stylesheet";
-			cssElement.crossOrigin = "anonymous";
-			cssElement.href = url;
-			document.head.appendChild(cssElement);
+		const loadCSS = (...urls) => {
+			const promises = urls.map(url => new Promise((resolve, reject) => {
+				const cssElement = document.createElement("link");
+
+				cssElement.addEventListener("load", () => resolve());
+				cssElement.addEventListener("error", () => reject(new ResourceLoadError(url, "CSS failed to load")));
+
+				cssElement.rel = "stylesheet";
+				cssElement.crossOrigin = "anonymous";
+				cssElement.href = url;
+
+				document.head.appendChild(cssElement);
+			}));
+
+			return Promise.all(promises);
 		};
 
 		µ.freezeAssign(µ, {

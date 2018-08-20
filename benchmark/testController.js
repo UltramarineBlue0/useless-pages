@@ -54,7 +54,7 @@
 					},
 				],
 			});
-		} else if (msg.data === "done") {
+		} else if (msg.data === "finished") {
 			finish();
 		} else {
 			result.textContent += msg.data + "\n";
@@ -69,7 +69,7 @@
 	};
 
 	run.addEventListener("click", () => {
-		if (controllerPort !== undefined) {
+		if (run.textContent === cancelText) {
 			// Cancel
 			reset();
 		} else {
