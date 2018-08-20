@@ -26,7 +26,7 @@ Out of scope / unsolvable:
 
 Features used to limit the things test code can do:
 
-- iframe sandbox one of the two main tools used to contain and limit test code's ability `sandbox="allow-scripts"`
+- iframe sandbox is one of the two main tools used to contain and limit test code's ability `sandbox="allow-scripts"`
   - restricted to a unique origin that is different than any other website. the browser will treat the iframe as cross domain
     - doesn't inherit any information storage like cookies from other domains
     - very limited access to the parent page
@@ -44,4 +44,4 @@ Features used to limit the things test code can do:
 - use a dedicated messagechannel to communicate to the test executor in the iframe. the test code shouldn't have access to the messagechannel so it has no way to communicate with the parent page
 
 
-i'm sure there are probably some very niche ways to store or send data despite csp and sandbox. but csp + sandbox removes most of the risk of executing potentially malicious code in a user's browser
+i'm sure there are probably some very obscure ways to store or send data despite csp and sandbox. but csp + sandbox removes most of the risk of executing potentially malicious code in a user's browser

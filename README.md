@@ -10,3 +10,4 @@
 
 - [Test clicks per second in browser](clicks_per_second/test.html)
 - [Test clocks in JavaScript](timer_resolution/test.html)
+- [Benchmark page](benchmark/index.html)
