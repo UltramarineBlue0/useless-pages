@@ -234,19 +234,19 @@
 		// Retry every 24 days and 20 hours to see if crypto returns 65536 bytes of zero. In theory this should never happen
 		// This creates a data dependency from test code to something that in practice never runs
 		// console seems to be the only somewhat acceptable way to create such a dependence, which is available in both web workers and the main window
-		const notZero = new Uint32Array(16384);
 		self.setInterval(() => {
+			const notZero = new Uint32Array(16384);
 			self.crypto.getRandomValues(notZero);
 			if (notZero.every(value => value === 0)) {
 				console.error("This should never appear: %o", int32Bin);
-				console.dir(int16Bin);
+				console.error("This should never appear: %o", int16Bin);;
 			}
 		}, µ.maxInt32);
 
 		// Bit-wise AND, OR, XOR and arithmetic operations ADD, SUB are the fastest instructions on most of the CPUs
 		// If fed with random values, AND and OR gravitate towards all 0s and all 1s
 		// XOR is best suited for the job, because, unlike ADD and SUB, it doesn't have any obvious issues with NaNs and Infinities
-		// Looking at the "BlackHole" class in the Java Micro-Benchmark Harness, these operations are more expensive (here: read then write)
+		// Looking at the "BlackHole" class in the Java Micro-Benchmark Harness, these operations are much more expensive (since data is actually written here)
 		// However, in Java, they use the "threat of data race under concurrency" (volatile field) to trick the VM. I'm not aware of
 		// anything remotely similar in functionality and speed that is both available in main window and web workers
 		// It would be ｖｅｒｙ  ｎｉｃｅ, if any of core developers of V8 and SpiderMonkey can comment on this and suggest any improvements
@@ -317,109 +317,27 @@
 	})();
 
 
-	// This is a very rudimentary testing framework mostly used for benchmarking. It intentionally doesn't
-	// have any kind of advanced features like assertions or async.
-	// Can only accept one before and one after function
 	(() => {
-		const ticker = () => self.performance.now();
-
-		const nop = x => x;
-
-		class TestTemplate {
-			constructor(testName = "Test") {
-				this._name = testName
-				this._before = nop;
-				this._after = nop;
-			}
-
-			before(beforeTest = nop) {
-				this._before = beforeTest;
-				return this;
-			}
-
-			after(afterTest = nop) {
-				this._after = afterTest;
-				return this;
-			}
-		}
-
-		class Test extends TestTemplate {
-			constructor(testName = "Test") {
-				super(testName);
-			}
-
-			test(testFunction) {
-				this._test = testFunction;
-				return this;
-			}
-
-			run(initialResource = {}) {
-				if (this._test === undefined) {
-					throw new Error("Incomplete test");
-				}
-
-				const testResource = this._before(initialResource);
-
-				const startTime = ticker();
-				const testResult = this._test(testResource);
-				const testDuration = ticker() - startTime;
-
-				const processedResult = this._after(testResult, testDuration);
-				return {
-					testResult: processedResult,
-					testDuration,
-					testName: this._name,
-				};
-			}
+		const loadJS = url => {
+			const jsElement = document.createElement("script");
+			jsElement.async = false;
+			jsElement.defer = false;
+			jsElement.crossOrigin = "anonymous";
+			jsElement.src = url;
+			document.head.appendChild(jsElement);
 		};
 
-		class TestSuite {
-			constructor(testName = "TestSuite") {
-				this._name = testName
-				this._beforeAll = nop;
-				this._testCases = [];
-				this._afterAll = nop;
-			}
-
-			beforeAll(beforeTest = nop) {
-				this._beforeAll = beforeTest;
-				return this;
-			}
-
-			afterAll(afterTest = nop) {
-				this._afterAll = afterTest;
-				return this;
-			}
-
-			addTest(testCase) {
-				this._testCases.push(testCase);
-				return this;
-			}
-
-			run(initialResource = {}) {
-				if (this._testCases.length === 0) {
-					throw new Error("Incomplete test suite");
-				}
-
-				const testResource = this._beforeAll(initialResource);
-
-				const startTime = ticker();
-				const testResults = this._testCases.map(testCase => testCase.run(testResource));
-				const testDuration = ticker() - startTime;
-
-				const processedResults = this._afterAll(testResults, testDuration)
-				return {
-					testResult: processedResults,
-					testDuration,
-					testName: this._name,
-				};
-			}
-		}
+		const loadCSS = url => {
+			const cssElement = document.createElement("link");
+			cssElement.rel="stylesheet";
+			cssElement.crossOrigin = "anonymous";
+			cssElement.href = url;
+			document.head.appendChild(cssElement);
+		};
 
 		µ.freezeAssign(µ, {
-			TestTemplate,
-			Test,
-			TestSuite,
+			loadJS,
+			loadCSS,
 		});
 	})();
 

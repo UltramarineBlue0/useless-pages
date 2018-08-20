@@ -28,11 +28,12 @@ button {
 	font-size: 120%;
 }
 
-.input-area {
+.textarea {
 	resize: vertical;
 	overflow: auto;
 	white-space: pre;
 	width: 100%;
+	font: 15px monospace;
 }
 
 .iframe-box {

@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<meta http-equiv="content-security-policy" content="block-all-mixed-content; form-action 'none'; base-uri 'none'; object-src 'none';">
+	<meta http-equiv="content-security-policy" content="block-all-mixed-content; form-action 'none'; base-uri 'none'; object-src 'none'; default-src https://cdnjs.cloudflare.com https://cdn.jsdelivr.net data: blob: 'self' 'unsafe-inline' 'unsafe-eval';">
 	<meta name="referrer" content="no-referrer">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -19,35 +19,30 @@
 		#run {
 			font-size: 150%;
 		}
-
-		#result{
-
-		}
-
-		.input-area {
-			font: 15px monospace;
-		}
 	</style>
 </head>
 
 <body>
-	<h3>Benchmark JavaScript</h3>
 	<header>
+		<h3>Benchmark JavaScript</h3>
 		<b>Before all:</b>
 		<br>
 		<code>"use strict";</code>
-		<textarea id="before" class="input-area" rows="6" autocapitalize="none" autocomplete="on" spellcheck="false" wrap="off">return {};</textarea>
+		<textarea id="before" class="textarea" rows="6" autocapitalize="none" autocomplete="on" spellcheck="false" wrap="off">const array = [0];
+return array;</textarea>
 		<br>
 		<b>Test functions:</b>
 		<br>
 		<code>"use strict";</code>
-		<textarea id="test0" class="input-area" rows="12" required autocapitalize="none" autocomplete="on" spellcheck="false" wrap="off"></textarea>
+		<textarea id="test0" class="textarea" rows="12" required autocapitalize="none" autocomplete="on" spellcheck="false" wrap="off">testTarget[0] = 0;
+testTarget[0]++;</textarea>
 
-		<button id="run" type="button">Run test</button>
+		<button id="run" type="button">Run</button>
 	</header>
 	<main>
-		<h4>Test executor iframe:</h4>
+		<b>Test result:</b>
 		<pre id="result"></pre>
+		<b>Test executor iframe:</b>
 		<section class="iframe-box">
 			<iframe class="iframe" id="test-iframe" referrerpolicy="no-referrer" sandbox="allow-scripts" src="about:blank" srcdoc=""></iframe>
 		</section>
