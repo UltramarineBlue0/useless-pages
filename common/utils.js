@@ -2,7 +2,9 @@
 
 const globalScope = (global === undefined) ? self : global;
 
-const marker = Symbol("Circular reference breaker");
+const isFunction = func => {
+	return ((typeof func) === "function");
+};
 
 /**
  * true if non null and type is object
@@ -12,9 +14,9 @@ const isObject = obj => {
 		return true;
 	}
 
-	const type = typeof obj;
-	if (type === "object" || type === "function") {
-		if (obj !== null) {
+	if (obj !== null) {
+		const type = typeof obj;
+		if (type === "object" || type === "function") {
 			return true;
 		}
 	}
@@ -23,65 +25,75 @@ const isObject = obj => {
 };
 
 /**
- * Swallow any errors
+ * "Depth first" Freezes innermost element first
+ * @param visited a set of already visited objects. used to break circular references 
  */
-const freezeSilently = obj => {
-	try {
-		Object.preventExtensions(obj);
-		Object.seal(obj);
-		Object.freeze(obj);
-	} catch (e) { }
-};
-
-/**
- * Need to be able to create new properties to detect cycles
- * Warning, using this on objects or arrays that are not pure data holders can have unexpected results
- * Ignores primitive values, compatible with objects with null prototype and objects from other global scopes
- * Does not freeze the [[Prototype]] of the object
- */
-const deepFreeze = obj => { // TODO use set as Circular reference breaker and throw exception
+const recursiveFreeze = (obj, visited) => {
 	if (!isObject(obj)) {
 		// primitive types are already immutable
 		return;
 	}
 
-	if (obj[marker] === true) {
-		// already in the process of deep freeze, abort
+	if (visited.has(obj)) {
+		// either in the process of freeze or already frozen, abort
 		return;
 	}
+
+	// mark current object that it entered the process to be frozen
+	visited.add(obj)
 
 	const descriptors = Object.getOwnPropertyDescriptors(obj);
-
-	// mark current object that it entered the process to be deep frozen
-	obj[marker] = true;
-
-	if (obj[marker] !== true) {
-		// no write access to the current object: cannot detect cycles
-		freezeSilently(obj);
-		return;
-	}
 
 	Object.values(descriptors).forEach(valueDescription => {
 		// recursively freeze any non primitive elements
 		if ("value" in valueDescription) {
-			deepFreeze(valueDescription.value);
+			recursiveFreeze(valueDescription.value, visited);
 		}
 		if ("get" in valueDescription) {
-			deepFreeze(valueDescription.get);
+			recursiveFreeze(valueDescription.get, visited);
 		}
 		if ("set" in valueDescription) {
-			deepFreeze(valueDescription.set);
+			recursiveFreeze(valueDescription.set, visited);
 		}
 	});
 
-	delete obj[marker];
+	Object.freeze(obj);
 
-	freezeSilently(obj);
+	if (!Object.isFrozen(obj)) {
+		throw new Error(`Couldn't freeze ${obj}`);
+	}
 };
 
-const immutableCopy = obj => {
-
+/**
+ * Naive implementation to freeze existing objects
+ * Warning, using this on anything other than plain objects or plain arrays could have unexpected results
+ * Leaves primitive values as is, compatible with objects with null prototype and objects from other global scopes
+ * Doesn't change any element's prototype, structure or type, can't freeze the new collection types in ES6 or proxies
+ * Also doesn't freeze the prototype chain of the object and any of its elements
+ */
+const deepFreeze = obj => {
+	const visited = new WeakSet();
+	recursiveFreeze(obj, visited);
+	return obj;
 };
 
+const AsyncFunc = Object.getPrototypeOf(async () => { }).constructor;
 
-export { globalScope as global, deepFreeze };
+/**
+ * @param args same signature as new Function()
+ */
+const newAsyncFunc = (...args) => {
+	return new AsyncFunc(...args);
+};
+
+// it's difficult to write a comprehensive immutable copy in just two or three short methods. it would have to deal with many different cases
+// things like typedarrays, maps, sets, proxies, and things from DOM all need individual treatment
+// a naive approach would be to copy everything in to objects. while this copies information, the behavior would be lost
+// some special case would need custom classes to simulate read only access
+
+deepFreeze(isFunction);
+deepFreeze(isObject);
+deepFreeze(deepFreeze);
+deepFreeze(newAsyncFunc);
+
+export { globalScope as global, isFunction, isObject, deepFreeze, newAsyncFunc };
