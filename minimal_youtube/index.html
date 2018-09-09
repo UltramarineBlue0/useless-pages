@@ -3,8 +3,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<meta http-equiv="content-security-policy" content="block-all-mixed-content; form-action 'none'; base-uri 'none'; object-src 'none';">
-	<meta name="referrer" content="no-referrer">
+	<meta http-equiv="content-security-policy" content="block-all-mixed-content; form-action 'none'; base-uri 'none'; object-src 'none'; default-src *;">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<title>YouTube in an iframe</title>
@@ -55,7 +54,7 @@
 	<main class="iframe-box">
 		<!-- I'm aware of the fact that youtube can just remove these restrictions, since I'm executing their script in the main window's scope.
 		The restrictions are just friendly suggestions, not hard rules. -->
-		<iframe class="iframe" id="yt-iframe" lang="en" contenteditable="false" referrerpolicy="no-referrer" allowfullscreen allow="encrypted-media"
+		<iframe class="iframe" id="yt-iframe" lang="en" contenteditable="false" allowfullscreen allow="encrypted-media"
 		 sandbox="allow-scripts allow-same-origin" src="https://www.youtube.com/embed/feBF_IY-HI8?autoplay=0&enablejsapi=1&hl=en-US&gl=US&modestbranding=1&playsinline=1&showinfo=1"></iframe>
 	</main>
 </body>

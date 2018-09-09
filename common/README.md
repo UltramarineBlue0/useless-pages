@@ -1,3 +1,1 @@
-### template.html
-
-A common skeleton for a html file, contains 
+This directory contains a micro js library that has no external dependency. The style.css provides a minimal dark theme styling for webpages. The template.html is a common template for all new webpages.

@@ -45,3 +45,8 @@ Features used to limit the things test code can do:
 
 
 i'm sure there are probably some very obscure ways to store or send data despite csp and sandbox. but csp + sandbox removes most of the risk of executing potentially malicious code in a user's browser
+
+
+### Usage
+
+TODO

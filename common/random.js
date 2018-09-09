@@ -79,9 +79,27 @@ const getRandomInt = (lowerBoundInclusive, upperBoundExclusive) => {
 	}
 };
 
+const lowerCase = "abcdefghijklmnopqrstuvwxyz";
+const upperCase = lowerCase.toUpperCase();
+const digits = "0123456789";
+const chars = lowerCase + upperCase + digits;
+
+/**
+ * Random alphanumeric string
+ */
+const randStr = length => {
+	const result = [];
+	for (let i = 0; i < length; i++) {
+		const pos = getRandomInt(0, chars.length);
+		result.push(chars.charAt(pos));
+	}
+	return result.join("");
+};
+
 deepFreeze(randInt32);
 deepFreeze(getRandomInt);
 deepFreeze(CAUTION_setSeed);
 deepFreeze(randBool);
+deepFreeze(randStr);
 
-export { randInt32, getRandomInt, CAUTION_setSeed, randBool };
+export { randInt32, getRandomInt, CAUTION_setSeed, randBool, randStr };
