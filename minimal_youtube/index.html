@@ -3,15 +3,17 @@
 
 <head>
 	<meta charset="utf-8">
-	<meta http-equiv="content-security-policy" content="block-all-mixed-content; form-action 'none'; base-uri 'none'; object-src 'none'; default-src *;">
+	<!-- allow things that should be disabled (inline scripts and styles), since i can't control how the embedded content works -->
+	<meta http-equiv="content-security-policy" content="block-all-mixed-content; object-src 'none';">
+	<!-- youtube needs a referrer for some videos that contains music, otherwise the player throws error code 150 -->
 	<meta name="referrer" content="strict-origin">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<title>YouTube in an iframe</title>
 
 	<link href="../common/style.css" rel="stylesheet">
-	<script src="script.js" defer></script>
-	<script src="https://www.youtube.com/iframe_api" defer></script>
+	<script defer src="script.js" type="module"></script>
+	<script defer src="https://www.youtube.com/iframe_api"></script>
 </head>
 
 <body>
@@ -55,8 +57,8 @@
 	<main class="iframe-box">
 		<!-- I'm aware of the fact that youtube can just remove these restrictions, since I'm executing their script in the main window's scope.
 		The restrictions are just friendly suggestions, not hard rules. -->
-		<iframe class="iframe" id="yt-iframe" lang="en" contenteditable="false" referrerpolicy="strict-origin" allowfullscreen allow="encrypted-media"
-		 sandbox="allow-scripts allow-same-origin" src="https://www.youtube.com/embed/feBF_IY-HI8?autoplay=0&enablejsapi=1&hl=en-US&gl=US&modestbranding=1&playsinline=1&showinfo=1"></iframe>
+		<iframe class="iframe" id="yt-iframe" lang="en-US" contenteditable="false" allowfullscreen allow="fullscreen; encrypted-media"
+		 sandbox="allow-scripts allow-same-origin" src="https://www.youtube.com/embed/feBF_IY-HI8?hl=en-US&gl=US&enablejsapi=1&cc_lang_pref=en&modestbranding=1"></iframe>
 	</main>
 </body>
 

@@ -3,14 +3,15 @@
 
 <head>
 	<meta charset="utf-8">
-	<meta http-equiv="content-security-policy" content="block-all-mixed-content; form-action 'none'; base-uri 'none'; object-src 'none';  default-src *;">
+	<!-- allow things that should be disabled (inline scripts and styles), since i can't control how the embedded content works -->
+	<meta http-equiv="content-security-policy" content="block-all-mixed-content; object-src 'none';">
 	<meta name="referrer" content="no-referrer">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<title>Twitch in an iframe</title>
 
 	<link href="../common/style.css" rel="stylesheet">
-	<script src="script.js" defer></script>
+	<script defer src="script.js" type="module"></script>
 </head>
 
 <body>
@@ -31,7 +32,7 @@
 		</form>
 	</header>
 	<main class="iframe-box">
-		<iframe class="iframe" id="ttv-iframe" lang="en" contenteditable="false" referrerpolicy="no-referrer" allowfullscreen allow="encrypted-media"
+		<iframe class="iframe" id="ttv-iframe" lang="en-US" contenteditable="false" allowfullscreen allow="fullscreen; encrypted-media"
 		 sandbox="allow-scripts allow-same-origin" src="https://player.twitch.tv/?channel=twitchpresents&autoplay=false"></iframe>
 	</main>
 </body>

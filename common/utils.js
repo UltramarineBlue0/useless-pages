@@ -1,6 +1,19 @@
 "use strict";
 
-const globalScope = (global === undefined) ? self : global;
+const globalScope = (() => {
+	// handle ReferenceError
+	try {
+		if (global !== undefined) {
+			return global;
+		}
+		throw "";
+	} catch (e) {
+		if (self !== undefined) {
+			return self;
+		}
+		throw InternalError("wat");
+	}
+})();
 
 const isFunction = func => {
 	return ((typeof func) === "function");
@@ -14,7 +27,7 @@ const isObject = obj => {
 		return true;
 	}
 
-	if (obj !== null) {
+	if (obj !== null && obj !== undefined) {
 		const type = typeof obj;
 		if (type === "object" || type === "function") {
 			return true;
@@ -25,18 +38,22 @@ const isObject = obj => {
 };
 
 /**
- * "Depth first" Freezes innermost element first
+ * Useful for string-like, array-like, set- or map-like objects
+ */
+const isEmpty = obj => {
+	return (obj === null) || (obj === undefined) || (obj.length === 0) || (obj.size === 0);
+};
+
+/**
  * @param visited a set of already visited objects. used to break circular references 
  */
 const recursiveFreeze = (obj, visited) => {
-	if (!isObject(obj)) {
-		// primitive types are already immutable
-		return;
-	}
+	// the "is object" and "not visited" check is hoisted into the previous iteration
 
-	if (visited.has(obj)) {
-		// either in the process of freeze or already frozen, abort
-		return;
+	// abort early if obj can't be frozen
+	Object.freeze(obj);
+	if (!Object.isFrozen(obj)) {
+		throw new Error(`Couldn't freeze ${obj}`);
 	}
 
 	// mark current object that it entered the process to be frozen
@@ -46,22 +63,19 @@ const recursiveFreeze = (obj, visited) => {
 
 	Object.values(descriptors).forEach(valueDescription => {
 		// recursively freeze any non primitive elements
-		if ("value" in valueDescription) {
-			recursiveFreeze(valueDescription.value, visited);
+		const value = valueDescription.value;
+		if (isObject(value) && !visited.has(value)) {
+			recursiveFreeze(value, visited);
 		}
-		if ("get" in valueDescription) {
-			recursiveFreeze(valueDescription.get, visited);
+		const getter = valueDescription.get;
+		if (isObject(getter) && !visited.has(getter)) {
+			recursiveFreeze(getter, visited);
 		}
-		if ("set" in valueDescription) {
-			recursiveFreeze(valueDescription.set, visited);
+		const setter = valueDescription.set;
+		if (isObject(setter) && !visited.has(setter)) {
+			recursiveFreeze(setter, visited);
 		}
 	});
-
-	Object.freeze(obj);
-
-	if (!Object.isFrozen(obj)) {
-		throw new Error(`Couldn't freeze ${obj}`);
-	}
 };
 
 /**
@@ -72,8 +86,10 @@ const recursiveFreeze = (obj, visited) => {
  * Also doesn't freeze the prototype chain of the object and any of its elements
  */
 const deepFreeze = obj => {
-	const visited = new WeakSet();
-	recursiveFreeze(obj, visited);
+	if (isObject(obj)) {
+		const visited = new WeakSet();
+		recursiveFreeze(obj, visited);
+	}
 	return obj;
 };
 
@@ -93,7 +109,10 @@ const newAsyncFunc = (...args) => {
 
 deepFreeze(isFunction);
 deepFreeze(isObject);
-deepFreeze(deepFreeze);
-deepFreeze(newAsyncFunc);
+deepFreeze(isEmpty);
 
-export { globalScope as global, isFunction, isObject, deepFreeze, newAsyncFunc };
+deepFreeze(newAsyncFunc);
+deepFreeze(recursiveFreeze);
+deepFreeze(deepFreeze);
+
+export { globalScope as global, isFunction, isObject, isEmpty, deepFreeze, newAsyncFunc };

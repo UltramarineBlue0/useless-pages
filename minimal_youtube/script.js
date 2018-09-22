@@ -1,7 +1,12 @@
 "use strict";
-self.onYouTubeIframeAPIReady = () => {
+
+import { deepFreeze, global, isEmpty } from "../common/utils.js";
+import { alertError, assertNotEmpty } from "../common/assertions.js";
+
+global.onYouTubeIframeAPIReady = deepFreeze(() => {
 	const onPlayerError = event => {
-		alert("YouTube reported error code:\n" + event.data);
+		console.log(`Player error: ${event}`);
+		alert(`YouTube reported error code:\n${event.data}`);
 	};
 
 	const onPlayerReady = e => {
@@ -12,6 +17,8 @@ self.onYouTubeIframeAPIReady = () => {
 		const YT_normal = "youtube.com".toLowerCase();
 		const YT_nocookie = "youtube-nocookie.com".toLowerCase();
 
+		const iframeWindow = document.getElementById("yt-iframe").contentWindow;
+
 		// form elements
 		const preferResolution = document.getElementById("resolution");
 		const playbackSpeed = document.getElementById("speed");
@@ -19,28 +26,12 @@ self.onYouTubeIframeAPIReady = () => {
 		const queryType = document.getElementById("type");
 		const queryInput = document.getElementById("query");
 
-		const showError = input => {
-			alert("Invalid / unsupported YouTube URL:\n" + input);
-		};
-
-		const isEmpty = input => {
-			return input === null || input === undefined || input.length === 0;
-		};
-
-		const checkNotEmpty = input => {
-			if (isEmpty(input)) {
-				throw "Empty";
-			}
-
-			return input;
-		};
-
 		const defaultToZero = input => {
-			const result = Number.parseInt(input);
-			if (Number.isNaN(result)) {
-				return 0;
+			const result = Number.parseInt(input, 10);
+			if (Number.isInteger(result)) {
+				return result;
 			}
-			return result;
+			return 0;
 		};
 
 		// Unfortunately I don't see a good way of parsing the old style timestamp without regex or external dependencies
@@ -63,14 +54,8 @@ self.onYouTubeIframeAPIReady = () => {
 			// so first try to see if the time parameter is in the old format
 			const resultArray = regex.exec(start);
 			if (isEmpty(resultArray)) {
-
-				let seconds = Number.parseInt(start, 10);
 				// if the param is a simple int: url in new syntax: ?t=34200 (9h30m0s)
-				if (Number.isNaN(seconds)) {
-					return 0;
-				} else {
-					return seconds;
-				}
+				return defaultToZero(start);
 			}
 
 			let seconds = 0;
@@ -90,15 +75,15 @@ self.onYouTubeIframeAPIReady = () => {
 			if (hostname.endsWith(YT_urlShort)) {
 				// for youtube's url shortener, e.g. "https://youtu.be/VIDEO_ID?t=123"
 				if (pathArray.length === 2) {
-					return [checkNotEmpty(pathArray[1]), startSeconds];
+					return [assertNotEmpty(pathArray[1]), startSeconds];
 				}
 			} else if (hostname.endsWith(YT_normal) || hostname.endsWith(YT_nocookie)) {
 				if (pathArray[1] === "v" || pathArray[1] === "embed") {
 					// for url for the embedded player, e.g. "https://www.youtube.com/v/VIDEO_ID?start=123"
-					return [checkNotEmpty(pathArray[2]), startSeconds];
+					return [assertNotEmpty(pathArray[2]), startSeconds];
 				} else if (searchParams.has("v")) {
 					// for normal youtube urls, e.g. "https://www.youtube.com/watch?v=VIDEO_ID&t=1m1s"
-					return [checkNotEmpty(searchParams.get("v")), startSeconds];
+					return [assertNotEmpty(searchParams.get("v")), startSeconds];
 				}
 			}
 
@@ -112,7 +97,7 @@ self.onYouTubeIframeAPIReady = () => {
 
 			if (hostname.endsWith(YT_urlShort) || hostname.endsWith(YT_normal) || hostname.endsWith(YT_nocookie)) {
 				if (searchParams.has("list")) {
-					return checkNotEmpty(searchParams.get("list"));
+					return assertNotEmpty(searchParams.get("list"));
 				}
 			}
 
@@ -155,9 +140,10 @@ self.onYouTubeIframeAPIReady = () => {
 				}
 
 				queryInput.blur();
-				player.getIframe().focus();
+				iframeWindow.focus();
 			} catch (error) {
-				showError(query);
+				console.log(`Form error: ${error}`);
+				alertError(error, `Error parsing "${query}"`);
 			}
 		});
 
@@ -170,19 +156,17 @@ self.onYouTubeIframeAPIReady = () => {
 		});
 	};
 
-	const unused = new YT.Player("yt-iframe", {
+	new YT.Player("yt-iframe", deepFreeze({
 		playerVars: {
-			autoplay: 0,
-			enablejsapi: 1,
 			hl: "en-US",
 			gl: "US",
+			enablejsapi: 1,
+			cc_lang_pref: "en",
 			modestbranding: 1,
-			playsinline: 1,
-			showinfo: 1,
 		},
 		events: {
 			onReady: onPlayerReady,
 			onError: onPlayerError,
 		},
-	});
-};
+	}));
+});
