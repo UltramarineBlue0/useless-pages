@@ -4,9 +4,6 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-
-	<title>Test</title>
-
 	<link href="../common/style.css" rel="stylesheet">
 </head>
 
@@ -15,7 +12,7 @@
 		<script src="https://player.twitch.tv/js/embed/v1.js"></script>
 
 		<div class="iframe" id="SamplePlayerDivID"></div>
-		
+
 		<script>
 			const options = {
 				width: 854,
@@ -23,9 +20,6 @@
 				channel: "twitchpresents",
 			};
 			const player = new Twitch.Player("SamplePlayerDivID", options);
-
-			console.log(`Volume: ${player.getVolume()}`);
-			console.log(`Qualities: ${player.getQualities()}`);
 		</script>
 	</main>
 </body>
