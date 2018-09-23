@@ -3,8 +3,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<!-- allow things that should be disabled (inline scripts and styles), since i can't control how the embedded content works -->
-	<meta http-equiv="content-security-policy" content="block-all-mixed-content; object-src 'none';">
+	<meta http-equiv="content-security-policy" content="block-all-mixed-content; object-src 'none'; form-action 'self'; base-uri 'self'; default-src *;">
 	<!-- youtube needs a referrer for some videos that contains music, otherwise the player throws error code 150 -->
 	<meta name="referrer" content="strict-origin">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -57,8 +56,8 @@
 	<main class="iframe-box">
 		<!-- I'm aware of the fact that youtube can just remove these restrictions, since I'm executing their script in the main window's scope.
 		The restrictions are just friendly suggestions, not hard rules. -->
-		<iframe class="iframe" id="yt-iframe" lang="en-US" contenteditable="false" allowfullscreen allow="fullscreen; encrypted-media"
-		 sandbox="allow-scripts allow-same-origin" src="https://www.youtube.com/embed/feBF_IY-HI8?hl=en-US&gl=US&enablejsapi=1&cc_lang_pref=en&modestbranding=1"></iframe>
+		<iframe class="iframe" id="yt-iframe" contenteditable="false" allowfullscreen allow="fullscreen; encrypted-media"
+		 sandbox="allow-scripts allow-same-origin" src="https://www.youtube.com/embed/VQfGJxImAHw?hl=en-US&gl=US&enablejsapi=1&cc_lang_pref=en&modestbranding=1"></iframe>
 	</main>
 </body>
 

@@ -3,8 +3,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<!-- allow things that should be disabled (inline scripts and styles), since i can't control how the embedded content works -->
-	<meta http-equiv="content-security-policy" content="block-all-mixed-content; object-src 'none';">
+	<meta http-equiv="content-security-policy" content="block-all-mixed-content; object-src 'none'; form-action 'self'; base-uri 'self'; default-src *;">
 	<meta name="referrer" content="no-referrer">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -32,7 +31,7 @@
 		</form>
 	</header>
 	<main class="iframe-box">
-		<iframe class="iframe" id="ttv-iframe" lang="en-US" contenteditable="false" allowfullscreen allow="fullscreen; encrypted-media"
+		<iframe class="iframe" id="ttv-iframe" contenteditable="false" allowfullscreen allow="fullscreen; encrypted-media"
 		 sandbox="allow-scripts allow-same-origin" src="https://player.twitch.tv/?channel=twitchpresents&autoplay=false"></iframe>
 	</main>
 </body>
