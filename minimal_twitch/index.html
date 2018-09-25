@@ -3,7 +3,8 @@
 
 <head>
 	<meta charset="utf-8">
-	<meta http-equiv="content-security-policy" content="block-all-mixed-content; object-src 'none';">
+	<!-- I can't control how the embedded content works (and it could change over time): can't set default-src, need to allow everything -->
+	<meta http-equiv="content-security-policy" content="block-all-mixed-content; object-src 'none'; form-action 'self'; base-uri 'self';">
 	<meta name="referrer" content="no-referrer">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
