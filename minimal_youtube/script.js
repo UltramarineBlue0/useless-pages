@@ -1,9 +1,9 @@
 "use strict";
 
-import { deepFreeze, global, isEmpty } from "../common/utils.js";
+import { isEmpty } from "../common/utils.js";
 import { alertError, assertNotEmpty } from "../common/assertions.js";
 
-global.onYouTubeIframeAPIReady = deepFreeze(() => {
+self.onYouTubeIframeAPIReady = () => {
 	const onPlayerError = event => {
 		console.log(`Player error: ${event}`);
 		alert(`YouTube reported error code:\n${event.data}`);
@@ -156,7 +156,21 @@ global.onYouTubeIframeAPIReady = deepFreeze(() => {
 		});
 	};
 
-	new YT.Player("yt-iframe", deepFreeze({
+	const originalTitle = document.title;
+
+	const onStateChange = event => {
+		if (event.data === 1) {
+			// video started playing, change window title
+			const player = event.target;
+			const videoData = player.getVideoData();
+
+			document.title = `${videoData.title} ― ${videoData.author}`
+		} else {
+			document.title = originalTitle;
+		}
+	};
+
+	new YT.Player("yt-iframe", {
 		playerVars: {
 			hl: "en-US",
 			gl: "US",
@@ -167,6 +181,7 @@ global.onYouTubeIframeAPIReady = deepFreeze(() => {
 		events: {
 			onReady: onPlayerReady,
 			onError: onPlayerError,
+			onStateChange: onStateChange,
 		},
-	}));
-});
+	});
+};
