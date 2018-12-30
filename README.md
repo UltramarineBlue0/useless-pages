@@ -4,6 +4,8 @@
 
 ###### [Link to the hosted website](https://ultramarineblue0.github.io/useless-pages/)
 
+<sup> <sup> [Link to the hosted website](https://ultramarineblue0.github.io/useless-pages/) </sup> </sup>
+
 - [YouTube in an iframe](minimal_youtube/index.html)
 - [Twitch in an iframe](minimal_twitch/index.html)
 
