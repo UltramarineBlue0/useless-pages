@@ -71,5 +71,11 @@ formElement.addEventListener("submit", event => {
 	}
 
 	queryInput.blur();
-	ttvIframe.contentWindow.focus();
 });
+
+// read hash as channel name
+const fragmentId = document.location.hash;
+if (fragmentId.length > 1) {
+	ttvIframe.src = twitchPlayer + "channel=" + encodeURIComponent(fragmentId.substring(1)) + playerParams;
+	queryInput.blur();
+}

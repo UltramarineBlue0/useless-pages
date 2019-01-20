@@ -5,7 +5,7 @@ import { alertError, assertNotEmpty } from "../common/assertions.js";
 
 self.onYouTubeIframeAPIReady = () => {
 	const onPlayerError = event => {
-		console.log(`Player error: ${event}`);
+		console.log(`Player error: ${JSON.stringify(event, null, 2)}`);
 		alert(`YouTube reported error code:\n${event.data}`);
 	};
 
@@ -16,8 +16,6 @@ self.onYouTubeIframeAPIReady = () => {
 		const YT_urlShort = "youtu.be".toLowerCase();
 		const YT_normal = "youtube.com".toLowerCase();
 		const YT_nocookie = "youtube-nocookie.com".toLowerCase();
-
-		const iframeWindow = document.getElementById("yt-iframe").contentWindow;
 
 		// form elements
 		const preferResolution = document.getElementById("resolution");
@@ -113,6 +111,9 @@ self.onYouTubeIframeAPIReady = () => {
 			const query = queryInput.value.trim().normalize();
 
 			try {
+				// cancel the currently playing video. in certain situations, YT will autoplay the new video, this prevents that
+				player.stopVideo();
+
 				if (type === "url") {
 					// Load video based on the video id in the url
 					const [videoID, startSeconds] = getVideoID(query);
@@ -140,7 +141,6 @@ self.onYouTubeIframeAPIReady = () => {
 				}
 
 				queryInput.blur();
-				iframeWindow.focus();
 			} catch (error) {
 				console.log(`Form error: ${error}`);
 				alertError(error, `Error parsing "${query}"`);
@@ -154,19 +154,71 @@ self.onYouTubeIframeAPIReady = () => {
 		preferResolution.addEventListener("change", () => {
 			player.setPlaybackQuality(preferResolution.value);
 		});
+
+		// load playlist if a hash is present
+		const fragmentId = document.location.hash;
+		if (fragmentId.length > 1) {
+			player.cuePlaylist({
+				listType: "playlist",
+				list: fragmentId.substring(1),
+				suggestedQuality: preferResolution.value,
+			});
+
+			queryInput.blur();
+		}
 	};
 
 	const originalTitle = document.title;
+	const channel = document.getElementById("channel");
+	const videoTitle = document.getElementById("videoTitle");
+	const videoLength = document.getElementById("videoLength");
+
+	const convertSecToString = seconds => {
+		let remainingSecs = seconds;
+		let returnStr = "";
+
+		const hours = Math.trunc(remainingSecs / 3600);
+		remainingSecs = remainingSecs % 3600;
+		if (hours > 0) {
+			returnStr += hours + "h ";
+		}
+
+		const minutes = Math.trunc(remainingSecs / 60);
+		remainingSecs = remainingSecs % 60;
+		// for consistency: show 0 minutes if there's an hour count
+		if (minutes > 0 || hours > 0) {
+			returnStr += minutes + "m ";
+		}
+
+		// 0 seconds length means that the video is currently still loading. don't display anything
+		if (remainingSecs > 0 || minutes > 0 || hours > 0) {
+			returnStr += remainingSecs + "s";
+		}
+
+		return returnStr;
+	};
 
 	const onStateChange = event => {
-		if (event.data === 1) {
-			// video started playing, change window title
-			const player = event.target;
-			const videoData = player.getVideoData();
+		document.title = originalTitle;
+		const player = event.target;
+		const state = event.data;
 
-			document.title = `${videoData.title} ― ${videoData.author}`
-		} else {
-			document.title = originalTitle;
+		const videoData = player.getVideoData();
+		const videoName = videoData.title;
+		const channelName = videoData.author;
+		const durationInSec = player.getDuration();
+
+		if ((state === YT.PlayerState.PLAYING) || (state === YT.PlayerState.BUFFERING)) {
+			// video started playing, change window title
+			document.title = `${videoName} ― ${channelName}`
+		} else if (state === YT.PlayerState.ENDED) {
+			// disable autoplay of playlist: each video must be manually started by the user
+			player.pauseVideo();
+		} else if (state === YT.PlayerState.UNSTARTED) {
+			// display info about the currently loaded video
+			channel.textContent = channelName;
+			videoTitle.textContent = videoName;
+			videoLength.textContent = convertSecToString(durationInSec);
 		}
 	};
 

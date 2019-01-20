@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<!-- I can't control how the embedded content works (and it could change over time): can't set default-src, need to allow everything -->
-	<meta http-equiv="content-security-policy" content="block-all-mixed-content; object-src 'none'; form-action 'self'; base-uri 'self';">
+	<meta http-equiv="content-security-policy" content="block-all-mixed-content; object-src 'none'; form-action 'none';">
 	<meta name="referrer" content="no-referrer">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -17,7 +17,7 @@
 <body>
 	<header>
 		<h3>Twitch in an iframe</h3>
-		<form id="form" autocomplete="on" target="_self">
+		<form id="form" autocomplete="on" target="_self" action="about:blank">
 			<label for="type">Query type: </label>
 			<select id="type" required>
 				<option value="channel" selected>Channel name</option>
@@ -32,7 +32,7 @@
 		</form>
 	</header>
 	<main class="iframe-box">
-		<iframe class="iframe" id="ttv-iframe" contenteditable="false" allowfullscreen allow="fullscreen; encrypted-media"
+		<iframe class="iframe" id="ttv-iframe" contenteditable="false" allowfullscreen allow="fullscreen *; encrypted-media *;"
 		 sandbox="allow-scripts allow-same-origin" src="https://player.twitch.tv/?channel=twitchpresents&autoplay=false"></iframe>
 	</main>
 </body>

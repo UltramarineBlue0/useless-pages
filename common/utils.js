@@ -1,20 +1,5 @@
 "use strict";
 
-const globalScope = (() => {
-	// handle ReferenceError
-	try {
-		if (global !== undefined) {
-			return global;
-		}
-		throw "";
-	} catch (e) {
-		if (self !== undefined) {
-			return self;
-		}
-		throw InternalError("wat");
-	}
-})();
-
 const isFunction = func => {
 	return ((typeof func) === "function");
 };
@@ -102,6 +87,15 @@ const newAsyncFunc = (...args) => {
 	return new AsyncFunc(...args);
 };
 
+const AsyncGenerator = Object.getPrototypeOf(async function* () { }).constructor;;
+
+/**
+ * @param args same signature as new Function()
+ */
+const newAsyncGenerator = (...args) => {
+	return new AsyncGenerator(...args);
+};
+
 // it's difficult to write a comprehensive immutable copy in just two or three short methods. it would have to deal with many different cases
 // things like typedarrays, maps, sets, proxies, and things from DOM all need individual treatment
 // a naive approach would be to copy everything in to objects. while this copies information, the behavior would be lost
@@ -112,7 +106,9 @@ deepFreeze(isObject);
 deepFreeze(isEmpty);
 
 deepFreeze(newAsyncFunc);
+deepFreeze(newAsyncGenerator);
+
 deepFreeze(recursiveFreeze);
 deepFreeze(deepFreeze);
 
-export { globalScope as global, isFunction, isObject, isEmpty, deepFreeze, newAsyncFunc };
+export { isFunction, isObject, isEmpty, deepFreeze, newAsyncFunc, newAsyncGenerator };

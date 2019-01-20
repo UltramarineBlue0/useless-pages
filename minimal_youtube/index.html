@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<!-- I can't control how the embedded content works (and it could change over time): can't set default-src, need to allow everything -->
-	<meta http-equiv="content-security-policy" content="block-all-mixed-content; object-src 'none'; form-action 'self'; base-uri 'self';">
+	<meta http-equiv="content-security-policy" content="block-all-mixed-content; object-src 'none'; form-action 'none';">
 	<!-- youtube needs a referrer for some videos that contains music, otherwise the player throws error code 150 -->
 	<meta name="referrer" content="strict-origin">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,7 +19,7 @@
 <body>
 	<header>
 		<h3>YouTube in an iframe</h3>
-		<form id="form" autocomplete="on" target="_self">
+		<form id="form" autocomplete="on" target="_self" action="about:blank">
 			<label for="type">Query type: </label>
 			<select id="type" required>
 				<option value="url">YouTube video URL</option>
@@ -32,15 +32,26 @@
 			<input id="query" type="search" size="30" minlength="1" maxlength="768" inputmode="search" autofocus required>
 			<br>
 			<button type="submit">Load video</button>
-			<br>
-			<label for="resolution">Resolution: </label>
+		</form>
+	</header>
+	<main class="iframe-box">
+		<!-- I'm aware of the fact that youtube can just remove these restrictions, since I'm executing their script in the main window's scope.
+		The restrictions are just friendly suggestions, not hard rules. -->
+		<iframe class="iframe" id="yt-iframe" contenteditable="false" allowfullscreen allow="fullscreen *; encrypted-media *;"
+		 sandbox="allow-scripts allow-same-origin" src="https://www.youtube.com/embed/feBF_IY-HI8?hl=en-US&gl=US&enablejsapi=1&cc_lang_pref=en&modestbranding=1"></iframe>
+	</main>
+	<footer>
+		<form>
+			<label for="resolution">Prefer quality: </label>
 			<select id="resolution">
+				<option value="tiny">144p</option>
 				<option value="small">240p</option>
 				<option value="medium">360p</option>
 				<option value="large">480p</option>
 				<option value="hd720" selected>720p</option>
 				<option value="hd1080">1080p</option>
-				<option value="highres">> 1080p</option>
+				<option value="hd1440">1440p</option>
+				<option value="hd2160">2160p</option>
 			</select>
 			<label for="speed">Speed: </label>
 			<select id="speed">
@@ -54,13 +65,10 @@
 				<option value="2">2x</option>
 			</select>
 		</form>
-	</header>
-	<main class="iframe-box">
-		<!-- I'm aware of the fact that youtube can just remove these restrictions, since I'm executing their script in the main window's scope.
-		The restrictions are just friendly suggestions, not hard rules. -->
-		<iframe class="iframe" id="yt-iframe" contenteditable="false" allowfullscreen allow="fullscreen; encrypted-media"
-		 sandbox="allow-scripts allow-same-origin" src="https://www.youtube.com/embed/feBF_IY-HI8?hl=en-US&gl=US&enablejsapi=1&cc_lang_pref=en&modestbranding=1"></iframe>
-	</main>
+		<p>Channel: <b id="channel"></b></p>
+		<p>Title: <b id="videoTitle"></b></p>
+		<p>Duration: <b id="videoLength"></b></p>
+	</footer>
 </body>
 
 </html>
