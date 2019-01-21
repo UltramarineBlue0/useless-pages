@@ -1,8 +1,5 @@
 "use strict";
 
-import { isEmpty } from "../common/utils.js";
-import { alertError, assertNotEmpty } from "../common/assertions.js";
-
 const ytIframeId = "yt-iframe";
 const ytIframe = document.getElementById(ytIframeId);
 const queryInput = document.getElementById("query");
@@ -10,9 +7,12 @@ const queryInput = document.getElementById("query");
 // load playlist if a hash is present
 const fragmentId = document.location.hash;
 if (fragmentId.length > 1) {
-	ytIframe.src = `https://www.youtube.com/embed?list=${fragmentId.substring(1)}&listType=playlist&hl=en-US&gl=US&enablejsapi=1&cc_lang_pref=en&modestbranding=1`;
+	ytIframe.src = `https://www.youtube.com/embed?list=${encodeURIComponent(fragmentId.substring(1))}&listType=playlist&hl=en-US&gl=US&enablejsapi=1&cc_lang_pref=en&modestbranding=1`;
 	queryInput.blur();
 }
+
+import { isEmpty } from "../common/utils.js";
+import { alertError, assertNotEmpty } from "../common/assertions.js";
 
 self.onYouTubeIframeAPIReady = () => {
 	const onPlayerError = event => {
@@ -86,7 +86,7 @@ self.onYouTubeIframeAPIReady = () => {
 			}
 		}
 
-		throw "Unknown format";
+		throw new Error(`Unknown format: ${input}`);
 	};
 
 	const getPlaylistID = input => {
@@ -100,7 +100,7 @@ self.onYouTubeIframeAPIReady = () => {
 			}
 		}
 
-		throw "Unknown format";
+		throw new Error(`Unknown format: ${input}`);
 	};
 
 	// form elements
@@ -124,14 +124,14 @@ self.onYouTubeIframeAPIReady = () => {
 			const query = queryInput.value.trim().normalize();
 
 			try {
-				// cancel the currently playing video. when playing a playlist: in certain situations, YT will autoplay the new video, this prevents that
+				// cancel the currently playing video. when playing a playlist: in certain situations, YT will autoplay the newly queued video
+				// stopVideo() causes the player to lose some of the current setting. those are reapplied in onStateChange
 				if (!isEmpty(player.getPlaylist())) {
 					switch (player.getPlayerState()) {
 						case YT.PlayerState.BUFFERING:
 						case YT.PlayerState.PLAYING:
 						case YT.PlayerState.UNSTARTED:
 							player.stopVideo();
-							break;
 						default:
 							break;
 					}
@@ -174,6 +174,7 @@ self.onYouTubeIframeAPIReady = () => {
 			player.setPlaybackRate(Number.parseFloat(playbackSpeed.value));
 		});
 
+		// playback quality currently doesn't work. neither on chrome nor on firefox :(
 		preferResolution.addEventListener("change", () => {
 			player.setPlaybackQuality(preferResolution.value);
 		});
@@ -218,8 +219,18 @@ self.onYouTubeIframeAPIReady = () => {
 		const channelName = videoData.author;
 		const durationInSec = player.getDuration();
 
-		// youtube player sometimes forgets the selected playback speed: aggressively sets it whenever a video starts playing
-		const setPlaybackRate = () => player.setPlaybackRate(Number.parseFloat(playbackSpeed.value));
+		// according to the docs, yt player should reset the playback speed on new queue, however that behavior is not consistent
+		// moreover, on firefox the player could be stuck on 1x speed, if the new speed is the same as the old setting and the player has reset the speed
+		// between videos. setting it to a different playback speed "unstucks" the player
+		const setPlaybackRate = () => {
+			const selectedSpeed = Number.parseFloat(playbackSpeed.value);
+			if (selectedSpeed <= 1) {
+				player.setPlaybackRate(10);
+			} else {
+				player.setPlaybackRate(0.01);
+			}
+			player.setPlaybackRate(selectedSpeed);
+		};
 		// video started playing: change window title
 		const updateWindowTitle = () => document.title = `${videoName} ― ${channelName}`;
 		// reset window title when video is not playing
@@ -244,10 +255,10 @@ self.onYouTubeIframeAPIReady = () => {
 
 		switch (state) {
 			case YT.PlayerState.BUFFERING:
+				setPlaybackRate();
 			case YT.PlayerState.PLAYING:
 				updateVideoInfo();
 				updateWindowTitle();
-				setPlaybackRate();
 				break;
 			case YT.PlayerState.ENDED:
 				stopAutoplay();

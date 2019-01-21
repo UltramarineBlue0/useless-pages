@@ -1,20 +1,27 @@
 "use strict";
 
-import { isEmpty } from "../common/utils.js";
-import { alertError, assertNotEmpty } from "../common/assertions.js";
-
 const clipsHost = "clips.twitch.tv";
 const twitchHost = "twitch.tv";
 
-const twitchPlayer = "https://player." + twitchHost + "/?";
+const twitchPlayer = `https://player.${twitchHost}/?`;
 const playerParams = "&autoplay=false";
-const clipsPlayer = "https://" + clipsHost + "/embed?";
+const clipsPlayer = `https://${clipsHost}/embed?`;
 
 const ttvIframe = document.getElementById("ttv-iframe");
 
 const formElement = document.getElementById("form");
 const queryType = document.getElementById("type");
 const queryInput = document.getElementById("query");
+
+// read hash as channel name
+const fragmentId = document.location.hash;
+if (fragmentId.length > 1) {
+	ttvIframe.src = `${twitchPlayer}channel=${encodeURIComponent(fragmentId.substring(1))}${playerParams}`;
+	queryInput.blur();
+}
+
+import { isEmpty } from "../common/utils.js";
+import { alertError, assertNotEmpty } from "../common/assertions.js";
 
 const getClipSlug = input => {
 	// get clip id: https://clips.twitch.tv/{AdjectiveAdjectiveNounEmote}
@@ -24,7 +31,7 @@ const getClipSlug = input => {
 	if (hostname.endsWith(clipsHost)) {
 		return assertNotEmpty(pathArray[1]);
 	}
-	throw new Error("Unsupported URL");
+	throw new Error(`Unknown format: ${input}`);
 };
 
 const onlyDigits = /^\d+$/;
@@ -43,7 +50,7 @@ const getVideoID = input => {
 		}
 		return [id, timestamp];
 	}
-	throw new Error("Unsupported URL");
+	throw new Error(`Unknown format: ${input}`);
 };
 
 formElement.addEventListener("submit", event => {
@@ -65,17 +72,10 @@ formElement.addEventListener("submit", event => {
 			// show the channel of a user
 			ttvIframe.src = twitchPlayer + "channel=" + encodeURIComponent(query) + playerParams;
 		}
+
+		queryInput.blur();
 	} catch (error) {
 		console.log(`Form error: ${error}`);
 		alertError(error, `Error parsing "${query}"`);
 	}
-
-	queryInput.blur();
 });
-
-// read hash as channel name
-const fragmentId = document.location.hash;
-if (fragmentId.length > 1) {
-	ttvIframe.src = twitchPlayer + "channel=" + encodeURIComponent(fragmentId.substring(1)) + playerParams;
-	queryInput.blur();
-}
