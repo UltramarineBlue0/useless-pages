@@ -124,8 +124,18 @@ self.onYouTubeIframeAPIReady = () => {
 			const query = queryInput.value.trim().normalize();
 
 			try {
-				// cancel the currently playing video. in certain situations, YT will autoplay the new video, this prevents that
-				player.stopVideo();
+				// cancel the currently playing video. when playing a playlist: in certain situations, YT will autoplay the new video, this prevents that
+				if (!isEmpty(player.getPlaylist())) {
+					switch (player.getPlayerState()) {
+						case YT.PlayerState.BUFFERING:
+						case YT.PlayerState.PLAYING:
+						case YT.PlayerState.UNSTARTED:
+							player.stopVideo();
+							break;
+						default:
+							break;
+					}
+				}
 
 				if (type === "url") {
 					// Load video based on the video id in the url
@@ -214,12 +224,18 @@ self.onYouTubeIframeAPIReady = () => {
 		const updateWindowTitle = () => document.title = `${videoName} ― ${channelName}`;
 		// reset window title when video is not playing
 		const resetWindowTitle = () => document.title = originalTitle;
-		// disable autoplay of playlist: each video must be manually started by the user
+		// disable autoplay if currently in the middle of a playlist: each video must be manually started by the user
 		// stopVideo() puts the player in a strange state, it'll sometimes "lose" information about the current video, when it's called right at the beginning of a video
-		const stopAutoplay = () => player.pauseVideo();
+		const stopAutoplay = () => {
+			const currentPlaylist = player.getPlaylist();
+			if (!isEmpty(currentPlaylist) && currentPlaylist.length > (player.getPlaylistIndex() + 1)) {
+				player.pauseVideo();
+			}
+		};
 		// display info about the currently loaded video
 		// sometimes, when a video is paused right at the beginning and then a different video is selected from the playlist, the newly selected video will
-		// start playing without going through the UNSTARTED state: update also on BUFFERING
+		// start playing without going through the UNSTARTED state. also, the information is not available when a single video is queued:
+		// update on both playing and buffering
 		const updateVideoInfo = () => {
 			channel.textContent = channelName;
 			videoTitle.textContent = videoName;
@@ -228,8 +244,8 @@ self.onYouTubeIframeAPIReady = () => {
 
 		switch (state) {
 			case YT.PlayerState.BUFFERING:
-				updateVideoInfo();
 			case YT.PlayerState.PLAYING:
+				updateVideoInfo();
 				updateWindowTitle();
 				setPlaybackRate();
 				break;
