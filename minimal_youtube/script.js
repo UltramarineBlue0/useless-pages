@@ -9,7 +9,12 @@ const fragmentId = document.location.hash;
 if (fragmentId.length > 1) {
 	ytIframe.src = `https://www.youtube.com/embed?list=${encodeURIComponent(fragmentId.substring(1))}&listType=playlist&hl=en-US&gl=US&enablejsapi=1&cc_lang_pref=en&modestbranding=1`;
 	queryInput.blur();
+} else {
+	// default youtube video
+	ytIframe.src = `https://www.youtube.com/embed/feBF_IY-HI8?hl=en-US&gl=US&enablejsapi=1&cc_lang_pref=en&modestbranding=1`;
 }
+
+window.addEventListener("hashchange", () => document.location.reload(false));
 
 import { isEmpty } from "../common/utils.js";
 import { alertError, assertNotEmpty } from "../common/assertions.js";

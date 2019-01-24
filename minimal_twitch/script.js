@@ -18,7 +18,12 @@ const fragmentId = document.location.hash;
 if (fragmentId.length > 1) {
 	ttvIframe.src = `${twitchPlayer}channel=${encodeURIComponent(fragmentId.substring(1))}${playerParams}`;
 	queryInput.blur();
+} else {
+	// default channel
+	ttvIframe.src = `https://player.twitch.tv/?channel=twitchpresents&autoplay=false`;
 }
+
+window.addEventListener("hashchange", () => document.location.reload(false));
 
 import { isEmpty } from "../common/utils.js";
 import { alertError, assertNotEmpty } from "../common/assertions.js";
