@@ -183,6 +183,12 @@ self.onYouTubeIframeAPIReady = () => {
 		preferResolution.addEventListener("change", () => {
 			player.setPlaybackQuality(preferResolution.value);
 		});
+
+		const volumeSlider = document.getElementById("volumeSlider");
+		volumeSlider.addEventListener("change", () => player.setVolume(volumeSlider.valueAsNumber));
+
+		document.getElementById("shufflePlaylist").addEventListener("click", () => player.setShuffle(true));
+		document.getElementById("setLoop").addEventListener("click", () => player.setLoop(true));
 	};
 
 	const convertSecToString = seconds => {

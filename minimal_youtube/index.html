@@ -20,18 +20,16 @@
 	<header>
 		<h3>YouTube in an iframe</h3>
 		<form id="form" autocomplete="on" target="_self" action="about:blank">
-			<label for="type">Query type: </label>
+			<label for="type">Query&nbsp;type: </label>
 			<select id="type" required>
 				<option value="url">YouTube video URL</option>
 				<option value="playlist">YouTube playlist URL</option>
 				<option value="search" selected>Search query</option>
 				<option value="user_uploads">Channel name</option>
 			</select>
-			<br>
-			<label for="query">Query text: </label>
+			<label for="query">Query&nbsp;text: </label>
 			<input id="query" type="search" size="30" minlength="1" maxlength="768" inputmode="search" autofocus required>
-			<br>
-			<button type="submit">Load video</button>
+			<button type="submit"><b>&nbsp;&#128269;&nbsp;</b></button>
 		</form>
 	</header>
 	<main class="iframe-box">
@@ -41,8 +39,8 @@
 		 sandbox="allow-scripts allow-same-origin"></iframe>
 	</main>
 	<footer>
-		<form>
-			<label for="resolution">Prefer quality: </label>
+		<form target="_self" action="about:blank">
+			<label for="resolution">Prefer&nbsp;quality: </label>
 			<select id="resolution">
 				<option value="tiny">144p</option>
 				<option value="small">240p</option>
@@ -64,6 +62,10 @@
 				<option value="1.75">1.75x</option>
 				<option value="2">2x</option>
 			</select>
+			<label for="volumeSlider">Volume: </label>
+			<input type="range" id="volumeSlider" min="0" max="100" step="5" value="35">
+			<button type="button" id="shufflePlaylist">Shuffle&nbsp;playlist</button>
+			<button type="button" id="setLoop">Loop&nbsp;playlist</button>
 		</form>
 		<p>Channel: <b id="channel"></b><br>
 			Title: <b id="videoTitle"></b><br>
