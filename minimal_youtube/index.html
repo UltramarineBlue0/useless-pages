@@ -3,8 +3,8 @@
 
 <head>
 	<meta charset="utf-8">
-	<!-- I can't control how the embedded content works (and it could change over time): can't set default-src, need to allow everything -->
-	<meta http-equiv="content-security-policy" content="block-all-mixed-content; object-src 'none'; form-action 'none';">
+	<meta http-equiv="content-security-policy"
+		content="block-all-mixed-content; object-src 'none'; form-action 'none'; base-uri 'none'; default-src 'self'; frame-src 'self' https://*.youtube.com; script-src 'self' https: blob:;">
 	<!-- youtube needs a referrer for some videos that contains music, otherwise the player throws error code 150 -->
 	<meta name="referrer" content="strict-origin">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -28,15 +28,17 @@
 				<option value="user_uploads">Channel name</option>
 			</select>
 			<label for="query">Query&nbsp;text: </label>
-			<input id="query" type="search" size="30" minlength="1" maxlength="768" inputmode="search" autofocus required>
+			<input id="query" type="search" size="30" minlength="1" maxlength="768" inputmode="search" autofocus
+				required>
 			<button type="submit"><b>&nbsp;&#128269;&nbsp;</b></button>
 		</form>
 	</header>
 	<main class="iframe-box">
 		<!-- I'm aware of the fact that youtube can just remove these restrictions, since I'm executing their script in the main window's scope.
 		The restrictions are just friendly suggestions, not hard rules. -->
-		<iframe class="iframe" id="yt-iframe" contenteditable="false" allowfullscreen allow="fullscreen *; encrypted-media *;"
-		 sandbox="allow-scripts allow-same-origin"></iframe>
+		<iframe class="iframe" id="yt-iframe" referrerpolicy="strict-origin" allowfullscreen
+			allow="encrypted-media; fullscreen; picture-in-picture; speaker; wake-lock; accelerometer 'none'; ambient-light-sensor 'none'; autoplay 'none'; camera 'none'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; payment 'none'; usb 'none'; vr 'none';"
+			sandbox="allow-scripts allow-same-origin"></iframe>
 	</main>
 	<footer>
 		<form target="_self" action="about:blank">
@@ -63,9 +65,9 @@
 				<option value="2">2x</option>
 			</select>
 			<label for="volumeSlider">Volume: </label>
+			<output for="volumeSlider" id="volumeValueDisp">35</output>
 			<input type="range" id="volumeSlider" min="0" max="100" step="5" value="35">
 			<button type="button" id="shufflePlaylist">Shuffle&nbsp;playlist</button>
-			<button type="button" id="setLoop">Loop&nbsp;playlist</button>
 		</form>
 		<p>Channel: <b id="channel"></b><br>
 			Title: <b id="videoTitle"></b><br>

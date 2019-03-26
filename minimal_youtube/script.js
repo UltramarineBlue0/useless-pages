@@ -113,12 +113,10 @@ self.onYouTubeIframeAPIReady = () => {
 	const playbackSpeed = document.getElementById("speed");
 	const formElement = document.getElementById("form");
 	const queryType = document.getElementById("type");
+	const volumeSlider = document.getElementById("volumeSlider");
 
 	const onPlayerReady = e => {
 		const player = e.target;
-
-		// reduce volume to prevent surprise ear rape
-		player.setVolume(35);
 
 		formElement.addEventListener("submit", event => {
 			event.preventDefault();
@@ -184,11 +182,14 @@ self.onYouTubeIframeAPIReady = () => {
 			player.setPlaybackQuality(preferResolution.value);
 		});
 
-		const volumeSlider = document.getElementById("volumeSlider");
-		volumeSlider.addEventListener("change", () => player.setVolume(volumeSlider.valueAsNumber));
+		const volumeValueDisp = document.getElementById("volumeValueDisp");
+		volumeSlider.addEventListener("change", () => {
+			const selectedVolume = volumeSlider.valueAsNumber;
+			player.setVolume(selectedVolume);
+			volumeValueDisp.textContent = selectedVolume;
+		});
 
 		document.getElementById("shufflePlaylist").addEventListener("click", () => player.setShuffle(true));
-		document.getElementById("setLoop").addEventListener("click", () => player.setLoop(true));
 	};
 
 	const convertSecToString = seconds => {
@@ -228,19 +229,20 @@ self.onYouTubeIframeAPIReady = () => {
 		const videoData = player.getVideoData();
 		const videoName = videoData.title;
 		const channelName = videoData.author;
-		const durationInSec = player.getDuration();
 
 		// according to the docs, yt player should reset the playback speed on new queue, however that behavior is not consistent
 		// moreover, on firefox the player could be stuck on 1x speed, if the new speed is the same as the old setting and the player has reset the speed
 		// between videos. setting it to a different playback speed "unstucks" the player
-		const setPlaybackRate = () => {
+		const updatePlayerSetting = () => {
 			const selectedSpeed = Number.parseFloat(playbackSpeed.value);
 			if (selectedSpeed <= 1) {
-				player.setPlaybackRate(10);
+				player.setPlaybackRate(2);
 			} else {
-				player.setPlaybackRate(0.01);
+				player.setPlaybackRate(0.25);
 			}
 			player.setPlaybackRate(selectedSpeed);
+			player.setVolume(volumeSlider.valueAsNumber);
+			player.setPlaybackQuality(preferResolution.value);
 		};
 		// video started playing: change window title
 		const updateWindowTitle = () => document.title = `${videoName} ― ${channelName}`;
@@ -250,7 +252,7 @@ self.onYouTubeIframeAPIReady = () => {
 		// stopVideo() puts the player in a strange state, it'll sometimes "lose" information about the current video, when it's called right at the beginning of a video
 		const stopAutoplay = () => {
 			const currentPlaylist = player.getPlaylist();
-			if (!isEmpty(currentPlaylist) && currentPlaylist.length > (player.getPlaylistIndex() + 1)) {
+			if (!isEmpty(currentPlaylist)) {
 				player.pauseVideo();
 			}
 		};
@@ -259,6 +261,7 @@ self.onYouTubeIframeAPIReady = () => {
 		// start playing without going through the UNSTARTED state. also, the information is not available when a single video is queued:
 		// update on both playing and buffering
 		const updateVideoInfo = () => {
+			const durationInSec = player.getDuration();
 			channel.textContent = channelName;
 			videoTitle.textContent = videoName;
 			videoLength.textContent = convertSecToString(durationInSec);
@@ -266,7 +269,8 @@ self.onYouTubeIframeAPIReady = () => {
 
 		switch (state) {
 			case YT.PlayerState.BUFFERING:
-				setPlaybackRate();
+				updatePlayerSetting();
+				break;
 			case YT.PlayerState.PLAYING:
 				updateVideoInfo();
 				updateWindowTitle();

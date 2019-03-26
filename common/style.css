@@ -19,13 +19,17 @@ a:visited {
 	color: #E1BEE7;
 }
 
+p {
+	margin: 0.5em 0px;
+}
+
 form {
-	margin: 0.7em 0px;
+	margin: 0.5em 0px;
 }
 
 button {
-	margin: 0.7ex 0px;
-	font-size: 120%;
+	margin: 0.5ex 0px;
+	font-size: 110%;
 }
 
 .textarea {

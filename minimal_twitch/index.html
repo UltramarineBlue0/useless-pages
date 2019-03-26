@@ -3,8 +3,8 @@
 
 <head>
 	<meta charset="utf-8">
-	<!-- I can't control how the embedded content works (and it could change over time): can't set default-src, need to allow everything -->
-	<meta http-equiv="content-security-policy" content="block-all-mixed-content; object-src 'none'; form-action 'none';">
+	<meta http-equiv="content-security-policy"
+		content="block-all-mixed-content; object-src 'none'; form-action 'none'; base-uri 'none'; default-src 'self'; frame-src 'self' https://*.twitch.tv; script-src 'self' https: blob:;">
 	<meta name="referrer" content="no-referrer">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -25,13 +25,15 @@
 				<option value="video">VOD URL</option>
 			</select>
 			<label for="query">Query&nbsp;text: </label>
-			<input id="query" type="search" size="30" minlength="1" maxlength="768" inputmode="search" autofocus required>
+			<input id="query" type="search" size="30" minlength="1" maxlength="768" inputmode="search" autofocus
+				required>
 			<button type="submit">&nbsp;&#128269;&nbsp;</button>
 		</form>
 	</header>
 	<main class="iframe-box">
-		<iframe class="iframe" id="ttv-iframe" contenteditable="false" allowfullscreen allow="fullscreen *; encrypted-media *;"
-		 sandbox="allow-scripts allow-same-origin"></iframe>
+		<iframe class="iframe" id="ttv-iframe" referrerpolicy="no-referrer" allowfullscreen
+			allow="encrypted-media; fullscreen; picture-in-picture; speaker; wake-lock; accelerometer 'none'; ambient-light-sensor 'none'; autoplay 'none'; camera 'none'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; payment 'none'; usb 'none'; vr 'none';"
+			sandbox="allow-scripts allow-same-origin"></iframe>
 	</main>
 </body>
 
