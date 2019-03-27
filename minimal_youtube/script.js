@@ -188,6 +188,7 @@ self.onYouTubeIframeAPIReady = () => {
 			player.setVolume(selectedVolume);
 			volumeValueDisp.textContent = selectedVolume;
 		});
+		volumeValueDisp.textContent = volumeSlider.valueAsNumber;
 
 		document.getElementById("shufflePlaylist").addEventListener("click", () => player.setShuffle(true));
 	};
