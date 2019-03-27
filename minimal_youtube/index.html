@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="content-security-policy"
-		content="block-all-mixed-content; object-src 'none'; form-action 'none'; base-uri 'none'; default-src 'self'; frame-src 'self' https://*.youtube.com; script-src 'self' https: blob:;">
+		content="block-all-mixed-content; object-src 'none'; form-action 'none'; base-uri 'none'; default-src 'self'; frame-src 'self' https://*.youtube.com; script-src 'self' https://*.youtube.com https://*.ytimg.com;">
 	<!-- youtube needs a referrer for some videos that contains music, otherwise the player throws error code 150 -->
 	<meta name="referrer" content="strict-origin">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -65,7 +65,7 @@
 				<option value="2">2x</option>
 			</select>
 			<label for="volumeSlider">Volume: </label>
-			<output for="volumeSlider" id="volumeValueDisp">35</output>
+			<output for="volumeSlider" id="volumeValueDisp"></output>
 			<input type="range" id="volumeSlider" min="0" max="100" step="5" value="35">
 			<button type="button" id="shufflePlaylist">Shuffle&nbsp;playlist</button>
 		</form>
