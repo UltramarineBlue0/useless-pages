@@ -12,9 +12,9 @@ https://perfectmotherfuckingwebsite.com/
 https://evenbettermotherfucking.website/
 */
 
-html {
+:root {
 	box-sizing: border-box;
-	font: normal 500 16px/1.4 system-ui, sans-serif;
+	font: 500 16px/1.4 system-ui, sans-serif;
 }
 
 *, *::before, *::after {
@@ -30,7 +30,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-	margin: 0.5rem 0;
+	margin: 1rem 0;
 }
 
 h1, h2, h3 {
@@ -50,17 +50,12 @@ a:visited {
 	color: #E1BEE7;
 }
 
-p, form {
-	margin: 0.5rem 0;
-}
-
 button, select {
-	margin: 0.5ex 0;
-	font-size: 1rem;
+	font-size: 1.1rem;
 	text-transform: none;
 }
 
-.textarea {
+.codearea {
 	resize: vertical;
 	overflow: auto;
 	white-space: pre;
@@ -88,8 +83,11 @@ button, select {
 
 /*table and list*/
 table, th, td {
-	border: thin solid;
+	border: 1Q ridge;
 	border-collapse: collapse;
+}
+
+th, td {
 	padding: 0.7ex 1ex;
 }
 

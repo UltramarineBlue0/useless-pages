@@ -1,7 +1,7 @@
 @charset "UTF-8";
 
 .embed-box {
-	border: thin solid #FF5722;
+	border: 1Q ridge #FF5722;
 }
 
 #run {
