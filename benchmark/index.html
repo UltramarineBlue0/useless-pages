@@ -10,16 +10,8 @@
 	<title>Benchmark JavaScript</title>
 
 	<link href="../common/style.css" rel="stylesheet">
+	<link href="style.css" rel="stylesheet">
 	<script src="testController.js" defer></script>
-	<style>
-		.iframe-box {
-			border: thin solid #FF5722;
-		}
-
-		#run {
-			font-size: 150%;
-		}
-	</style>
 </head>
 
 <body>
@@ -41,8 +33,8 @@
 		<b>Test result:</b>
 		<pre id="result"></pre>
 		<b>Test executor iframe:</b>
-		<section class="iframe-box">
-			<iframe class="iframe" id="test-iframe" referrerpolicy="no-referrer" sandbox="allow-scripts" src="about:blank" srcdoc=""></iframe>
+		<section class="embed-box">
+			<iframe id="test-iframe" referrerpolicy="no-referrer" sandbox="allow-scripts" src="about:blank" srcdoc=""></iframe>
 		</section>
 	</main>
 </body>

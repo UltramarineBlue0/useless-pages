@@ -12,7 +12,6 @@
 
 	const ticker = () => window.performance.now();
 
-	const displayNone = "none";
 	const clickEventName = "click";
 
 	let previous = ticker();
@@ -133,18 +132,18 @@
 		event.stopImmediatePropagation();
 		resetAll();
 
-		if (startButton.style.display === displayNone) {
+		if (startButton.hidden === true) {
 			// Switch to generated clicks
-			startButton.style.display = null;
-			clickButton.style.display = displayNone;
+			startButton.hidden = false;
+			clickButton.hidden = true;
 			switchButton.textContent = "Switch to clicks by user";
 			// Test mode: click event on the button starts a chain of clicks
 			clickButton.removeEventListener(clickEventName, increment, eventOption);
 			clickButton.addEventListener(clickEventName, incrementThenClick, eventOption);
 		} else {
 			// Switch to user clicks
-			startButton.style.display = displayNone;
-			clickButton.style.display = null;
+			startButton.hidden = true;
+			clickButton.hidden = false;
 			switchButton.textContent = "Switch to generated clicks";
 			// User mode: one increment per click
 			clickButton.removeEventListener(clickEventName, incrementThenClick, eventOption);

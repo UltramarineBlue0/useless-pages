@@ -1,0 +1,9 @@
+@charset "UTF-8";
+
+.embed-box {
+	border: thin solid #FF5722;
+}
+
+#run {
+	font-size: 150%;
+}

@@ -1,17 +1,48 @@
+@charset "UTF-8";
+
+/*
+This css is a takes elements from minimal css resets and minimal websites:
+css reset (it's mostly just "box-sizing: border-box")
+https://allthingssmitty.com/2017/01/09/css-reset-for-minimalists/
+https://alligator.io/css/minimal-css-reset/
+https://github.com/sindresorhus/modern-normalize
+css from these minimal websites:
+https://bestmotherfucking.website/
+https://perfectmotherfuckingwebsite.com/
+https://evenbettermotherfucking.website/
+*/
+
+html {
+	box-sizing: border-box;
+	font: normal 500 16px/1.4 system-ui, sans-serif;
+}
+
+*, *::before, *::after {
+	box-sizing: inherit;
+}
+
 body {
 	background-color: #424242;
 	color: #ECEFF1;
-	font: 16px/1.4 sans-serif;
-	margin: 1em auto;
-	padding: 0px 0.5ex;
-	max-width: 1000px;
+	margin: 1rem auto;
+	padding: 0px 0.5rem;
+	max-width: 1100px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	margin: 0.5rem 0;
 }
 
 h1, h2, h3 {
 	line-height: 1.2;
 }
 
-a {
+/*fix lower specificity of hidden attribute on some elements*/
+[hidden] {
+	display: none !important;
+}
+
+a, a:link {
 	color: #B3E5FC;
 }
 
@@ -19,17 +50,14 @@ a:visited {
 	color: #E1BEE7;
 }
 
-p {
-	margin: 0.5em 0px;
+p, form {
+	margin: 0.5rem 0;
 }
 
-form {
-	margin: 0.5em 0px;
-}
-
-button {
-	margin: 0.5ex 0px;
-	font-size: 110%;
+button, select {
+	margin: 0.5ex 0;
+	font-size: 1.1rem;
+	text-transform: none;
 }
 
 .textarea {
@@ -40,14 +68,16 @@ button {
 	font: 15px monospace;
 }
 
-.iframe-box {
+/*16:9 aspect ratio*/
+.embed-box {
 	position: relative;
 	overflow: hidden;
-	padding-top: 56.25%;
+	padding-bottom: 56.25%;
 	height: 0;
+	margin: 1rem 0;
 }
 
-.iframe {
+.embed-box > iframe {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -56,8 +86,13 @@ button {
 	border: none;
 }
 
+/*table and list*/
 table, th, td {
 	border: thin solid;
 	border-collapse: collapse;
-	padding: 1ex;
+	padding: 0.7ex 1ex;
+}
+
+ol, ul {
+	padding: 0 0 0 1.2rem;
 }

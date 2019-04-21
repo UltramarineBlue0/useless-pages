@@ -1,0 +1,27 @@
+@charset "UTF-8";
+
+body {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	cursor: default;
+}
+
+.valueDisplay {
+	font: 1.5rem monospace;
+}
+
+.start, .start:focus, .start:hover, .start:active {
+	cursor: default;
+	background-color: #ECEFF1;
+	color: #424242;
+	padding: 0.3ex;
+	margin: 0.5ex 0px;
+	outline: none;
+	border: none;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 3em;
+}

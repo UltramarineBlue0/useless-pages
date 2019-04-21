@@ -3,51 +3,22 @@
 
 <head>
 	<meta charset="utf-8">
-	<meta http-equiv="content-security-policy" content="block-all-mixed-content; form-action 'none'; base-uri 'none'; default-src 'self'; style-src 'self' 'unsafe-inline'; object-src 'none';">
+	<meta http-equiv="content-security-policy" content="block-all-mixed-content; object-src 'none'; form-action 'none'; base-uri 'none'; default-src 'self';">
 	<meta name="referrer" content="no-referrer">
 	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 
 	<title>Test clicks per second</title>
 
 	<link href="../common/style.css" rel="stylesheet">
-	<script src="../common/µ.js" defer></script>
-	<script src="test.js" defer></script>
 	<!--
 		Some browsers will select text when you double click buttons. Some mobile browsers will zoom on double click.
 		The tags and styles tries to remove as many user interactions, which are automatically added by the browser, as possible,
 		without being too long or verbose. This test is meant to just test the performance of the click event, not the repaint or reflow
 		performance of the browser
 	-->
-	<style>
-		body {
-			-webkit-user-select: none;
-			-moz-user-select: none;
-			-ms-user-select: none;
-			user-select: none;
-			cursor: default;
-		}
-
-		.valueDisplay {
-			font: 1.5em monospace;
-		}
-
-		.start,
-		.start:focus,
-		.start:hover,
-		.start:active {
-			cursor: default;
-			background-color: #ECEFF1;
-			color: #424242;
-			padding: 0.3ex;
-			margin: 0.5ex 0px;
-			outline: none;
-			border: none;
-			text-align: center;
-			text-decoration: none;
-			display: inline-block;
-			font-size: 3em;
-		}
-	</style>
+	<link href="no-reflow.css" rel="stylesheet">
+	<script src="../common/µ.js" defer></script>
+	<script src="test.js" defer></script>
 </head>
 
 <body>
@@ -66,7 +37,7 @@
 				<strong>&nbsp;cps</strong>
 			</p>
 			<button class="start" id="clickArea" type="button" autofocus>Click here</button>
-			<button class="start" id="startGenerate" type="button" style="display: none;">Generate click events</button>
+			<button class="start" id="startGenerate" type="button" hidden>Generate click events</button>
 		</section>
 		<section>
 			<p class="valueDisplay">Average:
