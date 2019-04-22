@@ -25,8 +25,7 @@ if (fragmentId.length > 1) {
 
 window.addEventListener("hashchange", () => document.location.reload(false));
 
-import { isEmpty } from "../common/utils.js";
-import { alertError, assertNotEmpty } from "../common/assertions.js";
+import { isEmpty, alertError, assertNotEmpty } from "../common/utils.js";
 
 const getClipSlug = input => {
 	// get clip id: https://clips.twitch.tv/{AdjectiveAdjectiveNounEmote}

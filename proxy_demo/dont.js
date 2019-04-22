@@ -1,6 +1,7 @@
 "use strict";
 
-import { isObject, deepFreeze } from "../common/utils.js";
+import { isObject } from "../common/utils.js";
+import { deepFreeze } from "../common/misc.js";
 
 const globalProxyRegister = new WeakMap();
 

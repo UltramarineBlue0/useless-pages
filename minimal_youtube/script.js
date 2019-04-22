@@ -16,8 +16,7 @@ if (fragmentId.length > 1) {
 
 window.addEventListener("hashchange", () => document.location.reload(false));
 
-import { isEmpty } from "../common/utils.js";
-import { alertError, assertNotEmpty } from "../common/assertions.js";
+import { isEmpty, alertError, assertNotEmpty } from "../common/utils.js";
 
 self.onYouTubeIframeAPIReady = () => {
 	const onPlayerError = event => {
@@ -114,6 +113,9 @@ self.onYouTubeIframeAPIReady = () => {
 	const formElement = document.getElementById("form");
 	const queryType = document.getElementById("type");
 	const volumeSlider = document.getElementById("volumeSlider");
+	const volumeValueDisp = document.getElementById("volumeValueDisp");
+
+	volumeValueDisp.textContent = volumeSlider.valueAsNumber;
 
 	const onPlayerReady = e => {
 		const player = e.target;
@@ -122,55 +124,57 @@ self.onYouTubeIframeAPIReady = () => {
 			event.preventDefault();
 			event.stopImmediatePropagation();
 
-			const resolution = preferResolution.value;
-			const type = queryType.value;
-			const query = queryInput.value.trim().normalize();
+			// cancel the currently playing video. when playing a playlist: in certain situations, YT will autoplay the newly queued video
+			// stopVideo() causes the player to lose some of the current setting. those are reapplied in onStateChange
+			// if (!isEmpty(player.getPlaylist())) {
+			// 	switch (player.getPlayerState()) {
+			// 		case YT.PlayerState.BUFFERING:
+			// 		case YT.PlayerState.PLAYING:
+			// 		case YT.PlayerState.UNSTARTED:
+			player.stopVideo();
+			// 	default:
+			// 		break;
+			// }
+			//}
 
-			try {
-				// cancel the currently playing video. when playing a playlist: in certain situations, YT will autoplay the newly queued video
-				// stopVideo() causes the player to lose some of the current setting. those are reapplied in onStateChange
-				if (!isEmpty(player.getPlaylist())) {
-					switch (player.getPlayerState()) {
-						case YT.PlayerState.BUFFERING:
-						case YT.PlayerState.PLAYING:
-						case YT.PlayerState.UNSTARTED:
-							player.stopVideo();
-						default:
-							break;
-					}
-				}
+			setTimeout(() => {
+				const resolution = preferResolution.value;
+				const type = queryType.value;
+				const query = queryInput.value.trim().normalize();
 
-				if (type === "url") {
-					// Load video based on the video id in the url
-					const [videoID, startSeconds] = getVideoID(query);
-					player.cueVideoById({
-						videoId: videoID,
-						startSeconds: startSeconds,
-						suggestedQuality: resolution,
-					});
-				} else {
-					let playlistID;
-
-					if (type === "playlist") {
-						// Load playlist based on the playlist id in the url
-						playlistID = getPlaylistID(query);
+				try {
+					if (type === "url") {
+						// Load video based on the video id in the url
+						const [videoID, startSeconds] = getVideoID(query);
+						player.cueVideoById({
+							videoId: videoID,
+							startSeconds: startSeconds,
+							suggestedQuality: resolution,
+						});
 					} else {
-						// Load list of videos based on the query. That can either be a search term or a channel name
-						playlistID = query;
+						let playlistID;
+
+						if (type === "playlist") {
+							// Load playlist based on the playlist id in the url
+							playlistID = getPlaylistID(query);
+						} else {
+							// Load list of videos based on the query. That can either be a search term or a channel name
+							playlistID = query;
+						}
+
+						player.cuePlaylist({
+							listType: type,
+							list: playlistID,
+							suggestedQuality: resolution,
+						});
 					}
 
-					player.cuePlaylist({
-						listType: type,
-						list: playlistID,
-						suggestedQuality: resolution,
-					});
+					queryInput.blur();
+				} catch (error) {
+					console.log(`Form error: ${error}`);
+					alertError(error, `Error parsing "${query}"`);
 				}
-
-				queryInput.blur();
-			} catch (error) {
-				console.log(`Form error: ${error}`);
-				alertError(error, `Error parsing "${query}"`);
-			}
+			}, 1);
 		});
 
 		playbackSpeed.addEventListener("change", () => {
@@ -182,13 +186,11 @@ self.onYouTubeIframeAPIReady = () => {
 			player.setPlaybackQuality(preferResolution.value);
 		});
 
-		const volumeValueDisp = document.getElementById("volumeValueDisp");
 		volumeSlider.addEventListener("change", () => {
 			const selectedVolume = volumeSlider.valueAsNumber;
 			player.setVolume(selectedVolume);
 			volumeValueDisp.textContent = selectedVolume;
 		});
-		volumeValueDisp.textContent = volumeSlider.valueAsNumber;
 
 		document.getElementById("shufflePlaylist").addEventListener("click", () => player.setShuffle(true));
 	};
@@ -241,9 +243,12 @@ self.onYouTubeIframeAPIReady = () => {
 			} else {
 				player.setPlaybackRate(0.25);
 			}
-			player.setPlaybackRate(selectedSpeed);
-			player.setVolume(volumeSlider.valueAsNumber);
-			player.setPlaybackQuality(preferResolution.value);
+
+			setTimeout(() => {
+				player.setPlaybackRate(selectedSpeed);
+				player.setVolume(volumeSlider.valueAsNumber);
+				player.setPlaybackQuality(preferResolution.value);
+			}, 1);
 		};
 		// video started playing: change window title
 		const updateWindowTitle = () => document.title = `${videoName} ― ${channelName}`;

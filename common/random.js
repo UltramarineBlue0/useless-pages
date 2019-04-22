@@ -1,6 +1,5 @@
 "use strict";
 
-import { deepFreeze } from "./utils.js";
 import { maxUInt32 } from "./numbers.js";
 
 // Random number generator using xoshiro128** algorithm by David Blackman and Sebastiano Vigna
@@ -31,13 +30,13 @@ const randInt32 = () => {
 	return result;
 };
 
-const CAUTION_setSeed = array => {
+export const CAUTION_setSeed = array => {
 	for (let i = 0; i < 4; ++i) {
 		rndState[i] = array[i];
 	}
 };
 
-const randBool = () => {
+export const randBool = () => {
 	// Convert most significant bit to boolean
 	return randInt32() < 0;
 };
@@ -45,7 +44,7 @@ const randBool = () => {
 // Returns a generator which avoids bias by skipping over-represented candidates
 // The rejection is similar to the one in pcg32_boundedrand_r() in https://github.com/imneme/pcg-c-basic/blob/bc39cd76ac3d541e618606bcc6e1e5ba5e5e6aa3/pcg_basic.c
 // Also see "java.util.SplittableRandom.internalNextInt()" and "Random._randbelow_without_getrandbits()" in cpython/Lib/random.py
-const getRandomInt = (lowerBoundInclusive, upperBoundExclusive) => {
+export const getRandomInt = (lowerBoundInclusive, upperBoundExclusive) => {
 	const l = lowerBoundInclusive | 0;
 	const u = upperBoundExclusive | 0;
 	if ((lowerBoundInclusive !== l) || (upperBoundExclusive !== u) || // bounds must be 32-bit signed integers
@@ -87,7 +86,7 @@ const chars = lowerCase + upperCase + digits;
 /**
  * Random alphanumeric string
  */
-const randStr = length => {
+export const randStr = length => {
 	const result = [];
 	for (let i = 0; i < length; i++) {
 		const pos = getRandomInt(0, chars.length);
@@ -95,11 +94,3 @@ const randStr = length => {
 	}
 	return result.join("");
 };
-
-deepFreeze(randInt32);
-deepFreeze(getRandomInt);
-deepFreeze(CAUTION_setSeed);
-deepFreeze(randBool);
-deepFreeze(randStr);
-
-export { randInt32, getRandomInt, CAUTION_setSeed, randBool, randStr };
