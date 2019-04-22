@@ -50,9 +50,12 @@ a:visited {
 	color: #E1BEE7;
 }
 
-button, select {
+button {
 	font-size: 1.1rem;
-	text-transform: none;
+}
+
+select, input {
+	font-size: 0.9rem;
 }
 
 .codearea {

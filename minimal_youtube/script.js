@@ -124,14 +124,13 @@ self.onYouTubeIframeAPIReady = () => {
 			event.preventDefault();
 			event.stopImmediatePropagation();
 
+			const resolution = preferResolution.value;
+			const type = queryType.value;
+			const query = queryInput.value.trim().normalize();
 			// cancel the currently playing video. when playing a playlist: in certain situations, YT will autoplay the newly queued video
 			// stopVideo() causes the player to lose some of the current setting. those are reapplied in onStateChange
 			player.stopVideo();
 			setTimeout(() => {
-				const resolution = preferResolution.value;
-				const type = queryType.value;
-				const query = queryInput.value.trim().normalize();
-
 				try {
 					if (type === "url") {
 						// Load video based on the video id in the url
@@ -167,14 +166,10 @@ self.onYouTubeIframeAPIReady = () => {
 			}, 1);
 		});
 
-		playbackSpeed.addEventListener("change", () => {
-			player.setPlaybackRate(Number.parseFloat(playbackSpeed.value));
-		});
+		playbackSpeed.addEventListener("change", () => player.setPlaybackRate(Number.parseFloat(playbackSpeed.value)));
 
 		// playback quality currently doesn't work. neither on chrome nor on firefox :(
-		preferResolution.addEventListener("change", () => {
-			player.setPlaybackQuality(preferResolution.value);
-		});
+		preferResolution.addEventListener("change", () => player.setPlaybackQuality(preferResolution.value));
 
 		volumeSlider.addEventListener("change", () => {
 			const selectedVolume = volumeSlider.valueAsNumber;
@@ -226,6 +221,7 @@ self.onYouTubeIframeAPIReady = () => {
 		// according to the docs, yt player should reset the playback speed on new queue, however that behavior is not consistent
 		// moreover, on firefox the player could be stuck on 1x speed, if the new speed is the same as the old setting and the player has reset the speed
 		// between videos. setting it to a different playback speed "unstucks" the player
+		// delay the configuration after the BUFFERING event, otherwise some settings might be ignored
 		const updatePlayerSetting = () => {
 			const selectedSpeed = Number.parseFloat(playbackSpeed.value);
 			if (selectedSpeed <= 1) {

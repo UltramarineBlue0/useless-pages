@@ -22,15 +22,15 @@
 		<form id="form" autocomplete="on" target="_self" action="about:blank">
 			<label for="type">Query&nbsp;type: </label>
 			<select id="type" required>
-				<option value="url">YouTube video URL</option>
-				<option value="playlist">YouTube playlist URL</option>
+				<option value="url">Video URL</option>
+				<option value="playlist">Playlist URL</option>
 				<option value="search" selected>Search query</option>
 				<option value="user_uploads">Channel name</option>
 			</select>
 			<label for="query">Query: </label>
-			<input id="query" type="search" size="30" minlength="1" maxlength="768" inputmode="search" autofocus
+			<input id="query" type="search" size="24" minlength="1" maxlength="512" inputmode="search" autofocus
 				required>
-			<button type="submit"><b>&nbsp;&#128269;&nbsp;</b></button>
+			<button type="submit"><b>&#128269;</b></button>
 		</form>
 	</header>
 	<main class="embed-box">
