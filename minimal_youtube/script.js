@@ -126,17 +126,7 @@ self.onYouTubeIframeAPIReady = () => {
 
 			// cancel the currently playing video. when playing a playlist: in certain situations, YT will autoplay the newly queued video
 			// stopVideo() causes the player to lose some of the current setting. those are reapplied in onStateChange
-			// if (!isEmpty(player.getPlaylist())) {
-			// 	switch (player.getPlayerState()) {
-			// 		case YT.PlayerState.BUFFERING:
-			// 		case YT.PlayerState.PLAYING:
-			// 		case YT.PlayerState.UNSTARTED:
 			player.stopVideo();
-			// 	default:
-			// 		break;
-			// }
-			//}
-
 			setTimeout(() => {
 				const resolution = preferResolution.value;
 				const type = queryType.value;
