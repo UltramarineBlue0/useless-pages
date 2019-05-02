@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<!--This csp applies to the iframe below, since browsers treat iframes with the srcdoc attribute to be from the same origin as the
+		containing document (unless it has a sandbox attribute without allow-same-origin, then browsers would treat it as a document 
+		from a special, unique origin (heads up: firefox and chrome treats the edge case of a fully sandboxed iframe's srcdoc and the containing
+		document both having csp="default-src 'self'" differently))-->
+	<meta http-equiv="content-security-policy" content="object-src 'none'; form-action 'none'; base-uri 'none';">
+	<meta name="referrer" content="no-referrer">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>View HTML</title>
+
+	<link href="../common/style.css" rel="stylesheet">
+	<script type="module" src="script.js" defer></script>
+</head>
+
+<body>
+	<header>
+		<form id="htmlForm" target="_self" action="about:blank">
+			<textarea id="htmlText" class="codearea" rows="12" autocapitalize="none" autocomplete="on" spellcheck="false"
+				wrap="off"></textarea>
+			<label><input type="checkbox" id="allow-scripts" checked>allow-scripts</label>
+			<label><input type="checkbox" id="allow-same-origin" checked>allow-same-origin</label>
+			<button type="submit"><b>&dArr;</b></button>
+		</form>
+	</header>
+	<main class="embed-box">
+		<iframe id="contentIframe" referrerpolicy="no-referrer" sandbox="" style="border: 1Q ridge #FF5722;"
+			allow="encrypted-media 'none'; fullscreen 'none'; picture-in-picture 'none'; accelerometer 'none'; ambient-light-sensor 'none'; autoplay 'none'; camera 'none'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; payment 'none'; speaker 'none'; usb 'none'; vr 'none'; wake-lock 'none';"></iframe>
+	</main>
+</body>
+
+</html>

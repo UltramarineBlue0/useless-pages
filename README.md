@@ -8,6 +8,8 @@
 + [Test clicks per second in browser](clicks_per_second/test.html)
 + [Test clocks in JavaScript](timer_resolution/test.html)
 
+- [Paste and view HTML](embed/index.html)
+
 ---
 
 ###### [Link to the hosted website](https://ultramarineblue0.github.io/useless-pages/)
