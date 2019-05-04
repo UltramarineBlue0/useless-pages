@@ -1,19 +1,14 @@
 "use strict";
 
-const iframeSrcDocPrefix = `<!DOCTYPE html>
-<html lang="en">
-
-<head>
+const iframeSrcDocPrefix = `<!DOCTYPE html><html lang="en"><head>
 	<meta charset="utf-8">
-	<meta http-equiv="content-security-policy" content="object-src 'none'; form-action 'none';">
+	<meta http-equiv="content-security-policy" content="object-src 'none'; form-action 'none'; base-uri 'none';">
 	<meta name="referrer" content="no-referrer">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link href="${new URL("../common/style.css", location)}" rel="stylesheet">
-</head>
+</head><body>`;
 
-<body>`;
-
-const iframeSrcDocSuffix = `</body> </html>`;
+const iframeSrcDocSuffix = `</body></html>`;
 
 const iframe = document.getElementById("contentIframe");
 
@@ -55,11 +50,7 @@ toggleButton.addEventListener("click", () => {
 const updateIframe = () => {
 	// value is the currently active element
 	if (toggleButton.value === htmlTextStr) {
-		iframe.srcdoc = `${iframeSrcDocPrefix}
-
-${htmlText.value.trim()}
-
-${iframeSrcDocSuffix}`;
+		iframe.srcdoc = `${iframeSrcDocPrefix}${htmlText.value.trim()}${iframeSrcDocSuffix}`;
 	} else if (toggleButton.value === srcUrlStr) {
 		iframe.src = new URL(srcUrl.value.trim(), location);
 	} else {

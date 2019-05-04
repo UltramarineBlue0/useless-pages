@@ -1,6 +1,6 @@
 "use strict";
 (() => {
-	const iframeHtml = String.raw`
+	const iframeHtml = `
 <!DOCTYPE html>
 <html lang="en">
 
@@ -21,8 +21,7 @@
 	<main id="display"></main>
 </body>
 
-</html>
-	`;
+</html>`;
 
 	const iframe = document.getElementById("test-iframe");
 	const run = document.getElementById("run");

@@ -10,7 +10,6 @@
 	<title>Benchmark JavaScript</title>
 
 	<link href="../common/style.css" rel="stylesheet">
-	<link href="style.css" rel="stylesheet">
 	<script src="testController.js" defer></script>
 </head>
 
@@ -27,14 +26,14 @@
 		<code>"use strict";</code>
 		<textarea id="test0" class="codearea" rows="12" required autocapitalize="none" autocomplete="on" spellcheck="false" wrap="off">self.testTarget[0]++;</textarea>
 
-		<button id="run" type="button">Run</button>
+		<button id="run" type="button"><b>Run</b></button>
 	</header>
 	<main>
 		<b>Test result:</b>
 		<pre id="result"></pre>
 		<b>Test executor iframe:</b>
 		<section class="embed-box">
-			<iframe id="test-iframe" referrerpolicy="no-referrer" sandbox="allow-scripts" src="about:blank" srcdoc=""></iframe>
+			<iframe id="test-iframe" class="accenting-border" referrerpolicy="no-referrer" sandbox="allow-scripts"></iframe>
 		</section>
 	</main>
 </body>

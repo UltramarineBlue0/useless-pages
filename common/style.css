@@ -1,5 +1,4 @@
 @charset "UTF-8";
-
 /*
 This css is a takes elements from minimal css resets and minimal websites:
 css reset (it's mostly just "box-sizing: border-box")
@@ -11,7 +10,6 @@ https://bestmotherfucking.website/
 https://perfectmotherfuckingwebsite.com/
 https://evenbettermotherfucking.website/
 */
-
 :root {
 	box-sizing: border-box;
 	font: 500 16px/1.4 system-ui, sans-serif;
@@ -22,8 +20,8 @@ https://evenbettermotherfucking.website/
 }
 
 body {
-	background-color: #424242;
-	color: #ECEFF1;
+	background-color: #494949;
+	color: #FAFAFA;
 	margin: 1rem auto;
 	padding: 0px 0.5rem;
 	max-width: 1100px;
@@ -58,14 +56,6 @@ select, input {
 	font-size: 0.9rem;
 }
 
-.codearea {
-	resize: vertical;
-	overflow: auto;
-	white-space: pre;
-	width: 100%;
-	font: 15px monospace;
-}
-
 /*16:9 aspect ratio*/
 .embed-box {
 	position: relative;
@@ -96,4 +86,22 @@ th, td {
 
 ol, ul {
 	padding: 0 0 0 1.2rem;
+}
+
+/*utils*/
+.codearea {
+	resize: vertical;
+	overflow: auto;
+	white-space: pre;
+	width: 100%;
+	font: 15px monospace;
+}
+
+.full-width {
+	width: 100%;
+}
+
+/*https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity#The_!important_exception*/
+.accenting-border.accenting-border {
+	border: 1Q ridge #FF3D00;
 }
