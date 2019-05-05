@@ -1,6 +1,6 @@
 # Useless pages
 
-**_Here are a few strange pages of questionable use 🤔_**
+**_Here are a few strange pages of dubious utility 🤔_**
 
 - [YouTube in an iframe](minimal_youtube/index.html)
 - [Twitch in an iframe](minimal_twitch/index.html)
@@ -11,5 +11,3 @@
 - [Paste and view HTML](embed/index.html)
 
 ---
-
-###### [Link to the hosted website](https://ultramarineblue0.github.io/useless-pages/)
