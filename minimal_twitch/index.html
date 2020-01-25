@@ -25,15 +25,13 @@
 				<option value="video">VOD URL</option>
 			</select>
 			<label for="query">Query: </label>
-			<input id="query" type="search" size="24" minlength="1" maxlength="512" inputmode="search" autofocus
-				required>
+			<input id="query" type="search" size="24" minlength="1" maxlength="512" inputmode="search" autofocus required>
 			<button type="submit"><b>&#128269;</b></button>
 		</form>
 	</header>
 	<main class="embed-box">
-		<iframe id="ttv-iframe" referrerpolicy="no-referrer" allowfullscreen
-			allow="encrypted-media; fullscreen; picture-in-picture; accelerometer 'none'; ambient-light-sensor 'none'; autoplay 'none'; camera 'none'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; payment 'none'; speaker 'none'; usb 'none'; vr 'none'; wake-lock 'none';"
-			sandbox="allow-scripts allow-same-origin"></iframe>
+		<iframe id="ttv-iframe" referrerpolicy="no-referrer" allowfullscreen sandbox="allow-scripts allow-same-origin"
+			allow="encrypted-media 'src'; fullscreen 'src'; picture-in-picture 'src'; accelerometer 'none'; ambient-light-sensor 'none'; autoplay 'none'; battery 'none'; camera 'none'; display-capture 'none'; document-domain 'none'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; navigation-override 'none'; payment 'none'; publickey-credentials 'none'; usb 'none'; vibrate 'none'; wake-lock 'none'; xr-spatial-tracking 'none';"></iframe>
 	</main>
 </body>
 

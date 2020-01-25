@@ -12,7 +12,7 @@ if (fragmentId.length > 1) {
 	queryInput.blur();
 } else {
 	// default youtube video
-	ytIframe.src = `https://www.youtube.com/embed/feBF_IY-HI8?hl=en-US&gl=US&enablejsapi=1&cc_lang_pref=en&modestbranding=1`;
+	ytIframe.src = `https://www.youtube.com/embed/xbBr5b3-wSQ?hl=en-US&gl=US&enablejsapi=1&cc_lang_pref=en&modestbranding=1`;
 }
 
 window.addEventListener("hashchange", () => document.location.reload(false));
