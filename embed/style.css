@@ -1,0 +1,36 @@
+.full-page-embed-box {
+	position: fixed;
+	overflow: hidden;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	z-index: 99999;
+}
+
+.full-page-embed-box > iframe {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	border: 3.5Q ridge #FF3D00 !important;
+}
+
+.right-align {
+	float: right;
+}
+
+.float-bottom-right {
+	position: fixed;
+	overflow: hidden;
+	bottom: 0;
+	right: 0;
+	padding: 0;
+	margin: 0 1rem 1rem 0;
+	z-index: 199999;
+}

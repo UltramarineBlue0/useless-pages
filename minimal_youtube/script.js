@@ -7,7 +7,8 @@ const queryInput = document.getElementById("query");
 // load playlist if a hash is present
 const fragmentId = document.location.hash;
 if (fragmentId.length > 1) {
-	ytIframe.src = `https://www.youtube.com/embed?list=${encodeURIComponent(fragmentId.substring(1))}&listType=playlist&hl=en-US&gl=US&enablejsapi=1&cc_lang_pref=en&modestbranding=1`;
+	const playlistID = encodeURIComponent(fragmentId.trim().substring(1));
+	ytIframe.src = `https://www.youtube.com/embed?list=${playlistID}&listType=playlist&hl=en-US&gl=US&enablejsapi=1&cc_lang_pref=en&modestbranding=1`;
 	queryInput.blur();
 } else {
 	// default youtube video

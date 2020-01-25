@@ -3,38 +3,39 @@
 
 <head>
 	<meta charset="utf-8">
-	<!--This csp applies to the iframe below, since browsers treat iframes with the srcdoc attribute to be from the same origin as the
-		containing document (unless it has a sandbox attribute without allow-same-origin, then browsers would treat it as a document 
-		from a special, unique origin (heads up: firefox and chrome treats the edge case of a fully sandboxed iframe's srcdoc and the containing
-		document both having csp="default-src 'self'" differently))-->
-	<meta http-equiv="content-security-policy" content="object-src 'none'; form-action 'none'; base-uri 'none';">
+	<meta http-equiv="content-security-policy"
+		content="block-all-mixed-content; object-src 'none'; form-action 'none'; base-uri 'none'; default-src 'self'; frame-src http: https:;">
 	<meta name="referrer" content="no-referrer">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<title>View HTML</title>
+	<title>View webpages in an iframe</title>
 
 	<link href="../common/style.css" rel="stylesheet">
-	<script type="module" src="script.js" defer></script>
+	<link href="style.css" rel="stylesheet">
+	<script defer type="module" src="script.js"></script>
 </head>
 
 <body>
 	<header>
+		<h3>View webpages in an iframe</h3>
 		<form id="htmlForm" target="_self" action="about:blank">
-			<button id="toggle" type="button" value="htmlText">Switch to srcUrl</button>
-			<label><input type="checkbox" id="allow-scripts" checked>allow-scripts</label>
+			<label><input type="checkbox" id="allow-scripts">allow-scripts</label>
 			<label><input type="checkbox" id="allow-same-origin" checked>allow-same-origin</label>
 			<button type="submit"><b>&circlearrowright;</b></button>
 			<br>
-			<input id="srcUrl" class="full-width" type="search" minlength="1" maxlength="65535" inputmode="url" hidden>
-			<textarea id="htmlText" class="codearea" rows="12" autocapitalize="none" autocomplete="on" spellcheck="false"
-				wrap="off"></textarea>
+			<!--input with type url forces the user to type the entire url, including the scheme and everything-->
+			<input id="srcUrl" class="full-width" type="text" autofocus autocomplete="url" inputmode="url" minlength="0"
+				maxlength="8192">
 		</form>
 	</header>
-	<main class="embed-box">
-		<iframe id="contentIframe" class="accenting-border" referrerpolicy="no-referrer"
-			sandbox="allow-scripts allow-same-origin"
-			allow="encrypted-media 'none'; fullscreen 'none'; picture-in-picture 'none'; accelerometer 'none'; ambient-light-sensor 'none'; autoplay 'none'; camera 'none'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; payment 'none'; speaker 'none'; usb 'none'; vr 'none'; wake-lock 'none';"></iframe>
+	<main class="embed-box" id="iframeBox">
+		<!--The feature policy is made for desktop browsing experience-->
+		<iframe id="contentIframe" class="accenting-border" referrerpolicy="no-referrer" sandbox="allow-same-origin"
+			allow="accelerometer 'none'; ambient-light-sensor 'none'; autoplay 'none'; battery 'none'; camera 'none'; display-capture 'none'; document-domain 'none'; encrypted-media 'none'; fullscreen 'none'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; navigation-override 'none'; payment 'none'; picture-in-picture 'none'; publickey-credentials 'none'; usb 'none'; vibrate 'none'; wake-lock 'none'; xr-spatial-tracking 'none';"></iframe>
 	</main>
+	<footer>
+		<button type="button" id="fullPageToggle" class="right-align"><b>&#10530;</b></button>
+	</footer>
 </body>
 
 </html>
