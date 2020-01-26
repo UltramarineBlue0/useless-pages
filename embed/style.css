@@ -1,24 +1,20 @@
-.full-page-embed-box {
+/*https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity#How_is_specificity_calculated*/
+.full-page-iframe.full-page-iframe {
 	position: fixed;
 	overflow: hidden;
-	top: 0;
+	display: inline-grid;
 	bottom: 0;
-	left: 0;
 	right: 0;
-	width: 100%;
-	height: 100%;
+	width: 100vw;
+	height: 100vh;
 	padding: 0;
 	margin: 0;
-	z-index: 99999;
+	border: 3.5Q ridge #FF3D00;
+	z-index: 9999;
 }
 
-.full-page-embed-box > iframe {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	border: 3.5Q ridge #FF3D00 !important;
+.hide-overflow {
+	overflow: hidden;
 }
 
 .right-align {
@@ -27,10 +23,10 @@
 
 .float-bottom-right {
 	position: fixed;
-	overflow: hidden;
 	bottom: 0;
 	right: 0;
 	padding: 0;
 	margin: 0 1rem 1rem 0;
-	z-index: 199999;
+	z-index: 19999;
+	font: 700 ultra-expanded 1.25rem/1.25 system-ui, sans-serif;
 }

@@ -25,6 +25,7 @@ const updateIframe = () => {
 	iframe.sandbox.toggle(allowSameOriginStr, allowSameOrigin.checked);
 
 	iframe.src = parseUrl(srcUrl.value.trim());
+	iframe.contentWindow.focus();
 };
 
 document.getElementById("htmlForm").addEventListener("submit", event => {
@@ -49,16 +50,18 @@ loadUrlFromHash();
 
 // show embedded iframe on top the page, using the full viewport
 const fullPageToggle = document.getElementById("fullPageToggle");
-const iframeBox =  document.getElementById("iframeBox");
 
 const rightAlignClass = "right-align";
 const floatBottomRightClass = "float-bottom-right";
-const fullPageEmbedBoxClass = "full-page-embed-box";
-const normalEmbedBoxClass = "embed-box";
+const fullPageIframeClass = "full-page-iframe";
+const normalIframeClass = "accenting-border";
+const hideOverflowClass = "hide-overflow";
 
 fullPageToggle.addEventListener("click", e => {
-	iframeBox.classList.toggle(fullPageEmbedBoxClass);
-	iframeBox.classList.toggle(normalEmbedBoxClass);
+	iframe.classList.toggle(fullPageIframeClass);
+	iframe.classList.toggle(normalIframeClass);
 	fullPageToggle.classList.toggle(rightAlignClass);
 	fullPageToggle.classList.toggle(floatBottomRightClass);
+	// prevent the background from scrolling. the iframe needs to be treated as a modal popup
+	document.documentElement.classList.toggle(hideOverflowClass);
 });
