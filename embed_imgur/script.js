@@ -69,3 +69,40 @@ document.getElementById("form").addEventListener("submit", e => {
 		alertError(e);
 	}
 });
+
+// toggle fullscreen display of imgur. the iframe here cannot request fullscreen itself
+const fullScreenToggle = document.getElementById("fullScreenToggle");
+
+const rightAlignClass = "right-align";
+const floatBottomRightClass = "float-bottom-right";
+const fullPageIframeClass = "full-page-iframe";
+const normalIframeClass = "accenting-border";
+const hideOverflowClass = "hide-overflow";
+
+// See https://developer.mozilla.org/en-US/docs/Web/API/Element/onfullscreenchange
+fullScreenToggle.addEventListener("click", e => {
+	if (document.fullscreenElement) {
+		document.exitFullscreen();
+	} else {
+		iframe.requestFullscreen({
+			navigationUI: "hide"
+		}).catch(e => {
+			console.log(e);
+			alertError(e, "Failed to create fullscreen");
+		});
+	}
+});
+
+iframe.addEventListener("fullscreenchange", e => {
+	if (document.fullscreenElement === iframe) {
+		// just entered fullscreen
+		iframe.className = fullPageIframeClass;
+		fullScreenToggle.className = floatBottomRightClass;
+		document.documentElement.className = hideOverflowClass;
+	} else {
+		// exited fullscreen
+		iframe.className = normalIframeClass;
+		fullScreenToggle.className = rightAlignClass;
+		document.documentElement.className = null;
+	}
+});

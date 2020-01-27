@@ -3,10 +3,10 @@
 
 <head>
 	<meta charset="utf-8">
-	<!--This csp applies to the iframe below, since browsers treat iframes with the srcdoc attribute to be from the same origin as the
-		containing document (unless it has a sandbox attribute without allow-same-origin, then browsers would treat it as a document 
-		from a special, unique origin (heads up: firefox and chrome treats the edge case of a fully sandboxed iframe's srcdoc and the containing
-		document both having csp="default-src 'self'" differently))-->
+	<!--This csp applies to the iframe below, since browsers treat iframe's srcdoc as part of the same document as the containing
+		document. Weird things happen, if both pages contain csp restrictions.
+		(for example: firefox and chrome treats the edge case of a fully sandboxed iframe's srcdoc and the containing document both
+		having csp="default-src 'self'" differently)-->
 	<meta http-equiv="content-security-policy"
 		content="block-all-mixed-content; object-src 'none'; form-action 'none'; base-uri 'none'; default-src https://imgur.com https://*.imgur.com 'self';">
 	<meta name="referrer" content="no-referrer">
