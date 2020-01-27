@@ -1,15 +1,5 @@
 "use strict";
 
-const iframe = document.getElementById("contentIframe");
-
-const allowScriptsStr = "allow-scripts";
-const allowSameOriginStr = "allow-same-origin";
-const allowScripts = document.getElementById(allowScriptsStr);
-const allowSameOrigin = document.getElementById(allowSameOriginStr);
-
-const srcUrlStr = "srcUrl";
-const srcUrl = document.getElementById(srcUrlStr);
-
 const parseUrl = userInput => {
 	if (userInput.length === 0) {
 		return "about:blank";
@@ -19,6 +9,16 @@ const parseUrl = userInput => {
 	}
 	return userInput;
 };
+
+const iframe = document.getElementById("contentIframe");
+
+const allowScriptsStr = "allow-scripts";
+const allowSameOriginStr = "allow-same-origin";
+const allowScripts = document.getElementById(allowScriptsStr);
+const allowSameOrigin = document.getElementById(allowSameOriginStr);
+
+const srcUrlStr = "srcUrl";
+const srcUrl = document.getElementById(srcUrlStr);
 
 const updateIframe = () => {
 	iframe.sandbox.toggle(allowScriptsStr, allowScripts.checked);
@@ -63,5 +63,5 @@ fullPageToggle.addEventListener("click", e => {
 	fullPageToggle.classList.toggle(rightAlignClass);
 	fullPageToggle.classList.toggle(floatBottomRightClass);
 	// prevent the background from scrolling. the iframe needs to be treated as a modal popup
-	document.documentElement.classList.toggle(hideOverflowClass);
+	document.body.classList.toggle(hideOverflowClass);
 });

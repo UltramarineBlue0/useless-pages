@@ -70,7 +70,7 @@ document.getElementById("form").addEventListener("submit", e => {
 	}
 });
 
-// toggle fullscreen display of imgur. the iframe here cannot request fullscreen itself
+// show the entire page fullscreen. if only the iframe is fullscreen, the return button won't be visible
 const fullScreenToggle = document.getElementById("fullScreenToggle");
 
 const rightAlignClass = "right-align";
@@ -84,8 +84,8 @@ fullScreenToggle.addEventListener("click", e => {
 	if (document.fullscreenElement) {
 		document.exitFullscreen();
 	} else {
-		iframe.requestFullscreen({
-			navigationUI: "hide"
+		document.body.requestFullscreen({
+			navigationUI: "hide",
 		}).catch(e => {
 			console.log(e);
 			alertError(e, "Failed to create fullscreen");
@@ -93,11 +93,11 @@ fullScreenToggle.addEventListener("click", e => {
 	}
 });
 
-iframe.addEventListener("fullscreenchange", e => {
-	if (document.fullscreenElement === iframe) {
+document.addEventListener("fullscreenchange", e => {
+	if (document.fullscreenElement === document.body) {
 		iframe.className = fullPageIframeClass;
 		fullScreenToggle.className = floatBottomRightClass;
-		document.documentElement.classList.add(hideOverflowClass);
+		document.body.classList.add(hideOverflowClass);
 		// just entered fullscreen, reload to fix layout
 		const iframeSrc = iframe.srcdoc;
 		iframe.srcdoc = "";
@@ -106,7 +106,7 @@ iframe.addEventListener("fullscreenchange", e => {
 		// exited fullscreen
 		iframe.className = normalIframeClass;
 		fullScreenToggle.className = rightAlignClass;
-		document.documentElement.classList.remove(hideOverflowClass);
+		document.body.classList.remove(hideOverflowClass);
 
 		const iframeSrc = iframe.srcdoc;
 		iframe.srcdoc = "";
