@@ -95,14 +95,21 @@ fullScreenToggle.addEventListener("click", e => {
 
 iframe.addEventListener("fullscreenchange", e => {
 	if (document.fullscreenElement === iframe) {
-		// just entered fullscreen
 		iframe.className = fullPageIframeClass;
 		fullScreenToggle.className = floatBottomRightClass;
 		document.documentElement.classList.add(hideOverflowClass);
+		// just entered fullscreen, reload to fix layout
+		const iframeSrc = iframe.srcdoc;
+		iframe.srcdoc = "";
+		iframe.srcdoc = iframeSrc;
 	} else {
 		// exited fullscreen
 		iframe.className = normalIframeClass;
 		fullScreenToggle.className = rightAlignClass;
 		document.documentElement.classList.remove(hideOverflowClass);
+
+		const iframeSrc = iframe.srcdoc;
+		iframe.srcdoc = "";
+		iframe.srcdoc = iframeSrc;
 	}
 });
