@@ -6,8 +6,7 @@ const buildIframeHtml = imgurId => {
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<meta http-equiv="content-security-policy"
-		content="block-all-mixed-content; object-src 'none'; form-action 'none'; base-uri 'none'; default-src https://imgur.com https://*.imgur.com ${location.origin} 'self';">
+	<meta http-equiv="content-security-policy" content="block-all-mixed-content; object-src 'none'; form-action 'none'; base-uri 'none';">
 	<meta name="referrer" content="no-referrer">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 

@@ -1,16 +1,17 @@
+/*iframe is created by an external script. override styles*/
 iframe {
-	position: fixed;
-	overflow: hidden;
-	display: inline-block;
-	top: 0;
-	left: 0;
-	bottom: 0;
-	right: 0;
-	width: 100%;
-	height: 100%;
-	padding: 0;
-	margin: 0;
-	border: none;
+	position: fixed !important;
+	overflow: hidden !important;
+	display: inline-block !important;
+	top: 0 !important;
+	left: 0 !important;
+	bottom: 0 !important;
+	right: 0 !important;
+	width: 100% !important;
+	height: 100% !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	border: none !important;
 }
 
 :root {
