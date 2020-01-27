@@ -93,7 +93,7 @@ fullScreenToggle.addEventListener("click", e => {
 	}
 });
 
-document.addEventListener("fullscreenchange", e => {
+document.body.addEventListener("fullscreenchange", e => {
 	if (document.fullscreenElement === document.body) {
 		iframe.className = fullPageIframeClass;
 		fullScreenToggle.className = floatBottomRightClass;
