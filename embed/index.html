@@ -11,17 +11,17 @@
 	<title>View webpages in an iframe</title>
 
 	<link href="../common/style.css" rel="stylesheet">
-	<link href="style.css" rel="stylesheet">
+	<link href="../common/embed.css" rel="stylesheet">
 	<script defer type="module" src="script.js"></script>
 </head>
 
 <body>
 	<header>
 		<h3>View webpages in an iframe</h3>
-		<form id="htmlForm" target="_self" action="about:blank">
+		<form id="htmlForm" autocomplete="on" target="_self" action="about:blank">
 			<label><input type="checkbox" id="allow-scripts">allow-scripts</label>
 			<label><input type="checkbox" id="allow-same-origin" checked>allow-same-origin</label>
-			<button type="submit"><b>&circlearrowright;</b></button>
+			<button type="submit"><b>&#10227;</b></button>
 			<br>
 			<!--input with type url forces the user to type the entire url, including the scheme and everything-->
 			<input id="srcUrl" class="full-width" type="text" autofocus autocomplete="url" inputmode="url" minlength="0"

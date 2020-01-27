@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<!--This csp applies to the iframe below, since browsers treat iframes with the srcdoc attribute to be from the same origin as the
+		containing document (unless it has a sandbox attribute without allow-same-origin, then browsers would treat it as a document 
+		from a special, unique origin (heads up: firefox and chrome treats the edge case of a fully sandboxed iframe's srcdoc and the containing
+		document both having csp="default-src 'self'" differently))-->
+	<meta http-equiv="content-security-policy"
+		content="block-all-mixed-content; object-src 'none'; form-action 'none'; base-uri 'none'; default-src https://imgur.com https://*.imgur.com 'self';">
+	<meta name="referrer" content="no-referrer">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Imgur in an iframe</title>
+
+	<link href="../common/style.css" rel="stylesheet">
+	<link href="../common/embed.css" rel="stylesheet">
+	<script type="module" src="script.js" defer></script>
+</head>
+
+<body>
+	<header>
+		<h3>Imgur in an iframe</h3>
+		<form id="form" autocomplete="on" target="_self" action="about:blank">
+			<label for="urlType">Type: </label>
+			<select id="urlType" required>
+				<option value="album" selected>Album</option>
+				<option value="image">Image</option>
+			</select>
+			<label for="imgurUrl">Url: </label>
+			<input id="imgurUrl" type="url" size="24" autofocus autocomplete="url" inputmode="url" minlength="1"
+				maxlength="512" required>
+			<button type="submit"><b>&cudarrr;</b></button>
+		</form>
+	</header>
+	<main class="embed-box">
+		<iframe id="contentIframe" class="accenting-border" referrerpolicy="no-referrer" sandbox="allow-scripts"
+			allow="accelerometer 'none'; ambient-light-sensor 'none'; autoplay 'none'; battery 'none'; camera 'none'; display-capture 'none'; document-domain 'none'; encrypted-media 'none'; fullscreen 'none'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; navigation-override 'none'; payment 'none'; picture-in-picture 'none'; publickey-credentials 'none'; usb 'none'; vibrate 'none'; wake-lock 'none'; xr-spatial-tracking 'none';"></iframe>
+	</main>
+	<footer>
+		<button type="button" id="fullScreenToggle" class="right-align"><b>&#10530;</b></button>
+	</footer>
+</body>
+
+</html>
