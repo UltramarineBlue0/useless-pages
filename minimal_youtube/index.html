@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="content-security-policy"
-		content="block-all-mixed-content; object-src 'none'; form-action 'none'; base-uri 'none'; default-src 'self'; frame-src 'self' https://*.youtube.com; script-src 'self' https://*.youtube.com https://*.ytimg.com;">
+		content="block-all-mixed-content; object-src 'none'; form-action 'none'; base-uri 'none'; default-src 'self'; frame-src 'self' https://*.youtube-nocookie.com; script-src 'self' https://*.youtube.com https://*.ytimg.com;">
 	<!-- youtube needs a referrer for some videos that contains music, otherwise the player throws error code 150 -->
 	<meta name="referrer" content="strict-origin">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -22,13 +22,14 @@
 		<form id="form" autocomplete="on" target="_self" action="about:blank">
 			<label for="type">Query&nbsp;type: </label>
 			<select id="type" required>
-				<option value="url">Video URL</option>
+				<option value="url" selected>Video URL</option>
 				<option value="playlist">Playlist URL</option>
-				<option value="search" selected>Search query</option>
 				<option value="user_uploads">Channel name</option>
 			</select>
+
 			<label for="query">Query: </label>
 			<input id="query" type="search" size="24" minlength="1" maxlength="512" inputmode="search" autofocus required>
+
 			<button type="submit"><b>&#128269;</b></button>
 		</form>
 	</header>
@@ -40,31 +41,14 @@
 	</main>
 	<footer>
 		<form target="_self" action="about:blank">
-			<label for="resolution">Prefer&nbsp;quality: </label>
-			<select id="resolution">
-				<option value="tiny">144p</option>
-				<option value="small">240p</option>
-				<option value="medium">360p</option>
-				<option value="large">480p</option>
-				<option value="hd720" selected>720p</option>
-				<option value="hd1080">1080p</option>
-				<option value="hd1440">1440p</option>
-				<option value="hd2160">2160p</option>
-			</select>
 			<label for="speed">Speed: </label>
-			<select id="speed">
-				<option value="0.25">0.25x</option>
-				<option value="0.5">0.5x</option>
-				<option value="0.75">0.75x</option>
-				<option value="1" selected>1x</option>
-				<option value="1.25">1.25x</option>
-				<option value="1.5">1.5x</option>
-				<option value="1.75">1.75x</option>
-				<option value="2">2x</option>
-			</select>
+			<input type="range" id="speed" min="0.25" max="2" step="0.05" value="1.5">
+			<output for="speed" id="speedValueDisp"></output><i>&nbsp;x</i>
+
 			<label for="volumeSlider">Volume: </label>
 			<input type="range" id="volumeSlider" min="0" max="100" step="5" value="35">
 			<output for="volumeSlider" id="volumeValueDisp"></output>
+
 			<button type="button" id="shufflePlaylist">Shuffle playlist</button>
 		</form>
 		<p>Channel: <b id="channel"></b><br>
