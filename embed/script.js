@@ -12,17 +12,20 @@ const parseUrl = userInput => {
 
 const iframe = document.getElementById("contentIframe");
 
-const allowScriptsStr = "allow-scripts";
+const allowFormsStr = "allow-forms";
+const allowForms = document.getElementById(allowFormsStr);
 const allowSameOriginStr = "allow-same-origin";
-const allowScripts = document.getElementById(allowScriptsStr);
 const allowSameOrigin = document.getElementById(allowSameOriginStr);
+const allowScriptsStr = "allow-scripts";
+const allowScripts = document.getElementById(allowScriptsStr);
 
 const srcUrlStr = "srcUrl";
 const srcUrl = document.getElementById(srcUrlStr);
 
 const updateIframe = () => {
-	iframe.sandbox.toggle(allowScriptsStr, allowScripts.checked);
+	iframe.sandbox.toggle(allowFormsStr, allowForms.checked);
 	iframe.sandbox.toggle(allowSameOriginStr, allowSameOrigin.checked);
+	iframe.sandbox.toggle(allowScriptsStr, allowScripts.checked);
 
 	iframe.src = parseUrl(srcUrl.value.trim());
 	iframe.contentWindow.focus();

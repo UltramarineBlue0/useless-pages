@@ -19,7 +19,7 @@
 <body>
 	<header>
 		<h3>YouTube in an iframe</h3>
-		<form id="form" autocomplete="on" target="_self" action="about:blank">
+		<form id="form" autocomplete="on" action="about:blank">
 			<label for="type">Query&nbsp;type: </label>
 			<select id="type" required>
 				<option value="url" selected>Video URL</option>
@@ -40,7 +40,7 @@
 			allow="encrypted-media 'src'; fullscreen 'src'; picture-in-picture 'src'; accelerometer 'none'; ambient-light-sensor 'none'; autoplay 'none'; battery 'none'; camera 'none'; display-capture 'none'; document-domain 'none'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; navigation-override 'none'; payment 'none'; publickey-credentials 'none'; usb 'none'; vibrate 'none'; wake-lock 'none'; xr-spatial-tracking 'none';"></iframe>
 	</main>
 	<footer>
-		<form target="_self" action="about:blank">
+		<form autocomplete="on" action="about:blank">
 			<label for="speed">Speed: </label>
 			<input type="range" id="speed" min="0.25" max="2" step="0.05" value="1.5">
 			<output for="speed" id="speedValueDisp"></output><i>x </i>
