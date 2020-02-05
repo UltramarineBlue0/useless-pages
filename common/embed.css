@@ -1,16 +1,18 @@
+@import url("./style.css");
+
 /*https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity#How_is_specificity_calculated*/
 .full-page-iframe.full-page-iframe {
 	position: fixed;
 	overflow: hidden;
-	display: inline-grid;
+	display: inline-block;
 	bottom: 0;
 	right: 0;
 	width: 100vw;
 	height: 100vh;
 	padding: 0;
 	margin: 0;
-	border: 3Q ridge #FF3D00;
-	z-index: 9999;
+	border: 2.5Q ridge #FF3D00;
+	z-index: 9;
 }
 
 .hide-overflow {
@@ -27,6 +29,21 @@
 	right: 0;
 	padding: 0;
 	margin: 0 1rem 1rem 0;
-	z-index: 19999;
-	font: 700 ultra-expanded 1.25rem/1.25 system-ui, sans-serif;
+	z-index: 19;
+	font: 700 expanded 1.3rem/1.3 system-ui, sans-serif;
+}
+
+.bottom-navbar {
+	position: fixed;
+	overflow: hidden;
+	display: inline-block;
+	background-color: #494949;
+	bottom: 0;
+	right: 0;
+	width: 100vw;
+	height: auto;
+	padding: 1rem 0.5rem;
+	margin: 0;
+	border: 2.5Q ridge #FAFAFA;
+	z-index: 29;
 }

@@ -1,7 +1,9 @@
 "use strict";
 
+import { alertError, isEmpty } from "../common/utils.js";
+
 const parseUrl = userInput => {
-	if (userInput.length === 0) {
+	if (isEmpty(userInput)) {
 		return "about:blank";
 	} else if (!userInput.includes("://")) {
 		// No scheme in the user input. Default to https
@@ -18,6 +20,7 @@ const allowSameOriginStr = "allow-same-origin";
 const allowSameOrigin = document.getElementById(allowSameOriginStr);
 const allowScriptsStr = "allow-scripts";
 const allowScripts = document.getElementById(allowScriptsStr);
+const enableFullscreen = document.getElementById("enable-fullscreen");
 
 const srcUrlStr = "srcUrl";
 const srcUrl = document.getElementById(srcUrlStr);
@@ -26,16 +29,24 @@ const updateIframe = () => {
 	iframe.sandbox.toggle(allowFormsStr, allowForms.checked);
 	iframe.sandbox.toggle(allowSameOriginStr, allowSameOrigin.checked);
 	iframe.sandbox.toggle(allowScriptsStr, allowScripts.checked);
+	iframe.allowFullscreen = enableFullscreen.checked;
 
-	iframe.src = parseUrl(srcUrl.value.trim());
 	iframe.contentWindow.focus();
+	iframe.src = parseUrl(srcUrl.value.trim());
 };
 
-document.getElementById("htmlForm").addEventListener("submit", event => {
+const formElement = document.getElementById("htmlForm");
+formElement.addEventListener("submit", event => {
 	event.preventDefault();
 	event.stopImmediatePropagation();
 
 	updateIframe();
+});
+
+// Empty iframe content upon form reset
+formElement.addEventListener("reset", () => {
+	srcUrl.focus();
+	iframe.src = "about:blank";
 });
 
 // Load the url from the hash, if present
@@ -51,20 +62,33 @@ const loadUrlFromHash = () => {
 window.addEventListener("hashchange", loadUrlFromHash);
 loadUrlFromHash();
 
-// show embedded iframe on top the page, using the full viewport
-const fullPageToggle = document.getElementById("fullPageToggle");
+// show body element fullscreen. if only the iframe is fullscreen, the nav elements won't be shown
+const fullscreenToggle = document.getElementById("fullscreenToggle");
+fullscreenToggle.addEventListener("click", () => {
+	if (document.fullscreenElement) {
+		document.exitFullscreen();
+		fullscreenToggle.textContent = "Fullscreen";
+	} else {
+		fullscreenToggle.textContent = "Exit fullscreen";
 
-const rightAlignClass = "right-align";
-const floatBottomRightClass = "float-bottom-right";
-const fullPageIframeClass = "full-page-iframe";
-const normalIframeClass = "accenting-border";
-const hideOverflowClass = "hide-overflow";
-
-fullPageToggle.addEventListener("click", e => {
-	iframe.classList.toggle(fullPageIframeClass);
-	iframe.classList.toggle(normalIframeClass);
-	fullPageToggle.classList.toggle(rightAlignClass);
-	fullPageToggle.classList.toggle(floatBottomRightClass);
-	// prevent the background from scrolling. the iframe needs to be treated as a modal popup
-	document.body.classList.toggle(hideOverflowClass);
+		document.body.requestFullscreen({
+			navigationUI: "hide",
+		}).catch(e => {
+			fullscreenToggle.textContent = "Fullscreen";
+			console.log(e);
+			alertError(e, "Failed to create fullscreen");
+		});
+	}
 });
+
+const navbar = document.getElementById("navbar");
+document.getElementById("showNavbar").addEventListener("click", () => {
+	navbar.hidden = false;
+});
+document.getElementById("hideNavbar").addEventListener("click", () => {
+	navbar.hidden = true;
+});
+
+// Unfortunately, due to cross-origin policy, this script can't access the location of the iframe
+// This means that the current url is unknown and the iframe can't be reloaded properly: the src
+// attribute isn't always the current location
