@@ -15,28 +15,29 @@
 </head>
 
 <body class="hide-overflow">
-	<main>
-		<!--The feature policy is made for desktop browsing. Fullscreen permission missing here because it's toggled using js-->
-		<iframe id="contentIframe" class="full-page-iframe" referrerpolicy="no-referrer" sandbox="allow-same-origin"
-			allow="accelerometer 'none'; ambient-light-sensor 'none'; autoplay 'none'; battery 'none'; camera 'none'; display-capture 'none'; document-domain 'none'; encrypted-media 'none'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; navigation-override 'none'; payment 'none'; picture-in-picture 'none'; publickey-credentials 'none'; usb 'none'; vibrate 'none'; wake-lock 'none'; xr-spatial-tracking 'none';"></iframe>
-	</main>
-	<button type="button" id="showNavbar" class="float-bottom-right"><b>&#11164;</b></button>
-	<footer class="bottom-navbar" id="navbar">
-		<form id="htmlForm" autocomplete="on" action="about:blank">
-			<label><input type="checkbox" id="allow-forms">allow-forms</label>
-			<label><input type="checkbox" id="allow-same-origin" checked>allow-same-origin</label>
-			<label><input type="checkbox" id="allow-scripts">allow-scripts</label>
-			<label><input type="checkbox" id="enable-fullscreen">enable-fullscreen</label>
-			<button type="submit">Set src</button>
-			<button type="reset">Reset iframe</button>
-			<br>
-			<!--input with type url forces the user to type the entire url, including the scheme and everything-->
-			<input id="srcUrl" class="full-width" type="text" autofocus autocomplete="url" inputmode="url" minlength="0"
-				maxlength="8192">
-		</form>
+	<!--The feature policy is made for desktop browsing. Fullscreen permission missing here because it's toggled using js-->
+	<iframe id="contentIframe" class="full-page-iframe" referrerpolicy="no-referrer" sandbox="allow-same-origin"
+		allow="accelerometer 'none'; ambient-light-sensor 'none'; autoplay 'none'; battery 'none'; camera 'none'; display-capture 'none'; document-domain 'none'; encrypted-media 'none'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; navigation-override 'none'; payment 'none'; picture-in-picture 'none'; publickey-credentials 'none'; usb 'none'; vibrate 'none'; wake-lock 'none'; xr-spatial-tracking 'none';"></iframe>
+
+	<button type="button" id="showNavbar" class="float-bottom-right"><b>&vltri;</b></button>
+
+	<form id="navbarForm" class="bottom-navbar" autocomplete="on" action="about:blank">
+		<label><input type="checkbox" id="allow-forms">allow-forms</label>
+		<label><input type="checkbox" id="allow-same-origin" checked>allow-same-origin</label>
+		<label><input type="checkbox" id="allow-scripts">allow-scripts</label>
+		<label><input type="checkbox" id="enable-fullscreen">enable-fullscreen</label>
+		<button type="submit">Set src</button>
+		<button type="reset">Reset iframe</button>
+		<br>
+		<!--input with type url forces the user to type the entire url, including the scheme and everything-->
+		<input id="srcUrl" class="full-width" type="text" autofocus autocomplete="url" inputmode="url" minlength="0"
+			maxlength="8192">
+		<br>
+		<button type="button" id="historyBack">Back</button>
+		<button type="button" id="historyForward">Forward</button>
 		<button type="button" id="fullscreenToggle">Fullscreen</button>
-		<button type="button" id="hideNavbar" class="right-align"><b>&#10148;</b></button>
-	</footer>
+		<button type="button" id="hideNavbar" class="right-align"><b>&vrtri;</b></button>
+	</form>
 </body>
 
 </html>

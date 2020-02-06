@@ -1,6 +1,6 @@
 "use strict";
 
-import { alertError, isEmpty } from "../common/utils.js";
+import { isEmpty } from "../common/utils.js";
 
 const parseUrl = userInput => {
 	if (isEmpty(userInput)) {
@@ -35,24 +35,24 @@ const updateIframe = () => {
 	iframe.src = parseUrl(srcUrl.value.trim());
 };
 
-const formElement = document.getElementById("htmlForm");
-formElement.addEventListener("submit", event => {
+const navbarForm = document.getElementById("navbarForm");
+navbarForm.addEventListener("submit", event => {
 	event.preventDefault();
 	event.stopImmediatePropagation();
 
 	updateIframe();
 });
 
-// Empty iframe content upon form reset
-formElement.addEventListener("reset", () => {
+// Empty iframe content upon form reset. Event fired before form is reset
+navbarForm.addEventListener("reset", () => {
 	srcUrl.focus();
 	iframe.src = "about:blank";
 });
 
 // Load the url from the hash, if present
 const loadUrlFromHash = () => {
-	const fragmentId = document.location.hash;
-	if (fragmentId.length > 1) {
+	const fragmentId = location.hash;
+	if (!isEmpty(fragmentId)) {
 		srcUrl.value = fragmentId.trim().substring(1);
 
 		updateIframe();
@@ -65,28 +65,36 @@ loadUrlFromHash();
 // show body element fullscreen. if only the iframe is fullscreen, the nav elements won't be shown
 const fullscreenToggle = document.getElementById("fullscreenToggle");
 fullscreenToggle.addEventListener("click", () => {
-	if (document.fullscreenElement) {
+	if (document.body.isSameNode(document.fullscreenElement)) {
 		document.exitFullscreen();
-		fullscreenToggle.textContent = "Fullscreen";
-	} else {
-		fullscreenToggle.textContent = "Exit fullscreen";
-
+	} else if (isEmpty(document.fullscreenElement)) {
 		document.body.requestFullscreen({
 			navigationUI: "hide",
-		}).catch(e => {
-			fullscreenToggle.textContent = "Fullscreen";
-			console.log(e);
-			alertError(e, "Failed to create fullscreen");
 		});
 	}
 });
 
-const navbar = document.getElementById("navbar");
+// Fired after body is fullscreen: https://developer.mozilla.org/en-US/docs/Web/API/Element/onfullscreenchange#Example
+document.body.addEventListener("fullscreenchange", e => {
+	if (e.currentTarget.isSameNode(document.fullscreenElement)) {
+		fullscreenToggle.textContent = "Exit fullscreen";
+	} else if (isEmpty(document.fullscreenElement)) {
+		fullscreenToggle.textContent = "Fullscreen";
+	}
+});
+
 document.getElementById("showNavbar").addEventListener("click", () => {
-	navbar.hidden = false;
+	navbarForm.hidden = false;
 });
 document.getElementById("hideNavbar").addEventListener("click", () => {
-	navbar.hidden = true;
+	navbarForm.hidden = true;
+});
+
+document.getElementById("historyBack").addEventListener("click", () => {
+	history.back();
+});
+document.getElementById("historyForward").addEventListener("click", () => {
+	history.forward();
 });
 
 // Unfortunately, due to cross-origin policy, this script can't access the location of the iframe
