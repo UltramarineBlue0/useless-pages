@@ -25,8 +25,6 @@ const enableFullscreen = document.getElementById("enable-fullscreen");
 const srcUrlStr = "srcUrl";
 const srcUrl = document.getElementById(srcUrlStr);
 
-const navbarForm = document.getElementById("navbarForm");
-
 const loadingIndicator = "blue-border";
 
 const updateIframe = () => {
@@ -39,9 +37,9 @@ const updateIframe = () => {
 	iframe.src = parseUrl(srcUrl.value.trim());
 
 	iframe.classList.add(loadingIndicator);
-	navbarForm.classList.add(loadingIndicator);
 };
 
+const navbarForm = document.getElementById("navbarForm");
 navbarForm.addEventListener("submit", event => {
 	event.preventDefault();
 	event.stopImmediatePropagation();
@@ -82,26 +80,18 @@ fullscreenToggle.addEventListener("click", () => {
 
 // Fired after body is fullscreen: https://developer.mozilla.org/en-US/docs/Web/API/Element/onfullscreenchange#Example
 document.body.addEventListener("fullscreenchange", e => {
-	if (e.currentTarget.isSameNode(document.fullscreenElement)) {
+	if (e.target.isSameNode(document.fullscreenElement)) {
 		fullscreenToggle.textContent = "Exit fullscreen";
 	} else if (isEmpty(document.fullscreenElement)) {
 		fullscreenToggle.textContent = "Fullscreen";
 	}
 });
 
-document.getElementById("showNavbar").addEventListener("click", () => {
-	navbarForm.hidden = false;
-});
-document.getElementById("hideNavbar").addEventListener("click", () => {
-	navbarForm.hidden = true;
-});
+document.getElementById("showNavbar").addEventListener("click", () => navbarForm.hidden = false);
+document.getElementById("hideNavbar").addEventListener("click", () => navbarForm.hidden = true);
 
-document.getElementById("historyBack").addEventListener("click", () => {
-	history.back();
-});
-document.getElementById("historyForward").addEventListener("click", () => {
-	history.forward();
-});
+document.getElementById("historyBack").addEventListener("click", () => history.back());
+document.getElementById("historyForward").addEventListener("click", () => history.forward());
 
 // Unfortunately, due to cross-origin policy, this script can't access the location of the iframe
 // This means that the current url is unknown and the iframe can't be reloaded properly: the src
@@ -111,7 +101,4 @@ document.getElementById("historyForward").addEventListener("click", () => {
 // "error", "abort" or even "unload" is never fired. The load event also doesn't distinguish between
 // successful or failed loads (e.g. due to CSP). This means, the loading indicator is only useful for
 // the initial src url attribute change
-iframe.addEventListener("load", () => {
-	iframe.classList.remove(loadingIndicator);
-	navbarForm.classList.remove(loadingIndicator);
-});
+iframe.addEventListener("load", () => iframe.classList.remove(loadingIndicator));
