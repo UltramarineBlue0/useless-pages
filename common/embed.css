@@ -47,3 +47,7 @@
 	border: 2.5Q ridge #FAFAFA;
 	z-index: 29;
 }
+
+.blue-border.blue-border {
+	border-color: #3D5AFE;
+}

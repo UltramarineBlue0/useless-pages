@@ -25,6 +25,10 @@ const enableFullscreen = document.getElementById("enable-fullscreen");
 const srcUrlStr = "srcUrl";
 const srcUrl = document.getElementById(srcUrlStr);
 
+const navbarForm = document.getElementById("navbarForm");
+
+const loadingIndicator = "blue-border";
+
 const updateIframe = () => {
 	iframe.sandbox.toggle(allowFormsStr, allowForms.checked);
 	iframe.sandbox.toggle(allowSameOriginStr, allowSameOrigin.checked);
@@ -33,9 +37,11 @@ const updateIframe = () => {
 
 	iframe.contentWindow.focus();
 	iframe.src = parseUrl(srcUrl.value.trim());
+
+	iframe.classList.add(loadingIndicator);
+	navbarForm.classList.add(loadingIndicator);
 };
 
-const navbarForm = document.getElementById("navbarForm");
 navbarForm.addEventListener("submit", event => {
 	event.preventDefault();
 	event.stopImmediatePropagation();
@@ -100,3 +106,12 @@ document.getElementById("historyForward").addEventListener("click", () => {
 // Unfortunately, due to cross-origin policy, this script can't access the location of the iframe
 // This means that the current url is unknown and the iframe can't be reloaded properly: the src
 // attribute isn't always the current location
+
+// Also it seems that the "load" is the only event that fires when the iframe changes to another page.
+// "error", "abort" or even "unload" is never fired. The load event also doesn't distinguish between
+// successful or failed loads (e.g. due to CSP). This means, the loading indicator is only useful for
+// the initial src url attribute change
+iframe.addEventListener("load", () => {
+	iframe.classList.remove(loadingIndicator);
+	navbarForm.classList.remove(loadingIndicator);
+});
