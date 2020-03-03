@@ -104,7 +104,7 @@ export const convertSecToString = seconds => {
 
 	// 0 seconds length means that the video is currently still loading. don't display anything
 	if (remainingSecs > 0 || minutes > 0 || hours > 0) {
-		returnStr += Math.ceil(remainingSecs) + "s";
+		returnStr += Math.floor(remainingSecs) + "s";
 	}
 
 	return returnStr;
