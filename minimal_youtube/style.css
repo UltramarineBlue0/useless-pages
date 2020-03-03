@@ -1,0 +1,24 @@
+@import url("../common/style.css");
+
+.hide-player {
+	position: fixed;
+	z-index: 9;
+	top: 200vh;
+	left: 200vw;
+}
+
+/*
+YouTube automatically decides the video quality based on the visual size of the player.
+Bases on that criteria, the player will pick 360p as the lowest quality. The player 
+will only auto switch to lower qualities (240p and 144p) based on network condition.
+YouTube will detect "display: none;" as 0px player size. This could cause problems
+in the future
+*/
+.hide-player > iframe {
+	overflow: hidden;
+	width: 1in;
+	height: 1in;
+	border: none;
+	padding: 0;
+	margin: 0;
+}

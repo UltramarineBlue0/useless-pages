@@ -98,13 +98,35 @@ globalThis.onYouTubeIframeAPIReady = () => {
 			volumeValueDisp.textContent = selectedVolume;
 		});
 
-		document.getElementById("shufflePlaylist").addEventListener("click", () => player.setShuffle(true));
+		document.getElementById("playbackToggle").addEventListener("click", () => {
+			const currentState = player.getPlayerState();
+			if (currentState === YT.PlayerState.BUFFERING || currentState === YT.PlayerState.PLAYING) {
+				player.pauseVideo();
+			} else {
+				player.playVideo();
+			}
+		});
+
+		document.getElementById("rewind").addEventListener("click", () => {
+			const currentVideoTime = player.getCurrentTime();
+			player.seekTo(Math.max(0, currentVideoTime - 15), true);
+		});
+
+		document.getElementById("fastForward").addEventListener("click", () => {
+			const currentVideoTime = player.getCurrentTime();
+			player.seekTo(Math.min(Number.MAX_SAFE_INTEGER, currentVideoTime + 15), true);
+		});
 	};
 
 	const originalTitle = document.title;
 	const channel = document.getElementById("channel");
 	const videoTitle = document.getElementById("videoTitle");
 	const videoLength = document.getElementById("videoLength");
+	const videoLength2 = document.getElementById("videoLength2");
+	const videoTime = document.getElementById("videoTime");
+
+	let previousState = YT.PlayerState.UNSTARTED;
+	let videoTimeUpdater;
 
 	const onStateChange = event => {
 		const player = event.target;
@@ -118,18 +140,22 @@ globalThis.onYouTubeIframeAPIReady = () => {
 		// moreover, on firefox the player could be stuck on 1x speed, if the new speed is the same as the old setting and the player has reset the speed
 		// between videos. setting it to a different playback speed "unstucks" the player
 		// delay the configuration after the BUFFERING event, otherwise some settings might be ignored
-		const updatePlayerSetting = () => {
-			const selectedSpeed = playbackSpeed.valueAsNumber;
-			if (selectedSpeed <= 1) {
-				player.setPlaybackRate(2);
-			} else {
-				player.setPlaybackRate(0.25);
-			}
+		const resetPlayerAtVideoBegin = () => {
+			// only apply settings on the transition from one of the "dead" states (UNSTARTED, CUED, ENDED) to one of the "playing"
+			// states (PLAYING, BUFFERING)
+			if (previousState != YT.PlayerState.PAUSED && previousState != YT.PlayerState.PLAYING && previousState != YT.PlayerState.BUFFERING) {
+				const selectedSpeed = playbackSpeed.valueAsNumber;
+				if (selectedSpeed <= 1) {
+					player.setPlaybackRate(2);
+				} else {
+					player.setPlaybackRate(0.25);
+				}
 
-			setTimeout(() => {
-				player.setPlaybackRate(selectedSpeed);
-				player.setVolume(volumeSlider.valueAsNumber);
-			}, 9);
+				setTimeout(() => {
+					player.setPlaybackRate(selectedSpeed);
+					player.setVolume(volumeSlider.valueAsNumber);
+				}, 9);
+			}
 		};
 		// video started playing: change window title
 		const updateWindowTitle = () => document.title = `${videoName} ― ${channelName}`;
@@ -141,9 +167,7 @@ globalThis.onYouTubeIframeAPIReady = () => {
 		const stopAutoplay = () => {
 			const currentPlaylist = player.getPlaylist();
 			if (!isEmpty(currentPlaylist)) {
-				setTimeout(() => {
-					player.pauseVideo();
-				}, 9);
+				setTimeout(() => player.pauseVideo(), 9);
 			}
 		};
 		// display info about the currently loaded video
@@ -151,29 +175,51 @@ globalThis.onYouTubeIframeAPIReady = () => {
 		// start playing without going through the UNSTARTED state. also, the information is not available when a single video is queued:
 		// update on both playing and buffering
 		const updateVideoInfo = () => {
-			const durationInSec = player.getDuration();
+			const videoDuration = convertSecToString(player.getDuration());
 			channel.textContent = channelName;
 			videoTitle.textContent = videoName;
-			videoLength.textContent = convertSecToString(durationInSec);
+			videoLength.textContent = videoDuration;
+			videoLength2.textContent = videoDuration;
+		};
+
+		const startVideoTimeUpdater = () => {
+			if (isEmpty(videoTimeUpdater)) {
+				videoTimeUpdater = setInterval(() => {
+					videoTime.textContent = convertSecToString(player.getCurrentTime());
+				}, 200);
+			}
+		};
+
+		const stopVideoTimeUpdater = () => {
+			if (!isEmpty(videoTimeUpdater)) {
+				clearInterval(videoTimeUpdater);
+				videoTimeUpdater = undefined;
+				videoTime.textContent = "";
+			}
 		};
 
 		switch (state) {
 			case YT.PlayerState.BUFFERING:
-				updatePlayerSetting();
 			case YT.PlayerState.PLAYING:
+				resetPlayerAtVideoBegin();
+				startVideoTimeUpdater();
 				updateVideoInfo();
 				updateWindowTitle();
 				break;
 			case YT.PlayerState.UNSTARTED:
 			case YT.PlayerState.CUED:
 				updateVideoInfo();
+				stopVideoTimeUpdater();
 				break;
 			case YT.PlayerState.ENDED:
 				stopAutoplay();
+				stopVideoTimeUpdater();
 			case YT.PlayerState.PAUSED:
 				resetWindowTitle();
 				break;
 		}
+
+		previousState = state;
 	};
 
 	new YT.Player(ytIframeId, {
@@ -184,3 +230,19 @@ globalThis.onYouTubeIframeAPIReady = () => {
 		},
 	});
 };
+
+const iframeContainer = document.getElementById("iframe-box");
+const embedBoxClass = "embed-box";
+const hidePlayerClass = "hide-player";
+const toggleButton = document.getElementById("iframeToggle");
+const playbackControls = document.getElementById("playbackControls");
+toggleButton.addEventListener("click", () => {
+	iframeContainer.classList.toggle(embedBoxClass);
+	iframeContainer.classList.toggle(hidePlayerClass);
+	playbackControls.hidden = !playbackControls.hidden;
+	if (playbackControls.hidden) {
+		toggleButton.textContent = "Hide player";
+	} else {
+		toggleButton.textContent = "Show player";
+	}
+});

@@ -14,26 +14,32 @@ const queryType = document.getElementById("type");
 const queryInput = document.getElementById("query");
 
 // read hash as channel name
-const fragmentId = document.location.hash;
-if (fragmentId.length > 1) {
-	ttvIframe.src = `${twitchPlayer}channel=${encodeURIComponent(fragmentId.substring(1))}${playerParams}`;
-	queryInput.blur();
-} else {
-	// default channel
-	ttvIframe.src = `https://player.twitch.tv/?channel=twitchpresents&autoplay=false`;
-}
+const loadChannelFromHash = () => {
+	const fragmentId = document.location.hash;
+	if (fragmentId.length > 1) {
+		ttvIframe.src = `${twitchPlayer}channel=${encodeURIComponent(fragmentId.substring(1))}${playerParams}`;
+		queryInput.blur();
+	} else {
+		// default channel
+		ttvIframe.src = `https://player.twitch.tv/?channel=twitchpresents&autoplay=false`;
+	}
+};
 
-window.addEventListener("hashchange", () => document.location.reload(false));
+window.addEventListener("hashchange", loadChannelFromHash);
+loadChannelFromHash();
 
 import { isEmpty, alertError, assertNotEmpty } from "../common/utils.js";
 
 const getClipSlug = input => {
-	// get clip id: https://clips.twitch.tv/{AdjectiveAdjectiveNounEmote}
 	const url = new URL(input);
 	const hostname = url.hostname;
 	const pathArray = url.pathname.split("/");
+	// get clip id: https://clips.twitch.tv/{clip id}
 	if (hostname.endsWith(clipsHost)) {
 		return assertNotEmpty(pathArray[1]);
+	} else if (hostname.endsWith(twitchHost) && (pathArray[2] === "clip")) {
+		// alt url: https://www.twitch.tv/{channel name}/clip/{clip id}
+		return assertNotEmpty(pathArray[3]);
 	}
 	throw new Error(`Unknown format: ${input}`);
 };

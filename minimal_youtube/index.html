@@ -11,7 +11,7 @@
 
 	<title>YouTube in an iframe</title>
 
-	<link href="../common/style.css" rel="stylesheet">
+	<link href="style.css" rel="stylesheet">
 	<script defer src="script.js" type="module"></script>
 	<script defer src="https://www.youtube.com/iframe_api"></script>
 </head>
@@ -33,13 +33,19 @@
 			<button type="submit"><b>&#128269;</b></button>
 		</form>
 	</header>
-	<main class="embed-box">
+	<main id="iframe-box" class="embed-box">
 		<!-- I'm aware of the fact that youtube can just remove these restrictions, since I'm executing their script in the main window's scope.
 		The restrictions are just friendly suggestions, not hard rules. -->
 		<iframe id="yt-iframe" referrerpolicy="strict-origin" allowfullscreen sandbox="allow-scripts allow-same-origin"
 			allow="encrypted-media 'src'; fullscreen 'src'; picture-in-picture 'src'; accelerometer 'none'; ambient-light-sensor 'none'; autoplay 'none'; battery 'none'; camera 'none'; display-capture 'none'; document-domain 'none'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; navigation-override 'none'; payment 'none'; publickey-credentials 'none'; usb 'none'; vibrate 'none'; wake-lock 'none'; xr-spatial-tracking 'none';"></iframe>
 	</main>
 	<footer>
+		<p id="playbackControls" hidden>
+			<button type="button" id="playbackToggle"><b>&#9199;</b></button>
+			<b id="videoTime"></b> <b>/</b> <b id="videoLength2"></b>
+			<button type="button" id="rewind">Rewind 15s</button>
+			<button type="button" id="fastForward">Forward 15s</button>
+		</p>
 		<form autocomplete="on" action="about:blank">
 			<label for="speed">Speed: </label>
 			<input type="range" id="speed" min="1" max="2" step="0.05" value="1.5">
@@ -49,7 +55,7 @@
 			<input type="range" id="volumeSlider" min="0" max="100" step="5" value="35">
 			<output for="volumeSlider" id="volumeValueDisp"></output>
 
-			<button type="button" id="shufflePlaylist">Shuffle playlist</button>
+			<button type="button" id="iframeToggle">Hide player</button>
 		</form>
 		<p>Channel: <b id="channel"></b><br>
 			Title: <b id="videoTitle"></b><br>
