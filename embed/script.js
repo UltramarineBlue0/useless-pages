@@ -83,7 +83,7 @@ fullscreenToggle.addEventListener("click", () => {
 
 // Fired after body is fullscreen: https://developer.mozilla.org/en-US/docs/Web/API/Element/onfullscreenchange#Example
 document.body.addEventListener("fullscreenchange", e => {
-	if (e.target.isSameNode(document.fullscreenElement)) {
+	if (document.body.isSameNode(document.fullscreenElement)) {
 		fullscreenToggle.textContent = "Exit fullscreen";
 	} else if (isEmpty(document.fullscreenElement)) {
 		fullscreenToggle.textContent = "Fullscreen";

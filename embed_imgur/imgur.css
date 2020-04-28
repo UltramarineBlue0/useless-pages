@@ -7,13 +7,29 @@ iframe {
 	left: 0 !important;
 	bottom: 0 !important;
 	right: 0 !important;
-	width: 100% !important;
-	height: 100% !important;
+	width: 100vw !important;
+	height: 100vh !important;
 	padding: 0 !important;
 	margin: 0 !important;
 	border: none !important;
+	z-index: 9 !important;
+}
+
+:root {
+	box-sizing: border-box;
+	font: 500 16px/1.4 system-ui, sans-serif;
+}
+
+*, *::before, *::after {
+	box-sizing: inherit;
 }
 
 body {
+	background-color: #494949;
+	color: #FAFAFA;
 	overflow: hidden;
+	margin: 0;
+	padding: 0;
+	width: 100vw;
+	height: 100vh;
 }

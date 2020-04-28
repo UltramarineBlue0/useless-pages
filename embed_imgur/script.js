@@ -6,11 +6,11 @@ const buildIframeHtml = imgurId => {
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<meta http-equiv="content-security-policy" content="block-all-mixed-content; object-src 'none'; form-action 'none'; base-uri 'none';">
+	<meta http-equiv="content-security-policy"
+		content="block-all-mixed-content; object-src 'none'; form-action 'none'; base-uri 'none'; default-src https://imgur.com https://*.imgur.com ${location.origin} 'self';">
 	<meta name="referrer" content="no-referrer">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<link href="${new URL("../common/style.css", location)}" rel="stylesheet">
 	<link href="${new URL("./imgur.css", location)}" rel="stylesheet">
 </head>
 <body>
@@ -72,11 +72,12 @@ document.getElementById("form").addEventListener("submit", e => {
 
 // show the entire page fullscreen. if only the iframe is fullscreen, the return button won't be visible
 const fullScreenToggle = document.getElementById("fullScreenToggle");
+const embedBox = document.getElementById("embedBox");
 
 const rightAlignClass = "right-align";
 const floatBottomRightClass = "float-bottom-right";
-const fullPageIframeClass = "full-page-iframe";
-const normalIframeClass = "accenting-border";
+const fullPageEmbedBoxClass = "full-page-embed-box";
+const normalEmbedBoxClass = "embed-box accenting-border";
 const hideOverflowClass = "hide-overflow";
 
 // See https://developer.mozilla.org/en-US/docs/Web/API/Element/onfullscreenchange
@@ -86,25 +87,22 @@ fullScreenToggle.addEventListener("click", e => {
 	} else {
 		document.body.requestFullscreen({
 			navigationUI: "hide",
-		}).catch(e => {
-			console.log(e);
-			alertError(e, "Failed to create fullscreen");
 		});
 	}
 });
 
 document.body.addEventListener("fullscreenchange", e => {
-	if (document.fullscreenElement === document.body) {
-		iframe.className = fullPageIframeClass;
+	if (document.body.isSameNode(document.fullscreenElement)) {
+		embedBox.className = fullPageEmbedBoxClass;
 		fullScreenToggle.className = floatBottomRightClass;
 		document.body.classList.add(hideOverflowClass);
 		// just entered fullscreen, reload to fix layout
 		const iframeSrc = iframe.srcdoc;
 		iframe.srcdoc = "";
 		iframe.srcdoc = iframeSrc;
-	} else {
+	} else if (isEmpty(document.fullscreenElement)) {
 		// exited fullscreen
-		iframe.className = normalIframeClass;
+		embedBox.className = normalEmbedBoxClass;
 		fullScreenToggle.className = rightAlignClass;
 		document.body.classList.remove(hideOverflowClass);
 
