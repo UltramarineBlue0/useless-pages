@@ -145,11 +145,12 @@ globalThis.onYouTubeIframeAPIReady = () => {
 			// states (PLAYING, BUFFERING)
 			if (previousState != YT.PlayerState.PAUSED && previousState != YT.PlayerState.PLAYING && previousState != YT.PlayerState.BUFFERING) {
 				const selectedSpeed = playbackSpeed.valueAsNumber;
-				if (selectedSpeed <= 1) {
+				if (selectedSpeed < 1.25) {
 					player.setPlaybackRate(2);
 				} else {
-					player.setPlaybackRate(0.25);
+					player.setPlaybackRate(1);
 				}
+				player.setVolume(0);
 
 				setTimeout(() => {
 					player.setPlaybackRate(selectedSpeed);
@@ -210,6 +211,7 @@ globalThis.onYouTubeIframeAPIReady = () => {
 			case YT.PlayerState.CUED:
 				updateVideoInfo();
 				stopVideoTimeUpdater();
+				resetWindowTitle();
 				break;
 			case YT.PlayerState.ENDED:
 				stopAutoplay();
