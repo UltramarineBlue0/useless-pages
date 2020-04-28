@@ -1,7 +1,6 @@
 @import url("./style.css");
 
-/*https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity#How_is_specificity_calculated*/
-.full-page-iframe.full-page-iframe {
+.full-page-embed-box {
 	position: fixed;
 	overflow: hidden;
 	display: inline-block;
@@ -11,8 +10,20 @@
 	height: 100vh;
 	padding: 0;
 	margin: 0;
-	border: 2.5Q ridge #FF3D00;
+	border: 2Q ridge #FF3D00;
 	z-index: 9;
+}
+
+.full-page-embed-box > iframe {
+	position: absolute;
+	overflow: hidden;
+	bottom: 0;
+	right: 0;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	border: none;
 }
 
 .hide-overflow {
@@ -44,10 +55,11 @@
 	height: auto;
 	padding: 1rem 0.5rem;
 	margin: 0;
-	border: 2.5Q ridge #FAFAFA;
+	border: 2Q ridge #FAFAFA;
 	z-index: 29;
 }
 
+/*https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity#How_is_specificity_calculated*/
 .blue-border.blue-border {
-	border-color: #3D5AFE;
+	border: 2Q ridge #3D5AFE;
 }

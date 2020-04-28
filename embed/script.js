@@ -13,6 +13,7 @@ const parseUrl = userInput => {
 };
 
 const iframe = document.getElementById("contentIframe");
+const embedBox = document.getElementById("embedBox");
 
 const allowFormsStr = "allow-forms";
 const allowForms = document.getElementById(allowFormsStr);
@@ -24,6 +25,8 @@ const enableFullscreen = document.getElementById("enable-fullscreen");
 
 const srcUrlStr = "srcUrl";
 const srcUrl = document.getElementById(srcUrlStr);
+// Mimic browser's url bar behaviour: select all upon gaining focus
+srcUrl.addEventListener("focusin", () => srcUrl.select());
 
 const loadingIndicator = "blue-border";
 
@@ -36,7 +39,7 @@ const updateIframe = () => {
 	iframe.contentWindow.focus();
 	iframe.src = parseUrl(srcUrl.value.trim());
 
-	iframe.classList.add(loadingIndicator);
+	embedBox.classList.add(loadingIndicator);
 };
 
 const navbarForm = document.getElementById("navbarForm");
@@ -88,7 +91,11 @@ document.body.addEventListener("fullscreenchange", e => {
 });
 
 document.getElementById("showNavbar").addEventListener("click", () => navbarForm.hidden = false);
-document.getElementById("hideNavbar").addEventListener("click", () => navbarForm.hidden = true);
+document.getElementById("hideNavbar").addEventListener("click", () => {
+	navbarForm.hidden = true;
+	// Return focus to the iframe after hiding the navbar
+	iframe.contentWindow.focus();
+});
 
 document.getElementById("historyBack").addEventListener("click", () => history.back());
 document.getElementById("historyForward").addEventListener("click", () => history.forward());
@@ -101,4 +108,4 @@ document.getElementById("historyForward").addEventListener("click", () => histor
 // "error", "abort" or even "unload" is never fired. The load event also doesn't distinguish between
 // successful or failed loads (e.g. due to CSP). This means, the loading indicator is only useful for
 // the initial src url attribute change
-iframe.addEventListener("load", () => iframe.classList.remove(loadingIndicator));
+iframe.addEventListener("load", () => embedBox.classList.remove(loadingIndicator));
