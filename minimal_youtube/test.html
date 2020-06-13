@@ -9,7 +9,17 @@
 
 <body>
 	<main class="embed-box">
-		<iframe src="https://www.youtube.com/embed/dOxlEwX9lbA?list=YouTubeHelp&listType=user_uploads" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+		<div id="ytDivID"></div>
+
+		<script>
+			globalThis.onYouTubeIframeAPIReady = () => {
+				globalThis.player = new YT.Player("ytDivID", {
+					videoId: "xbBr5b3-wSQ",
+				});
+			}; 
+		</script>
+
+		<script src="https://www.youtube.com/iframe_api"></script>
 	</main>
 </body>
 

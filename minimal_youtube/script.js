@@ -9,10 +9,10 @@ const fragmentId = location.hash;
 if (fragmentId.length > 1) {
 	ytIframe.contentWindow.focus();
 	const playlistID = encodeURIComponent(fragmentId.trim().substring(1));
-	ytIframe.src = `https://www.youtube-nocookie.com/embed?list=${playlistID}&listType=playlist&hl=en-US&gl=US&enablejsapi=1&modestbranding=1`;
+	ytIframe.src = `https://www.youtube-nocookie.com/embed?list=${playlistID}&listType=playlist&hl=en-US&gl=US&enablejsapi=1&modestbranding=1&origin=${encodeURIComponent(location.origin)}&widget_referrer=${encodeURIComponent("https://github.com")}`;
 } else {
 	// default youtube video
-	ytIframe.src = `https://www.youtube-nocookie.com/embed/xbBr5b3-wSQ?hl=en-US&gl=US&enablejsapi=1&modestbranding=1`;
+	ytIframe.src = `https://www.youtube-nocookie.com/embed/xbBr5b3-wSQ?hl=en-US&gl=US&enablejsapi=1&modestbranding=1&origin=${encodeURIComponent(location.origin)}&widget_referrer=${encodeURIComponent("https://github.com")}`;
 }
 
 window.addEventListener("hashchange", () => location.reload());

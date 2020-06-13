@@ -11,13 +11,12 @@
 	<main class="embed-box">
 		<script src="https://player.twitch.tv/js/embed/v1.js"></script>
 
-		<div id="SamplePlayerDivID"></div>
+		<div id="ttvDivID"></div>
 
 		<script>
-			const options = {
+			globalThis.player = new Twitch.Player("ttvDivID", {
 				channel: "twitchpresents",
-			};
-			const player = new Twitch.Player("SamplePlayerDivID", options);
+			});
 		</script>
 	</main>
 </body>

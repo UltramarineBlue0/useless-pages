@@ -4,7 +4,7 @@ const clipsHost = "clips.twitch.tv";
 const twitchHost = "twitch.tv";
 
 const twitchPlayer = `https://player.${twitchHost}/?`;
-const playerParams = "&autoplay=false";
+const playerParams = `&autoplay=false&parent=${encodeURIComponent(location.hostname)}`;
 const clipsPlayer = `https://${clipsHost}/embed?`;
 
 const ttvIframe = document.getElementById("ttv-iframe");
@@ -21,7 +21,7 @@ const loadChannelFromHash = () => {
 		queryInput.blur();
 	} else {
 		// default channel
-		ttvIframe.src = `https://player.twitch.tv/?channel=twitchpresents&autoplay=false`;
+		ttvIframe.src = `${twitchPlayer}channel=twitchpresents${playerParams}`;
 	}
 };
 
