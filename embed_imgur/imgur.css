@@ -1,5 +1,5 @@
 /*iframe is created by an external script. override styles*/
-iframe {
+iframe, blockquote, .imgur-embed-pub {
 	position: fixed !important;
 	overflow: hidden !important;
 	display: inline-block !important;

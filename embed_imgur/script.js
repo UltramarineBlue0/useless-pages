@@ -1,7 +1,6 @@
 "use strict";
 
-const buildIframeHtml = imgurId => {
-	return `
+const buildIframeHtml = imgurId => `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,14 +14,13 @@ const buildIframeHtml = imgurId => {
 </head>
 <body>
 	<blockquote class="imgur-embed-pub" lang="en" data-id="${imgurId}" data-context="false">
-		<a href="https://imgur.com/${imgurId}">Link</a>
+		<a href="https://imgur.com/${imgurId}">Imgur link</a>
 	</blockquote>
-	<script async src="https://s.imgur.com/min/embed.js" charset="utf-8"></script>
+	<script async src="https://s.imgur.com/min/embed.js"></script>
 </body>
 </html>`;
-	// See https://help.imgur.com/hc/en-us/articles/211273743-Embed-Unit
-	// Kind of similar to twitter embeds
-};
+// See https://help.imgur.com/hc/en-us/articles/211273743-Embed-Unit
+// Kind of similar to twitter embeds
 
 import { alertError, assertNotEmpty, isEmpty } from "../common/utils.js";
 
