@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="content-security-policy"
+		content="block-all-mixed-content; object-src 'none'; form-action 'none'; base-uri 'none'; default-src 'self'; frame-src 'self' https://*.soundcloud.com; script-src 'self' https://*.soundcloud.com;">
+	<meta name="referrer" content="no-referrer">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>SoundCloud embedded player</title>
+
+	<link href="../common/embed.css" rel="stylesheet">
+	<script defer src="https://w.soundcloud.com/player/api.js"></script>
+	<script defer src="script.js" type="module"></script>
+</head>
+
+<body>
+	<header>
+		<h3>SoundCloud embedded player</h3>
+		<form id="headerForm" autocomplete="on" action="about:blank">
+			<label for="pathSegment">Path segment: </label>
+			<input id="pathSegment" type="search" size="24" minlength="1" maxlength="512" inputmode="search" required>
+			<button type="submit"><b>&ldca;</b></button>
+
+			<br>
+
+			<label for="volumeSlider">Volume: </label>
+			<input type="range" id="volumeSlider" min="0" max="100" step="5" value="25">
+			<output for="volumeSlider" id="volumeValueDisp">25</output>
+
+			<button type="button" id="rewind">Rewind 8s</button>
+			<button type="button" id="fastForward">Forward 8s</button>
+		</form>
+	</header>
+	<main class="embed-box">
+		<!-- I'm aware of the fact that soundcloud can just remove these restrictions, since I'm executing their script in the main window's scope.
+		The restrictions are just friendly suggestions, not hard rules. -->
+		<iframe id="sc-iframe" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin"
+			allow="encrypted-media 'src'; execution-while-not-rendered 'src'; execution-while-out-of-viewport 'src'; accelerometer 'none'; ambient-light-sensor 'none'; autoplay 'none'; battery 'none'; camera 'none'; display-capture 'none'; document-domain 'none'; fullscreen 'none'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; payment 'none'; picture-in-picture 'none'; publickey-credentials-get 'none'; sync-xhr 'none'; usb 'none'; wake-lock 'none'; xr-spatial-tracking 'none';"></iframe>
+	</main>
+</body>
+
+</html>

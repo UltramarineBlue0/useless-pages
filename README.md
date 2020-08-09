@@ -5,5 +5,6 @@
 - [YouTube in an iframe](minimal_youtube/index.html)
 - [Twitch in an iframe](minimal_twitch/index.html)
 - [Imgur in an iframe](embed_imgur/index.html)
+- [SoundCloud embedded player](embed_soundcloud/index.html)
 
 + [View webpages in an iframe](embed/index.html)
