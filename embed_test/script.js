@@ -71,4 +71,4 @@ embedIframe.srcdoc = buildSrcDoc(`
 // embedIframe.src = "https://open.spotify.com/embed/playlist/3UTeUqSzaT1FMJtgw6hmRp";
 
 // There is a JS API for the SoundCloud iframe embed, similar to YouTube. That API can control the audio volume.
-embedIframe.src = "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/346110701&auto_play=false";
+// embedIframe.src = "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/346110701&auto_play=false";
