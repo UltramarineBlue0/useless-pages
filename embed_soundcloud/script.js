@@ -4,7 +4,7 @@ const scIframeId = "sc-iframe";
 const scIframe = document.getElementById(scIframeId);
 
 const urlPrefix = "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/";
-const urlSuffix = "&color=%23747474&auto_play=false&single_active=false";
+const urlSuffix = "&color=%23000000&auto_play=false&show_comments=false&show_teaser=false&single_active=false";
 const defaultPlaylist = "playlists/346110701";
 
 const createUrl = (pathSegment = defaultPlaylist) => `${urlPrefix}${pathSegment}${urlSuffix}`;
@@ -12,7 +12,13 @@ const createUrl = (pathSegment = defaultPlaylist) => `${urlPrefix}${pathSegment}
 // load tracks from the hash/search box
 // chrome clears the search box after reload, reset it here
 const fragmentId = location.hash.trim();
-const playlistID = fragmentId.length > 1 ? fragmentId.substring(1) : defaultPlaylist;
+let playlistID;
+if (fragmentId.length > 1) {
+	playlistID = fragmentId.substring(1);
+} else {
+	location.hash = defaultPlaylist;
+	playlistID = defaultPlaylist;
+}
 const pathSegmentInput = document.getElementById("pathSegment");
 scIframe.contentWindow.focus();
 scIframe.src = createUrl(playlistID);
