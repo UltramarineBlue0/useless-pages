@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="content-security-policy"
+        content="object-src 'none'; form-action 'none'; base-uri 'none'; default-src 'self' https: data: 'unsafe-eval' 'unsafe-inline';">
+    <meta name="referrer" content="no-referrer">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="black">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
+        integrity="sha256-PI8n5gCcz9cQqQXm3PEtDuPG8qx9oFsFctPg0S5zb8g=" crossorigin="anonymous"
+        referrerpolicy="no-referrer" />
+
+    <script defer type="module" src="./index.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"
+        integrity="sha256-PtHu0lJIiSHfZeNj1nFd6wTX+Squ255SGZ/fc8seCtM=" crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
+
+    <link rel="icon" href="./favicon.png" />
+</head>
+
+<body>
+    <main x-data="embed" x-ref="outerElement" class="overflow-hidden vw-100 vh-100 position-relative vstack gap-0">
+        <noscript class="h1">Please enable javascript</noscript>
+        <article x-show="!showSrcDoc" class="w-100 h-100">Test</article>
+        <template x-if="showSrcDoc">
+            <iframe x-bind:srcdoc="embedDocument" x-bind:allow="allowAttr" x-bind:sandbox="sandboxAttr"
+                csp="default-src 'none';" class="w-100 h-100" credentialless></iframe>
+        </template>
+        <footer x-show="showDialog" class="border border-1 border-secondary mt-auto">
+            <div class="hstack gap-1">
+                <button x-on:click="loadIframe" class="btn btn-primary">Load</button>
+                <button x-on:click="showDialog = false" class="btn-close ms-auto me-5"></button>
+            </div>
+        </footer>
+        <div class="position-absolute bottom-0 end-0 btn-group-vertical btn-group-sm">
+            <button x-show="!showDialog" x-on:click="showDialog = true"
+                class="btn btn-outline-light fw-bold">&ltrif;</button>
+            <button x-on:click="toggleFullscreen" class="btn btn-outline-light fw-bold">&#x2921;</button>
+        </div>
+        </div>
+    </main>
+</body>
+
+</html>
