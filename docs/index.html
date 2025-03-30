@@ -23,39 +23,62 @@
 </head>
 
 <body>
-    <main x-data="embed" x-ref="outerElement" class="overflow-hidden vw-100 vh-100 position-relative vstack gap-0">
+    <main x-data="embed" class="overflow-hidden vw-100 vh-100 position-relative vstack gap-0">
         <noscript class="h1">Please enable javascript</noscript>
 
         <article x-show="!showIframe" class="w-100 h-100"></article>
-        <iframe x-show="showIframe" x-bind:src="embedUrl" x-bind:allow="allowAttr" x-bind:sandbox="sandboxAttr"
-            class="w-100 h-100" credentialless></iframe>
+        <iframe x-show="showIframe" x-ref="iframeElement" x-bind:allow="allowAttr" x-bind:sandbox="sandboxAttr"
+            class="w-100 h-100 m-0 p-0" src="about:blank" credentialless></iframe>
 
-        <footer x-show="showDialog" class="border border-1 border-secondary mt-auto">
-            <div class="hstack gap-1">
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" id="allowEncryptedMedia"
-                        x-model.boolean="allowEncryptedMedia">
-                    <label class="form-check-label" for="allowEncryptedMedia">Allow encrypted media</label>
+        <footer x-show="showDialog" class="border border-1 border-secondary mt-auto container-fluid">
+            <div class="row g-3 align-items-center">
+                <div class="col-lg-2">
+                    <select x-model="queryType" class="form-select">
+                        <option value="ytVideo" selected>Youtube Video</option>
+                        <option value="ytPlaylist">Youtube Playlist</option>
+                        <option value="ttvChannel">Twitch Channel</option>
+                        <option value="ttvVod">Twitch VOD</option>
+                    </select>
                 </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" id="enableScripts" x-model.boolean="enableScripts">
-                    <label class="form-check-label" for="enableScripts">Enable scripts</label>
+                <div class="col-lg-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="allowEncryptedMedia"
+                            x-model.boolean="allowEncryptedMedia">
+                        <label class="form-check-label" for="allowEncryptedMedia">Allow encrypted media</label>
+                    </div>
                 </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" id="enableSameOrigin"
-                        x-model.boolean="enableSameOrigin">
-                    <label class="form-check-label" for="enableSameOrigin">Enable same origin</label>
+                <div class="col-lg-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="enableScripts"
+                            x-model.boolean="enableScripts">
+                        <label class="form-check-label" for="enableScripts">Enable scripts</label>
+                    </div>
                 </div>
-                <button x-on:click="showDialog = false" class="btn-close ms-auto me-5"></button>
+                <div class="col-lg-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="enableSameOrigin"
+                            x-model.boolean="enableSameOrigin">
+                        <label class="form-check-label" for="enableSameOrigin">Enable same origin</label>
+                    </div>
+                </div>
+                <div class="col-lg-auto ms-auto justify-content-end">
+                    <button x-on:click="showDialog = false" class="btn-close"></button>
+                </div>
             </div>
-            <div class="hstack gap-1">
-                <button x-on:click="loadIframe" class="btn btn-primary">Load</button>
+            <div class="row g-3 align-items-center">
+                <div class="col-lg-1">
+                    <button x-on:click="loadIframe" class="btn btn-primary">Load</button>
+                </div>
+                <div class="col-lg">
+                    <input x-model="queryText" type="text" class="form-control" placeholder="URL / Channel name">
+                </div>
             </div>
         </footer>
         <div class="position-absolute bottom-0 end-0 btn-group-vertical btn-group-sm">
             <button x-show="!showDialog" x-on:click="showDialog = true"
                 class="btn btn-outline-light fw-bold">&ltrif;</button>
-            <button x-on:click="toggleFullscreen" class="btn btn-outline-light fw-bold">&#x2921;</button>
+            <button x-on:click="$refs.iframeElement.requestFullscreen()"
+                class="btn btn-outline-light fw-bold">&#x2921;</button>
         </div>
         </div>
     </main>

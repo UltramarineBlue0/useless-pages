@@ -2,45 +2,70 @@
 
 document.title = Math.random().toString(2);
 
-const getFragmentForTwitch = () => {
-    return `<script async="false" src="https://embed.twitch.tv/embed/v1.js"></script>
-
-    <script async="false">
-      console.log(Twitch);
-      const player = new Twitch.Embed('player', {
-        autoplay: false,
-        muted: true,
-        channel: "shroud",
-        parent: ["localhost"],
-      });
-    </script>`;
+const getTwitchChannelCommand = (queryText) => {
+    return JSON.stringify([0, queryText]);
 };
 
-const getEmbedUrl = () => {
-    return './player.html#' + encodeURIComponent(getFragmentForTwitch());
+const getTwitchVodCommand = (queryText) => {
+    try {
+        // url format: https://www.twitch.tv/videos/{a large number}
+        const url = new URL(queryText);
+        const pathArray = url.pathname.split("/");
+        let lastPath = pathArray[pathArray.length - 1];
+        if (!lastPath.startsWith('v')) {
+            lastPath = 'v' + lastPath;
+        }
+        return JSON.stringify([1, lastPath]);
+    } catch (e) {
+        console.error(e);
+        return '';
+    }
 };
 
+const getEmbedUrl = (queryType, queryText) => {
+    switch (queryType) {
+        case 'ttvChannel':
+            return '/public/ttv.html#' + encodeURIComponent(getTwitchChannelCommand(queryText));
+        case 'ttvVod':
+            return '/public/ttv.html#' + encodeURIComponent(getTwitchVodCommand(queryText));
+        default:
+            return '';
+    }
+};
+
+/**
+ *
+ */
 document.addEventListener('alpine:init', () => {
 
     Alpine.data('embed', () => ({
         showIframe: false,
         showDialog: true,
-        embedUrl: '',
         sandboxAttr: '',
         allowAttr: '',
+        queryType: 'ytVideo',
+        queryText: '',
 
         allowEncryptedMedia: false,
-        enableScripts: false,
-        enableSameOrigin: false,
+        enableScripts: true,
+        enableSameOrigin: true,
 
         async loadIframe() {
+            this.showIframe = false;
+            this.setSrc('about:blank');
             this.setAllow();
             this.setSandbox();
-            this.embedUrl = '';
-            this.showIframe = true;
 
             await this.$nextTick();
-            this.embedUrl = getEmbedUrl();
+            // The iframe cannot be hidden (display: none) when loading the src document. Otherwise some attributes doesn't correctly apply
+            this.showIframe = true;
+            // Bug in alpine.js or Firefox? If the src is set by alpine.js the same way as the other attributes, the iframe only updates half of the
+            // time. Detaching the src attribute update from alpine.js' reactivity fixes the issue. Doesn't happen on Chrome
+            setTimeout(() => this.setSrc(getEmbedUrl(this.queryType, this.queryText.trim().normalize())), 9);
+        },
+
+        setSrc(url) {
+            this.$refs.iframeElement.src = url;
         },
 
         setAllow() {
@@ -53,7 +78,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         setSandbox() {
-            this.sandboxAttr = ' ';
+            this.sandboxAttr = '';
             if (this.enableScripts) {
                 this.sandboxAttr = this.sandboxAttr.concat('allow-scripts ');
             }
@@ -62,8 +87,5 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        toggleFullscreen() {
-
-        }
     }));
 });
