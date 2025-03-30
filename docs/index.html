@@ -25,15 +25,31 @@
 <body>
     <main x-data="embed" x-ref="outerElement" class="overflow-hidden vw-100 vh-100 position-relative vstack gap-0">
         <noscript class="h1">Please enable javascript</noscript>
-        <article x-show="!showSrcDoc" class="w-100 h-100">Test</article>
-        <template x-if="showSrcDoc">
-            <iframe x-bind:srcdoc="embedDocument" x-bind:allow="allowAttr" x-bind:sandbox="sandboxAttr"
-                csp="default-src 'none';" class="w-100 h-100" credentialless></iframe>
-        </template>
+
+        <article x-show="!showIframe" class="w-100 h-100"></article>
+        <iframe x-show="showIframe" x-bind:src="embedUrl" x-bind:allow="allowAttr" x-bind:sandbox="sandboxAttr"
+            class="w-100 h-100" credentialless></iframe>
+
         <footer x-show="showDialog" class="border border-1 border-secondary mt-auto">
             <div class="hstack gap-1">
-                <button x-on:click="loadIframe" class="btn btn-primary">Load</button>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="allowEncryptedMedia"
+                        x-model.boolean="allowEncryptedMedia">
+                    <label class="form-check-label" for="allowEncryptedMedia">Allow encrypted media</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="enableScripts" x-model.boolean="enableScripts">
+                    <label class="form-check-label" for="enableScripts">Enable scripts</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="enableSameOrigin"
+                        x-model.boolean="enableSameOrigin">
+                    <label class="form-check-label" for="enableSameOrigin">Enable same origin</label>
+                </div>
                 <button x-on:click="showDialog = false" class="btn-close ms-auto me-5"></button>
+            </div>
+            <div class="hstack gap-1">
+                <button x-on:click="loadIframe" class="btn btn-primary">Load</button>
             </div>
         </footer>
         <div class="position-absolute bottom-0 end-0 btn-group-vertical btn-group-sm">
