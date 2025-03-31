@@ -22,19 +22,42 @@ const getTwitchVodCommand = (queryText) => {
     }
 };
 
+const urlPrefix = 'https://ultramarineblue.gitlab.io/useless-pages/';
+
+/**
+ * Think of this as some form of IPC: the embedded pages are functions and their calling parameters are
+ * encoded as JSON array in the hash of the URL
+ */
 const getEmbedUrl = (queryType, queryText) => {
     switch (queryType) {
         case 'ttvChannel':
-            return '/public/ttv.html#' + encodeURIComponent(getTwitchChannelCommand(queryText));
+            return urlPrefix + 'ttv.html#' + encodeURIComponent(getTwitchChannelCommand(queryText));
         case 'ttvVod':
-            return '/public/ttv.html#' + encodeURIComponent(getTwitchVodCommand(queryText));
+            return urlPrefix + 'ttv.html#' + encodeURIComponent(getTwitchVodCommand(queryText));
         default:
             return '';
     }
 };
 
 /**
+ * (Imho,) The most convenient way to embed Youtube / Twitch is using their script to programmatically create the iframes
  *
+ * Unfortunately, YouTube and Twitch embeds need both allow-scripts and allow-same-origin to work. If you want to enforce the sandbox rules and
+ * make sure that there is no way that Youtube / Twitch can somehow remove the sandbox or rewrite the feature policy, you need to
+ * run their script in a iframe which is served from a different domain than the embedding page. (srcdoc is useless here, since with both
+ * allow-scripts and allow-same-origin the document is considered to be from the same origin as the parent document) This way their script
+ * can't access the embedding element via window.parent.document.querySelectorAll('iframe').
+ *
+ * So: Top level page -> iframe from a different domain, in which Youtube / Twitch script is used -> iframe from Youtube / Twitch with the actual
+ * video content
+ *
+ * This is bad: iframe-ception, slower loading time, more code and deployment, even worse: complicated code and deployment.
+ * But I can't think of a better way to do it
+ *
+ * (Also: Different subpages for Youtube and Twitch is probably better. If you add html fragments insertAdjacentHTML() / innerHTML, by
+ * default the scripts in those fragments are not executed. You could work around that, but separate pages is probably easier to read
+ * and understand than the workaround. (Also running arbitrary code from the URL is terrible security-wise, even if we assume that you
+ * can trust your own domains and webpages and it's Youtube and Twitch who are untrustworthy))
  */
 document.addEventListener('alpine:init', () => {
 
