@@ -22,14 +22,14 @@
     <link rel="icon" href="./favicon.png" />
 </head>
 
-<body>
-    <main x-data="embed" class="overflow-hidden w-100 h-100 position-relative vstack gap-0">
+<body class="overflow-hidden w-100 h-100 position-absolute top-0 start-0">
+    <main x-data="embed" class="w-100 h-100 vstack gap-0">
         <noscript class="h1">Please enable javascript</noscript>
 
-        <aside x-show="!showIframe" class="w-100 h-100 m-0 p-0 bg-black"></aside>
+        <aside x-show="!showIframe" class="w-100 h-100 bg-black"></aside>
         <template x-if="showIframe">
             <iframe x-ref="iframeElement" x-bind:allow="allowAttr" x-bind:sandbox="sandboxAttr"
-                class="w-100 h-100 m-0 p-0 bg-black" src="about:blank" credentialless></iframe>
+                class="w-100 h-100 bg-black" src="about:blank" credentialless></iframe>
         </template>
 
         <footer x-show="showDialog" class="border border-1 border-secondary mt-auto container-fluid">
