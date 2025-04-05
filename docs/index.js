@@ -60,8 +60,7 @@ const getYoutubePlaylistCommand = (queryText) => {
     }
 };
 
-//const urlPrefix = 'https://ultramarineblue.gitlab.io/useless-pages/';
-const urlPrefix = 'http://localhost:8000/public/';
+const urlPrefix = 'https://ultramarineblue.gitlab.io/useless-pages/';
 
 /**
  * Think of this as some form of IPC: the embedded pages are functions and their calling parameters are
