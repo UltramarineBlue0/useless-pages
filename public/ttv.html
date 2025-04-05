@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="content-security-policy"
         content="object-src 'none'; form-action 'none'; base-uri 'none'; default-src 'self' https: 'unsafe-inline';">
-    <meta name="referrer" content="strict-origin">
+    <meta name="referrer" content="no-referrer">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="dark">
     <meta name="theme-color" content="black">
@@ -34,7 +34,7 @@
 <body>
     <div id="player"></div>
 
-    <script defer src="https://embed.twitch.tv/embed/v1.js"></script>
+    <script defer src="https://embed.twitch.tv/embed/v1.js" crossorigin="anonymous"></script>
     <script defer type="module">
         try {
             const command = JSON.parse(decodeURIComponent(location.hash.substring(1)));

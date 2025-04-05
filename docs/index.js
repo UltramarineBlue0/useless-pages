@@ -1,6 +1,15 @@
 "use strict";
 
-document.title = Math.random().toString(2);
+document.title = (Math.random() * 65536).toString(2);
+
+(names => {
+    for (const name of names) {
+        const element = document.createElement('meta');
+        element.name = name;
+        element.content = (Math.random() * 65536).toString(36);
+        document.head.appendChild(element);
+    }
+})(['application-name', 'author', 'description', 'generator', 'keywords', 'creator', 'publisher']);
 
 const getTwitchChannelCommand = (queryText) => {
     return JSON.stringify([0, queryText]);
@@ -40,24 +49,27 @@ const getEmbedUrl = (queryType, queryText) => {
 };
 
 /**
- * (Imho,) The most convenient way to embed Youtube / Twitch is using their script to programmatically create the iframes
+ * Some sites, like Youtube and Twitch, offer convenient scripts to embed their content into any other page. These scripts even offer some
+ * control over the embedded content. Unfortunately, this means that you have to execute foreign, untrustworthy scripts in the browsing
+ * context of your page, which can read any data your scripts can read and do anything your scripts can do.
  *
- * Unfortunately, YouTube and Twitch embeds need both allow-scripts and allow-same-origin to work. If you want to enforce the sandbox rules and
- * make sure that there is no way that Youtube / Twitch can somehow remove the sandbox or rewrite the feature policy, you need to
- * run their script in a iframe which is served from a different domain than the embedding page. (srcdoc is useless here, since with both
- * allow-scripts and allow-same-origin the document is considered to be from the same origin as the parent document) This way their script
- * can't access the embedding element via window.parent.document.querySelectorAll('iframe').
+ * For HTML and CSS, ShadowDOM offer a way to isolate elements on the same page from each other. However no such tool exist for JavaScript,
+ * all scripts, including those in a custom element, runs in the global scope of a browsing context. To isolate scripts from each other
+ * and prevent untrustworthy scripts from accessing your data, you have to create a new, isolated browsing context using an sandboxed
+ * iframe. A iframe with sandbox="allow-scripts" is considered to be from a opaque and unique origin. Therefore it is treated as
+ * cross-origin to any other sites, including itself (the actual src). Unfortunately, YouTube and Twitch embeds require both allow-scripts
+ * and allow-same-origin to work.
  *
- * So: Top level page -> iframe from a different domain, in which Youtube / Twitch script is used -> iframe from Youtube / Twitch with the actual
- * video content
+ * If you want to enforce the sandbox rules and make sure that there is no way that Youtube / Twitch can somehow remove the sandbox or
+ * rewrite the feature policy, you need to run their script in a iframe which is served from a different domain than the embedding page.
+ * (srcdoc is useless here, since with both allow-scripts and allow-same-origin the document is considered to be from the same origin as
+ * the parent document.) This way their script can't access the embedding element via window.parent.document.querySelectorAll('iframe').
  *
- * This is bad: iframe-ception, slower loading time, more code and deployment, even worse: complicated code and deployment.
+ * So: Top level page -> iframe from a different domain, in which Youtube / Twitch script is used -> iframe from Youtube / Twitch with the
+ * actual video content
+ *
+ * This is bad: iframe-ception, slower loading time, more complex code and deployment
  * But I can't think of a better way to do it
- *
- * (Also: Different subpages for Youtube and Twitch is probably better. If you add html fragments insertAdjacentHTML() / innerHTML, by
- * default the scripts in those fragments are not executed. You could work around that, but separate pages is probably easier to read
- * and understand than the workaround. (Also running arbitrary code from the URL is terrible security-wise, even if we assume that you
- * can trust your own domains and webpages and it's Youtube and Twitch who are untrustworthy))
  */
 document.addEventListener('alpine:init', () => {
 
@@ -74,17 +86,16 @@ document.addEventListener('alpine:init', () => {
         enableSameOrigin: true,
 
         async loadIframe() {
+            const embedUrl = getEmbedUrl(this.queryType, this.queryText.trim().normalize());
             this.showIframe = false;
-            this.setSrc('about:blank');
+            await this.$nextTick();
+
             this.setAllow();
             this.setSandbox();
+            this.showIframe = true;
 
             await this.$nextTick();
-            // The iframe cannot be hidden (display: none) when loading the src document. Otherwise some attributes doesn't correctly apply
-            this.showIframe = true;
-            // Bug in alpine.js or Firefox? If the src is set by alpine.js the same way as the other attributes, the iframe only updates half of the
-            // time. Detaching the src attribute update from alpine.js' reactivity fixes the issue. Doesn't happen on Chrome
-            setTimeout(() => this.setSrc(getEmbedUrl(this.queryType, this.queryText.trim().normalize())), 9);
+            this.setSrc(embedUrl);
         },
 
         setSrc(url) {
