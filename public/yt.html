@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="content-security-policy"
         content="object-src 'none'; form-action 'none'; base-uri 'none'; default-src 'self' https: 'unsafe-inline';">
-    <meta name="referrer" content="strict-origin">
+    <meta name="referrer" content="no-referrer">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="dark">
     <meta name="theme-color" content="black">
@@ -34,7 +34,6 @@
 <body>
     <div id="player"></div>
 
-    <script defer src="https://embed.twitch.tv/embed/v1.js"></script>
     <script defer type="module">
         try {
             const command = JSON.parse(decodeURIComponent(location.hash.substring(1)));
@@ -42,29 +41,33 @@
                 throw "Bad command: " + location.hash;
             }
 
-            const initObject = {
-                autoplay: false,
-                muted: true,
-                parent: ['localhost'],
+            const playerVars = {
+                autoplay: 0,
+                hl: 'en',
+                loop: 1,
+                rel: 0,
             };
 
             if (command[0] == 0) {
-                initObject.channel = command[1];
+                playerVars.playlist = command[1];
             } else if (command[0] == 1) {
-                initObject.video = command[1];
+                playerVars.list = command[1];
+                playerVars.listType = 'playlist';
             }
 
-            const embed = new Twitch.Embed('player', initObject);
-
-            embed.addEventListener(Twitch.Embed.VIDEO_READY, () => {
-                const player = embed.getPlayer();
-                player.setVolume(0.1);
-            });
-
+            window.onYouTubeIframeAPIReady = () => {
+                new YT.Player('player', {
+                    playerVars: playerVars,
+                    events: {
+                        onReady: event => event.target.setVolume(10),
+                    },
+                });
+            };
         } catch (error) {
             console.error(error);
         }
     </script>
+    <script defer src="https://www.youtube.com/iframe_api"></script>
 </body>
 
 </html>

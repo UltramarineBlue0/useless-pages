@@ -31,7 +31,37 @@ const getTwitchVodCommand = (queryText) => {
     }
 };
 
-const urlPrefix = 'https://ultramarineblue.gitlab.io/useless-pages/';
+const getYoutubeVideoCommand = (queryText) => {
+    try {
+        const url = new URL(queryText);
+        if (url.hostname.toLowerCase().endsWith('youtu.be')) {
+            // url format: https://youtu.be/{video id}
+            const pathArray = url.pathname.split("/");
+            const lastPath = pathArray[pathArray.length - 1];
+            return JSON.stringify([0, lastPath]);
+        } else {
+            // url format: https://www.youtube.com/watch?v={video id}
+            return JSON.stringify([0, url.searchParams.get('v')]);
+        }
+    } catch (e) {
+        console.error(e);
+        return '';
+    }
+};
+
+const getYoutubePlaylistCommand = (queryText) => {
+    try {
+        // url format: https://www.youtube.com/playlist?list={long string}
+        const url = new URL(queryText);
+        return JSON.stringify([1, url.searchParams.get('list')]);
+    } catch (e) {
+        console.error(e);
+        return '';
+    }
+};
+
+//const urlPrefix = 'https://ultramarineblue.gitlab.io/useless-pages/';
+const urlPrefix = 'http://localhost:8000/public/';
 
 /**
  * Think of this as some form of IPC: the embedded pages are functions and their calling parameters are
@@ -43,6 +73,10 @@ const getEmbedUrl = (queryType, queryText) => {
             return urlPrefix + 'ttv.html#' + encodeURIComponent(getTwitchChannelCommand(queryText));
         case 'ttvVod':
             return urlPrefix + 'ttv.html#' + encodeURIComponent(getTwitchVodCommand(queryText));
+        case 'ytVideo':
+            return urlPrefix + 'yt.html#' + encodeURIComponent(getYoutubeVideoCommand(queryText));
+        case 'ytPlaylist':
+            return urlPrefix + 'yt.html#' + encodeURIComponent(getYoutubePlaylistCommand(queryText));
         default:
             return '';
     }
