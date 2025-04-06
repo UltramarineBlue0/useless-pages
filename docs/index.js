@@ -11,9 +11,11 @@ document.title = (Math.random() * 65536).toString(2);
     }
 })(['application-name', 'author', 'description', 'generator', 'keywords', 'creator', 'publisher']);
 
+const blankPage = 'about:blank';
 
 class Action {
     static #urlPrefix = 'https://ultramarineblue.gitlab.io/useless-pages/';
+    //static #urlPrefix = 'http://localhost:8000/public/';
     id;
     name;
     placeholder;
@@ -50,10 +52,10 @@ class Action {
             } catch (e) {
                 alert(e);
                 console.error(e);
-                return 'about:blank';
+                return blankPage;
             }
         }
-        return 'about:blank';
+        return blankPage;
     }
 }
 
@@ -175,7 +177,7 @@ document.addEventListener('alpine:init', () => {
         showDialog: true,
         sandboxAttr: '',
         allowAttr: '',
-        srcAttr: 'about:blank',
+        srcAttr: blankPage,
         selectedActionId: actions[0].id,
         queryText: '',
 
@@ -192,9 +194,11 @@ document.addEventListener('alpine:init', () => {
 
             this.setAllow();
             this.setSandbox();
-            this.srcAttr = embedUrl;
-
+            this.srcAttr = blankPage;
             this.showIframe = true;
+            await this.$nextTick();
+
+            this.srcAttr = embedUrl;
         },
 
         setAllow() {

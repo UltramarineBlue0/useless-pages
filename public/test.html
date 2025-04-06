@@ -42,7 +42,12 @@
             if (command[0] == 0) {
                 iframe.src = command[1];
             } else if (command[0] == 1) {
-                iframe.srcdoc = `<script defer type="module">${command[1]}<//script>`;
+                // the end script tag always ends an inline script, regardless where it appears
+                iframe.srcdoc = `
+                <head>
+                <script defer type="module">${command[1]}${decodeURIComponent('%3C%2Fscript%3E')}
+                <style>html, body { background: black; color: white; }</style>
+                </head>`;
             }
 
             document.body.appendChild(iframe);

@@ -28,7 +28,7 @@
 
         <aside x-show="!showIframe" class="w-100 h-100 bg-black"></aside>
         <template x-if="showIframe">
-            <iframe x-bind:src="srcAttr" x-bind:allow="allowAttr" x-bind:sandbox="sandboxAttr"
+            <iframe x-bind:allow="allowAttr" x-bind:sandbox="sandboxAttr" x-bind:src="srcAttr"
                 class="w-100 h-100 bg-black" referrerpolicy="no-referrer" credentialless></iframe>
         </template>
 
