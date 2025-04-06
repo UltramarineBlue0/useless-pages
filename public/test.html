@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="content-security-policy"
+        content="object-src 'none'; form-action 'none'; base-uri 'none'; default-src 'self' https: 'unsafe-inline';">
+    <meta name="referrer" content="no-referrer">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="black">
+    <!--Fix iframe quirks. Explicit height and width is needed to make it fill out the embedding element.
+    Position, top and left is needed to fit the content exactly to the element size, without scroll bars-->
+    <style>
+        html,
+        body,
+        iframe {
+            box-sizing: border-box;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            padding: 0;
+            margin: 0;
+            border: 0;
+            background: black;
+        }
+    </style>
+</head>
+
+<body>
+    <script defer type="module">
+        try {
+            const command = JSON.parse(decodeURIComponent(location.hash.substring(1)));
+            if (command.length != 2) {
+                throw "Bad command: " + location.hash;
+            }
+
+            const iframe = document.createElement('iframe');
+            if (command[0] == 0) {
+                iframe.src = command[1];
+            } else if (command[0] == 1) {
+                iframe.srcdoc = `<script defer type="module">${command[1]}<//script>`;
+            }
+
+            document.body.appendChild(iframe);
+        } catch (error) {
+            console.error(error);
+        }
+    </script>
+</body>
+
+</html>

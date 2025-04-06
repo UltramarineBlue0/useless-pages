@@ -11,75 +11,138 @@ document.title = (Math.random() * 65536).toString(2);
     }
 })(['application-name', 'author', 'description', 'generator', 'keywords', 'creator', 'publisher']);
 
-const getTwitchChannelCommand = (queryText) => {
-    return JSON.stringify([0, queryText]);
-};
 
-const getTwitchVodCommand = (queryText) => {
-    try {
-        // url format: https://www.twitch.tv/videos/{a large number}
-        const url = new URL(queryText);
-        const pathArray = url.pathname.split("/");
-        let lastPath = pathArray[pathArray.length - 1];
-        if (!lastPath.startsWith('v')) {
-            lastPath = 'v' + lastPath;
-        }
-        return JSON.stringify([1, lastPath]);
-    } catch (e) {
-        console.error(e);
-        return '';
+class Action {
+    static #urlPrefix = 'https://ultramarineblue.gitlab.io/useless-pages/';
+    id;
+    name;
+    placeholder;
+    #functionPage;
+    #queryToCommand;
+
+    /**
+     * @param {string} id
+     * @param {string} name
+     * @param {string} placeholder
+     * @param {string} functionPage
+     * @param {(queryText: string) => [number, string]} queryToCommand
+     */
+    constructor(id, name, placeholder, functionPage, queryToCommand) {
+        this.id = id;
+        this.name = name;
+        this.placeholder = placeholder;
+        this.#functionPage = functionPage;
+        this.#queryToCommand = queryToCommand;
     }
-};
 
-const getYoutubeVideoCommand = (queryText) => {
-    try {
-        const url = new URL(queryText);
-        if (url.hostname.toLowerCase().endsWith('youtu.be')) {
-            // url format: https://youtu.be/{video id}
+    /**
+     * Think of this as some form of IPC: the embedded pages are functions and their calling
+     * parameters are encoded as JSON array in the hash of the URL
+     * @param {string?} queryText
+     * @returns {string}
+     */
+    getEmbedUrl(queryText) {
+        if (queryText && queryText.length) {
+            try {
+                const command = this.#queryToCommand(queryText.trim().normalize());
+                const hash = encodeURIComponent(JSON.stringify(command));
+                return Action.#urlPrefix + this.#functionPage + '#' + hash;
+            } catch (e) {
+                alert(e);
+                console.error(e);
+                return 'about:blank';
+            }
+        }
+        return 'about:blank';
+    }
+}
+
+const actions = [
+    new Action(
+        'ytVideo',
+        'YouTube Video',
+        'Video URL',
+        'yt.html',
+        (queryText) => {
+            const url = new URL(queryText);
+            if (url.hostname.toLowerCase().endsWith('youtu.be')) {
+                // url format: https://youtu.be/{video id}
+                const pathArray = url.pathname.split("/");
+                return [0, pathArray[1]];
+            } else {
+                // url format: https://www.youtube.com/watch?v={video id}
+                return [0, url.searchParams.get('v')];
+            }
+        },
+    ),
+    new Action(
+        'ytPlaylist',
+        'YouTube Playlist',
+        'Playlist URL',
+        'yt.html',
+        (queryText) => {
+            // url format: https://www.youtube.com/playlist?list={long string}
+            const url = new URL(queryText);
+            return [1, url.searchParams.get('list')];
+        },
+    ),
+    new Action(
+        'embedPage',
+        'Embed webpage',
+        'URL',
+        'test.html',
+        (queryText) => {
+            return [0, queryText];
+        },
+    ),
+    new Action(
+        'runScript',
+        'Run JS in iframe',
+        'JavaScript',
+        'test.html',
+        (queryText) => {
+            return [1, queryText];
+        },
+    ),
+    new Action(
+        'ttvChannel',
+        'Twitch Channel',
+        'Channel name',
+        'ttv.html',
+        (queryText) => {
+            return [0, queryText];
+        },
+    ),
+    new Action(
+        'ttvVod',
+        'Twitch VOD',
+        'VOD URL',
+        'ttv.html',
+        (queryText) => {
+            // url format: https://www.twitch.tv/videos/{a large number}
+            const url = new URL(queryText);
             const pathArray = url.pathname.split("/");
-            const lastPath = pathArray[pathArray.length - 1];
-            return JSON.stringify([0, lastPath]);
-        } else {
-            // url format: https://www.youtube.com/watch?v={video id}
-            return JSON.stringify([0, url.searchParams.get('v')]);
-        }
-    } catch (e) {
-        console.error(e);
-        return '';
-    }
-};
+            let lastPath = pathArray[pathArray.length - 1];
+            if (!lastPath.startsWith('v')) {
+                lastPath = 'v' + lastPath;
+            }
+            return [1, lastPath];
+        },
+    ),
+    new Action(
+        'gmaps',
+        'Google Maps',
+        'Search location',
+        'test.html',
+        (queryText) => {
+            return [0, `https://maps.google.com/maps?hl=en&q=${encodeURIComponent(queryText)}&t=m&z=12&ie=UTF8&iwloc=B&output=embed`];
+        },
+    ),
+];
 
-const getYoutubePlaylistCommand = (queryText) => {
-    try {
-        // url format: https://www.youtube.com/playlist?list={long string}
-        const url = new URL(queryText);
-        return JSON.stringify([1, url.searchParams.get('list')]);
-    } catch (e) {
-        console.error(e);
-        return '';
-    }
-};
-
-const urlPrefix = 'https://ultramarineblue.gitlab.io/useless-pages/';
-
-/**
- * Think of this as some form of IPC: the embedded pages are functions and their calling parameters are
- * encoded as JSON array in the hash of the URL
- */
-const getEmbedUrl = (queryType, queryText) => {
-    switch (queryType) {
-        case 'ttvChannel':
-            return urlPrefix + 'ttv.html#' + encodeURIComponent(getTwitchChannelCommand(queryText));
-        case 'ttvVod':
-            return urlPrefix + 'ttv.html#' + encodeURIComponent(getTwitchVodCommand(queryText));
-        case 'ytVideo':
-            return urlPrefix + 'yt.html#' + encodeURIComponent(getYoutubeVideoCommand(queryText));
-        case 'ytPlaylist':
-            return urlPrefix + 'yt.html#' + encodeURIComponent(getYoutubePlaylistCommand(queryText));
-        default:
-            return '';
-    }
-};
+const actionsMap = new Map(
+    actions.map(elem => [elem.id, elem])
+);
 
 /**
  * Some sites, like Youtube and Twitch, offer convenient scripts to embed their content into any other page. These scripts even offer some
@@ -105,13 +168,15 @@ const getEmbedUrl = (queryType, queryText) => {
  * But I can't think of a better way to do it
  */
 document.addEventListener('alpine:init', () => {
-
     Alpine.data('embed', () => ({
+        actions: actions,
+
         showIframe: false,
         showDialog: true,
         sandboxAttr: '',
         allowAttr: '',
-        queryType: 'ytVideo',
+        srcAttr: 'about:blank',
+        selectedActionId: actions[0].id,
         queryText: '',
 
         allowEncryptedMedia: false,
@@ -119,20 +184,17 @@ document.addEventListener('alpine:init', () => {
         enableSameOrigin: true,
 
         async loadIframe() {
-            const embedUrl = getEmbedUrl(this.queryType, this.queryText.trim().normalize());
+            const selectedAction = actionsMap.get(this.selectedActionId);
+            const embedUrl = selectedAction.getEmbedUrl(this.queryText);
+
             this.showIframe = false;
             await this.$nextTick();
 
             this.setAllow();
             this.setSandbox();
+            this.srcAttr = embedUrl;
+
             this.showIframe = true;
-
-            await this.$nextTick();
-            this.setSrc(embedUrl);
-        },
-
-        setSrc(url) {
-            this.$refs.iframeElement.src = url;
         },
 
         setAllow() {
@@ -154,5 +216,16 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
+        toggleFullscreen() {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                document.body.requestFullscreen();
+            }
+        },
+
+        getPlaceholder() {
+            return actionsMap.get(this.selectedActionId).placeholder;
+        },
     }));
 });

@@ -28,18 +28,17 @@
 
         <aside x-show="!showIframe" class="w-100 h-100 bg-black"></aside>
         <template x-if="showIframe">
-            <iframe x-ref="iframeElement" x-bind:allow="allowAttr" x-bind:sandbox="sandboxAttr"
-                class="w-100 h-100 bg-black" src="about:blank" credentialless></iframe>
+            <iframe x-bind:src="srcAttr" x-bind:allow="allowAttr" x-bind:sandbox="sandboxAttr"
+                class="w-100 h-100 bg-black" referrerpolicy="no-referrer" credentialless></iframe>
         </template>
 
         <footer x-show="showDialog" class="border border-1 border-secondary mt-auto container-fluid">
             <div class="row g-3 align-items-center">
                 <div class="col-lg-2">
-                    <select x-model="queryType" class="form-select">
-                        <option value="ytVideo" selected>Youtube Video</option>
-                        <option value="ytPlaylist">Youtube Playlist</option>
-                        <option value="ttvChannel">Twitch Channel</option>
-                        <option value="ttvVod">Twitch VOD</option>
+                    <select x-model="selectedActionId" class="form-select">
+                        <template x-for="action in actions" :key="action.id">
+                            <option x-bind:value="action.id" x-text="action.name"></option>
+                        </template>
                     </select>
                 </div>
                 <div class="col-lg-2">
@@ -72,15 +71,14 @@
                     <button x-on:click="loadIframe" class="btn btn-primary">Load</button>
                 </div>
                 <div class="col-lg">
-                    <input x-model="queryText" type="text" class="form-control" placeholder="URL / Channel name">
+                    <input x-model="queryText" type="text" class="form-control" x-bind:placeholder="getPlaceholder">
                 </div>
             </div>
         </footer>
         <div class="position-absolute bottom-0 end-0 btn-group-vertical btn-group-sm">
             <button x-show="!showDialog" x-on:click="showDialog = true"
                 class="btn btn-outline-light fw-bold">&ltrif;</button>
-            <button x-on:click="$refs.iframeElement.requestFullscreen()"
-                class="btn btn-outline-light fw-bold">&#x2921;</button>
+            <button x-on:click="toggleFullscreen" class="btn btn-outline-light fw-bold">&#x2921;</button>
         </div>
         </div>
     </main>
