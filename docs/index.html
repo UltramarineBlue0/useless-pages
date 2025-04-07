@@ -27,6 +27,8 @@
         <noscript class="h1">Please enable javascript</noscript>
 
         <aside x-show="!showIframe" class="w-100 h-100 bg-black"></aside>
+        <!--Modifying the src of an iframe attached to the DOM creates an entry in the history. Removing then
+        recreating the iframe element doesn't change the history-->
         <template x-if="showIframe">
             <iframe x-bind:allow="allowAttr" x-bind:sandbox="sandboxAttr" x-bind:src="srcAttr"
                 class="w-100 h-100 bg-black" referrerpolicy="no-referrer" credentialless></iframe>
@@ -46,13 +48,6 @@
                         <input class="form-check-input" type="checkbox" id="allowEncryptedMedia"
                             x-model.boolean="allowEncryptedMedia">
                         <label class="form-check-label" for="allowEncryptedMedia">Allow encrypted media</label>
-                    </div>
-                </div>
-                <div class="col-lg-2">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="enableScripts"
-                            x-model.boolean="enableScripts">
-                        <label class="form-check-label" for="enableScripts">Enable scripts</label>
                     </div>
                 </div>
                 <div class="col-lg-2">

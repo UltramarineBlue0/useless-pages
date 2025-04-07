@@ -182,7 +182,6 @@ document.addEventListener('alpine:init', () => {
         queryText: '',
 
         allowEncryptedMedia: false,
-        enableScripts: true,
         enableSameOrigin: true,
 
         async loadIframe() {
@@ -190,15 +189,16 @@ document.addEventListener('alpine:init', () => {
             const embedUrl = selectedAction.getEmbedUrl(this.queryText);
 
             this.showIframe = false;
-            await this.$nextTick();
-
             this.setAllow();
             this.setSandbox();
             this.srcAttr = blankPage;
-            this.showIframe = true;
-            await this.$nextTick();
 
-            this.srcAttr = embedUrl;
+            await this.$nextTick();
+            this.showIframe = true;
+            // Allow and sandbox attribute only apply if they are present before loading the iframe. Depending on how alpine.js
+            // sets the attributes, the navigation may start before the other attributes are set. => Delay setting src to make
+            // sure the other attributes are present before navigation
+            setTimeout(() => this.srcAttr = embedUrl, 9);
         },
 
         setAllow() {
@@ -211,10 +211,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         setSandbox() {
-            this.sandboxAttr = '';
-            if (this.enableScripts) {
-                this.sandboxAttr = this.sandboxAttr.concat('allow-scripts ');
-            }
+            this.sandboxAttr = 'allow-scripts ';
             if (this.enableSameOrigin) {
                 this.sandboxAttr = this.sandboxAttr.concat('allow-same-origin ');
             }
