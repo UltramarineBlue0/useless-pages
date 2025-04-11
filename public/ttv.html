@@ -9,8 +9,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="dark">
     <meta name="theme-color" content="black">
-    <!--Fix iframe quirks. Explicit height and width is needed to make it fill out the embedding element.
-    Position, top and left is needed to fit the content exactly to the element size, without scroll bars-->
     <style>
         html,
         body,
@@ -29,11 +27,6 @@
             background: black;
         }
     </style>
-</head>
-
-<body>
-    <div id="player"></div>
-
     <script defer src="https://embed.twitch.tv/embed/v1.js"></script>
     <script defer type="module">
         try {
@@ -66,6 +59,10 @@
             console.error(error);
         }
     </script>
+</head>
+
+<body>
+    <div id="player"></div>
 </body>
 
 </html>

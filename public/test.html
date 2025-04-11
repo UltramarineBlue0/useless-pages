@@ -9,8 +9,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="dark">
     <meta name="theme-color" content="black">
-    <!--Fix iframe quirks. Explicit height and width is needed to make it fill out the embedding element.
-    Position, top and left is needed to fit the content exactly to the element size, without scroll bars-->
     <style>
         html,
         body,
@@ -28,9 +26,6 @@
             background: black;
         }
     </style>
-</head>
-
-<body>
     <script defer type="module">
         try {
             const command = JSON.parse(decodeURIComponent(location.hash.substring(1)));
@@ -55,6 +50,8 @@
             console.error(error);
         }
     </script>
-</body>
+</head>
+
+<body></body>
 
 </html>

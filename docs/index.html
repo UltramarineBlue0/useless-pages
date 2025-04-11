@@ -10,20 +10,22 @@
     <meta name="color-scheme" content="dark">
     <meta name="theme-color" content="black">
 
+    <!--no-referrer + no crossorigin attribute prevents the browser from sending a Referer or an Origin header.
+    Assuming the files themselves are not tampered, this hides the origin of the requests from the cdns-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
-        integrity="sha256-PI8n5gCcz9cQqQXm3PEtDuPG8qx9oFsFctPg0S5zb8g=" crossorigin="anonymous"
-        referrerpolicy="no-referrer" />
+        integrity="sha256-PI8n5gCcz9cQqQXm3PEtDuPG8qx9oFsFctPg0S5zb8g=" />
 
     <script defer type="module" src="./index.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"
-        integrity="sha256-PtHu0lJIiSHfZeNj1nFd6wTX+Squ255SGZ/fc8seCtM=" crossorigin="anonymous"
-        referrerpolicy="no-referrer"></script>
+        integrity="sha256-PtHu0lJIiSHfZeNj1nFd6wTX+Squ255SGZ/fc8seCtM="></script>
 
     <link rel="icon" href="./favicon.png" />
 </head>
 
-<body class="overflow-hidden w-100 h-100 position-absolute top-0 start-0">
-    <main x-data="embed" class="w-100 h-100 vstack gap-0">
+<body class="w-100 h-100 position-relative top-0 start-0 m-0 p-0">
+    <!--In order for the element to exactly fill out the visible area without scroll bars, explicit height, width
+    and position is necessary. The same styles are applied manually on the function pages-->
+    <main x-data="embed" class="vstack gap-0 w-100 h-100 position-absolute overflow-hidden top-0 start-0 z-0">
         <noscript class="h1">Please enable javascript</noscript>
 
         <aside x-show="!showIframe" class="w-100 h-100 bg-black"></aside>
@@ -70,7 +72,7 @@
                 </div>
             </div>
         </footer>
-        <div class="position-absolute bottom-0 end-0 btn-group-vertical btn-group-sm">
+        <div class="position-absolute bottom-0 end-0 z-3 pb-1 pe-1 btn-group btn-group-sm">
             <button x-show="!showDialog" x-on:click="showDialog = true"
                 class="btn btn-outline-light fw-bold">&ltrif;</button>
             <button x-on:click="toggleFullscreen" class="btn btn-outline-light fw-bold">&#x2921;</button>
