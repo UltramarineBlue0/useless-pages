@@ -13,6 +13,9 @@ document.title = (Math.random() * 65536).toString(2);
 
 const blankPage = 'about:blank';
 
+/**
+ * Settings applied to / set by the functions pages
+ */
 class Settings {
     allowEncryptedMedia;
     enableSameOrigin;
@@ -40,6 +43,10 @@ class Settings {
         return Object.freeze(this);
     }
 
+    /**
+     * @returns The defaults are immutable. Mutable deep copy is created to
+     * bind to the UI
+     */
     newCopy() {
         return new Settings({ ...this.allowEncryptedMedia },
             { ...this.enableSameOrigin },
@@ -54,7 +61,7 @@ class Settings {
         {value: 2, show: true},
     );
     static ttvDefault = new Settings(
-        {value: false, show: false},
+        {value: true, show: false},
         {value: true, show: false},
         {value: 10, show: true},
         {value: 2, show: true},
@@ -65,6 +72,9 @@ class Settings {
     );
 }
 
+/**
+ * Definition of one possible function which the user can choose
+ */
 class Action {
     static #urlPrefix = 'https://ultramarineblue.gitlab.io/useless-pages/';
     //static #urlPrefix = 'http://localhost:8000/public/';
