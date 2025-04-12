@@ -23,8 +23,8 @@
 </head>
 
 <body class="w-100 h-100 position-relative top-0 start-0 m-0 p-0">
-    <!--In order for the element to exactly fill out the visible area without scroll bars, explicit height, width
-    and position is necessary. The same styles are applied manually on the function pages-->
+    <!--In order for the element to exactly fill out the visible area without scroll bars, explicit height, width and
+    position on body and child element is necessary. The same styles are applied manually on the function pages-->
     <main x-data="embed" class="vstack gap-0 w-100 h-100 position-absolute overflow-hidden top-0 start-0 z-0">
         <noscript class="h1">Please enable javascript</noscript>
 
@@ -36,47 +36,55 @@
                 class="w-100 h-100 bg-black" referrerpolicy="no-referrer" credentialless></iframe>
         </template>
 
-        <footer x-show="showDialog" class="border border-1 border-secondary mt-auto container-fluid">
-            <div class="row g-3 align-items-center">
-                <div class="col-lg-2">
-                    <select x-model="selectedActionId" class="form-select">
+        <form x-show="showDialog" x-on:submit.prevent="loadIframe" class="border border-1 border-secondary mt-auto"
+            action="about:blank" novalidate autocapitalize="off" autocomplete="off" rel="nofollow noreferrer">
+            <div class="position-relative top-0 end-0 z-2 pt-2 pe-2">
+                <button x-show="showDialog" x-on:click="showDialog = false" class="btn-close" type="button"></button>
+            </div>
+            <div class="row gx-2 my-2 align-items-center">
+                <div class="col-11 col-lg-2">
+                    <select x-model="selectedActionId" x-on:change="fillSettingWithDefaults" class="form-select">
                         <template x-for="action in actions" :key="action.id">
                             <option x-bind:value="action.id" x-text="action.name"></option>
                         </template>
                     </select>
                 </div>
-                <div class="col-lg-2">
+                <div x-show="settings.allowEncryptedMedia.show" class="col-auto">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="allowEncryptedMedia"
-                            x-model.boolean="allowEncryptedMedia">
+                            x-model.boolean="settings.allowEncryptedMedia.value">
                         <label class="form-check-label" for="allowEncryptedMedia">Allow encrypted media</label>
                     </div>
                 </div>
-                <div class="col-lg-2">
+                <div x-show="settings.enableSameOrigin.show" class="col-auto">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="enableSameOrigin"
-                            x-model.boolean="enableSameOrigin">
+                            x-model.boolean="settings.enableSameOrigin.value">
                         <label class="form-check-label" for="enableSameOrigin">Enable same origin</label>
                     </div>
                 </div>
-                <div class="col-lg-auto ms-auto justify-content-end">
-                    <button x-on:click="showDialog = false" class="btn-close"></button>
+                <div x-show="settings.initialVolume.show" class="col-auto">
+                    <label x-text="'Initial Volume: ' + settings.initialVolume.value" for="initialVolume" class="form-label"></label>
+                    <input x-model.number="settings.initialVolume.value" type="range" class="form-range" min="0" max="100" step="5" id="initialVolume">
+                </div>
+                <div x-show="settings.initialSpeed.show" class="col-auto">
+                    <label x-text="'Initial Speed: ' + settings.initialSpeed.value" for="initialSpeed" class="form-label"></label>
+                    <input x-model.number="settings.initialSpeed.value" type="range" class="form-range" min="1" max="2" step="0.25" id="initialSpeed">
                 </div>
             </div>
-            <div class="row g-3 align-items-center">
-                <div class="col-lg-1">
-                    <button x-on:click="loadIframe" class="btn btn-primary">Load</button>
-                </div>
-                <div class="col-lg">
-                    <input x-model="queryText" type="text" class="form-control" x-bind:placeholder="getPlaceholder">
-                </div>
+            <div
+                x-bind:class="selectedActionId != 'runScript' ? 'input-group input-group-lg' : 'input-group input-group-sm'">
+                <button type="submit" class="btn btn-primary">Load</button>
+                <input x-show="selectedActionId != 'runScript'" x-model="queryText" x-bind:placeholder="getPlaceholder"
+                    x-on:focus="$el.select()" type="text" class="form-control">
+                <textarea x-show="selectedActionId == 'runScript'" x-model="queryText"
+                    x-bind:placeholder="getPlaceholder" x-on:focus="$el.select()" class="form-control"></textarea>
             </div>
-        </footer>
+        </form>
         <div class="position-absolute bottom-0 end-0 z-3 pb-1 pe-1 btn-group btn-group-sm">
-            <button x-show="!showDialog" x-on:click="showDialog = true"
-                class="btn btn-outline-light fw-bold">&ltrif;</button>
-            <button x-on:click="toggleFullscreen" class="btn btn-outline-light fw-bold">&#x2921;</button>
-        </div>
+            <button x-show="!showDialog" x-on:click="showDialog = true" class="btn btn-outline-light fw-bold"
+                type="button">&ltrif;</button>
+            <button x-on:click="toggleFullscreen" class="btn btn-outline-light fw-bold" type="button">&#x2921;</button>
         </div>
     </main>
 </body>

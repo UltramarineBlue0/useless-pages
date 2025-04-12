@@ -13,34 +13,87 @@ document.title = (Math.random() * 65536).toString(2);
 
 const blankPage = 'about:blank';
 
+class Settings {
+    allowEncryptedMedia;
+    enableSameOrigin;
+    initialVolume;
+    initialSpeed;
+
+    /**
+     * @param {{value: boolean, show: boolean}?} allowEncryptedMedia
+     * @param {{value: boolean, show: boolean}?} enableSameOrigin
+     * @param {{value: number, show: boolean}?} initialVolume
+     * @param {{value: number, show: boolean}?} initialSpeed
+     */
+    constructor(allowEncryptedMedia, enableSameOrigin, initialVolume, initialSpeed) {
+        this.allowEncryptedMedia = allowEncryptedMedia ?? { value: false, show: true };
+        this.enableSameOrigin = enableSameOrigin ?? { value: false, show: true };
+        this.initialVolume = initialVolume ?? { value: 1, show: false };
+        this.initialSpeed = initialSpeed ?? { value: 1, show: false };
+    }
+
+    freezeSelf() {
+        Object.freeze(this.allowEncryptedMedia);
+        Object.freeze(this.enableSameOrigin);
+        Object.freeze(this.initialVolume);
+        Object.freeze(this.initialSpeed);
+        return Object.freeze(this);
+    }
+
+    newCopy() {
+        return new Settings({ ...this.allowEncryptedMedia },
+            { ...this.enableSameOrigin },
+            { ...this.initialVolume },
+            { ...this.initialSpeed });
+    }
+
+    static ytDefault = new Settings(
+        {value: true, show: false},
+        {value: true, show: false},
+        {value: 10, show: true},
+        {value: 2, show: true},
+    );
+    static ttvDefault = new Settings(
+        {value: false, show: false},
+        {value: true, show: false},
+        {value: 10, show: true},
+        {value: 2, show: true},
+    );
+    static othersDefault = new Settings(
+        {value: false, show: true},
+        {value: true, show: true},
+    );
+}
+
 class Action {
     static #urlPrefix = 'https://ultramarineblue.gitlab.io/useless-pages/';
     //static #urlPrefix = 'http://localhost:8000/public/';
+    static #ytPage = 'yt.html';
+    static #ttvPage = 'ttv.html';
+    static #testPage = 'test.html';
+
     id;
     name;
     placeholder;
     #functionPage;
     #queryToCommand;
     #defaultSettings;
-    #showInputs;
 
     /**
      * @param {string} id
      * @param {string} name
      * @param {string} placeholder
      * @param {string} functionPage
-     * @param {(queryText: string) => [number, string]} queryToCommand
-     * @param {{allowEncryptedMedia, enableSameOrigin, initialVolume, initialSpeed}} defaultSettings
-     * @param {string[]} showInputs
+     * @param {(queryText: string, settings: Settings) => [number, string]} queryToCommand
+     * @param {Settings} defaultSettings
      */
-    constructor(id, name, placeholder, functionPage, queryToCommand, defaultSettings, showInputs) {
+    constructor(id, name, placeholder, functionPage, queryToCommand, defaultSettings) {
         this.id = Object.freeze(id);
         this.name = Object.freeze(name);
         this.placeholder = Object.freeze(placeholder);
         this.#functionPage = Object.freeze(functionPage);
         this.#queryToCommand = Object.freeze(queryToCommand);
-        this.#defaultSettings = Object.freeze(defaultSettings);
-        this.#showInputs = Object.freeze(showInputs);
+        this.#defaultSettings = defaultSettings.freezeSelf();
 
         Object.freeze(this);
     }
@@ -49,11 +102,12 @@ class Action {
      * Think of this as some form of IPC: the embedded pages are functions and their calling
      * parameters are encoded as JSON array in the hash of the URL
      * @param {string?} queryText
+     * @param {Settings} settings
      * @returns {string}
      */
-    getEmbedUrl(queryText) {
+    getEmbedUrl(queryText, settings) {
         try {
-            const command = this.#queryToCommand(queryText?.normalize()?.trim() ?? '');
+            const command = this.#queryToCommand(queryText?.normalize()?.trim() ?? '', settings);
             const hash = encodeURIComponent(JSON.stringify(command));
             return Action.#urlPrefix + this.#functionPage + '#' + hash;
         } catch (e) {
@@ -67,14 +121,7 @@ class Action {
      * @returns Copy of defaults
      */
     getDefaults() {
-        return { ...this.#defaultSettings };
-    }
-
-    /**
-     * @returns Copy of array
-     */
-    getShowInputs() {
-        return [...this.#showInputs];
+        return this.#defaultSettings.newCopy();
     }
 
     static actions = Object.freeze([
@@ -82,7 +129,7 @@ class Action {
             'ytVideo',
             'YouTube Video',
             'Video URL',
-            'yt.html',
+            Action.#ytPage,
             (queryText) => {
                 const url = new URL(queryText);
                 if (url.hostname.toLowerCase().endsWith('youtu.be')) {
@@ -94,50 +141,55 @@ class Action {
                     return [0, url.searchParams.get('v')];
                 }
             },
+            Settings.ytDefault
         ),
         new Action(
             'ytPlaylist',
             'YouTube Playlist',
             'Playlist URL',
-            'yt.html',
+            Action.#ytPage,
             (queryText) => {
                 // url format: https://www.youtube.com/playlist?list={long string}
                 const url = new URL(queryText);
                 return [1, url.searchParams.get('list')];
             },
+            Settings.ytDefault
         ),
         new Action(
             'embedPage',
             'Embed webpage',
             'URL',
-            'test.html',
+            Action.#testPage,
             (queryText) => {
                 return [0, queryText];
             },
+            Settings.othersDefault
         ),
         new Action(
             'runScript',
             'Run JS in iframe',
             'JavaScript',
-            'test.html',
+            Action.#testPage,
             (queryText) => {
                 return [1, queryText];
             },
+            new Settings()
         ),
         new Action(
             'ttvChannel',
             'Twitch Channel',
             'Channel name',
-            'ttv.html',
+            Action.#ttvPage,
             (queryText) => {
                 return [0, queryText];
             },
+            Settings.ttvDefault
         ),
         new Action(
             'ttvVod',
             'Twitch VOD',
             'VOD URL',
-            'ttv.html',
+            Action.#ttvPage,
             (queryText) => {
                 // url format: https://www.twitch.tv/videos/{a large number}
                 const url = new URL(queryText);
@@ -148,15 +200,17 @@ class Action {
                 }
                 return [1, lastPath];
             },
+            Settings.ttvDefault
         ),
         new Action(
             'gmaps',
             'Google Maps',
             'Search location',
-            'test.html',
+            Action.#testPage,
             (queryText) => {
                 return [0, `https://maps.google.com/maps?hl=en&q=${encodeURIComponent(queryText)}&t=m&z=12&ie=UTF8&iwloc=B&output=embed`];
             },
+            Settings.othersDefault
         ),
     ]);
 }
@@ -199,17 +253,14 @@ class EmbedPage {
     sandboxAttr = '';
     allowAttr = '';
     srcAttr = blankPage;
-    selectedActionId = Action.actions[0].id;
     queryText = '';
 
-    allowEncryptedMedia = false;
-    enableSameOrigin = true;
-
-    constructor() { }
+    selectedActionId = Action.actions[0].id;
+    settings = Action.actions[0].getDefaults();
 
     async loadIframe() {
         const selectedAction = EmbedPage.#actionsMap.get(this.selectedActionId);
-        const embedUrl = selectedAction?.getEmbedUrl(this.queryText) ?? blankPage;
+        const embedUrl = selectedAction?.getEmbedUrl(this.queryText, this.settings) ?? blankPage;
 
         this.showIframe = false;
         await this.$nextTick();
@@ -227,7 +278,7 @@ class EmbedPage {
 
     setAllow() {
         this.allowAttr = "accelerometer 'none'; ambient-light-sensor 'none'; attribution-reporting 'none'; autoplay 'none'; bluetooth 'none'; browsing-topics 'none'; camera 'none'; compute-pressure 'none'; cross-origin-isolated 'none'; display-capture 'none'; document-domain 'none'; fullscreen 'none'; gamepad 'none'; geolocation 'none'; gyroscope 'none'; hid 'none'; identity-credentials-get 'none'; idle-detection 'none'; local-fonts 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; otp-credentials 'none'; payment 'none'; picture-in-picture 'none'; publickey-credentials-create 'none'; publickey-credentials-get 'none'; screen-wake-lock 'none'; serial 'none'; speaker-selection 'none'; storage-access 'none'; usb 'none'; web-share 'none'; window-management 'none'; xr-spatial-tracking 'none'; ";
-        if (this.allowEncryptedMedia) {
+        if (this.settings.allowEncryptedMedia.value) {
             this.allowAttr = this.allowAttr.concat(" encrypted-media * ;");
         } else {
             this.allowAttr = this.allowAttr.concat(" encrypted-media 'none';");
@@ -236,7 +287,7 @@ class EmbedPage {
 
     setSandbox() {
         this.sandboxAttr = 'allow-scripts ';
-        if (this.enableSameOrigin) {
+        if (this.settings.enableSameOrigin.value) {
             this.sandboxAttr = this.sandboxAttr.concat('allow-same-origin ');
         }
     }
@@ -251,6 +302,10 @@ class EmbedPage {
 
     getPlaceholder() {
         return EmbedPage.#actionsMap.get(this.selectedActionId).placeholder;
+    }
+
+    fillSettingWithDefaults() {
+        this.settings = EmbedPage.#actionsMap.get(this.selectedActionId).getDefaults();
     }
 }
 
