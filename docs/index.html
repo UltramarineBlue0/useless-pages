@@ -10,22 +10,20 @@
     <meta name="color-scheme" content="dark">
     <meta name="theme-color" content="black">
 
-    <!--no-referrer + no crossorigin attribute prevents the browser from sending a Referer or an Origin header.
-    Assuming the files themselves are not tampered, this hides the origin of the requests from the cdns-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
-        integrity="sha256-PI8n5gCcz9cQqQXm3PEtDuPG8qx9oFsFctPg0S5zb8g=" />
+        integrity="sha256-PI8n5gCcz9cQqQXm3PEtDuPG8qx9oFsFctPg0S5zb8g=" crossorigin="anonymous" />
 
     <script defer type="module" src="./index.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"
-        integrity="sha256-PtHu0lJIiSHfZeNj1nFd6wTX+Squ255SGZ/fc8seCtM="></script>
+        integrity="sha256-PtHu0lJIiSHfZeNj1nFd6wTX+Squ255SGZ/fc8seCtM=" crossorigin="anonymous"></script>
 
     <link rel="icon" href="./favicon.png" />
 </head>
 
-<body class="w-100 h-100 position-relative top-0 start-0 m-0 p-0">
+<body class="w-100 h-100 position-absolute top-0 start-0 m-0 p-0">
     <!--In order for the element to exactly fill out the visible area without scroll bars, explicit height, width and
     position on body and child element is necessary. The same styles are applied manually on the function pages-->
-    <main x-data="embed" class="vstack gap-0 w-100 h-100 position-absolute overflow-hidden top-0 start-0 z-0">
+    <main x-data="embed" class="vstack gap-0 w-100 h-100 position-relative overflow-hidden top-0 start-0 z-1">
         <noscript class="h1">Please enable javascript</noscript>
 
         <aside x-show="!showIframe" class="w-100 h-100 bg-black"></aside>
@@ -36,12 +34,13 @@
                 class="w-100 h-100 bg-black" referrerpolicy="no-referrer" credentialless></iframe>
         </template>
 
-        <form x-show="showDialog" x-on:submit.prevent="loadIframe" class="border border-1 border-secondary mt-auto"
-            action="about:blank" novalidate autocapitalize="off" autocomplete="off" rel="nofollow noreferrer">
-            <div class="position-relative top-0 end-0 z-2 pt-2 pe-2">
+        <form x-show="showDialog" x-on:submit.prevent="loadIframe"
+            class="border border-1 border-secondary mt-auto position-relative" action="about:blank" novalidate
+            autocapitalize="off" autocomplete="off" rel="nofollow noreferrer">
+            <div class="position-absolute top-0 end-0 z-2 pt-1 pe-1">
                 <button x-show="showDialog" x-on:click="showDialog = false" class="btn-close" type="button"></button>
             </div>
-            <div class="row gx-2 my-2 align-items-center">
+            <div class="row gx-2 m-2 align-items-center">
                 <div class="col-11 col-lg-2">
                     <select x-model="selectedActionId" x-on:change="fillSettingWithDefaults" class="form-select">
                         <template x-for="action in actions" :key="action.id">
@@ -64,16 +63,20 @@
                     </div>
                 </div>
                 <div x-show="settings.initialVolume.show" class="col-auto">
-                    <label x-text="'Initial Volume: ' + settings.initialVolume.value" for="initialVolume" class="form-label"></label>
-                    <input x-model.number="settings.initialVolume.value" type="range" class="form-range" min="0" max="100" step="5" id="initialVolume">
+                    <label x-text="'Initial Volume: ' + settings.initialVolume.value" for="initialVolume"
+                        class="form-label"></label>
+                    <input x-model.number="settings.initialVolume.value" type="range" class="form-range" min="0"
+                        max="100" step="5" id="initialVolume">
                 </div>
                 <div x-show="settings.initialSpeed.show" class="col-auto">
-                    <label x-text="'Initial Speed: ' + settings.initialSpeed.value" for="initialSpeed" class="form-label"></label>
-                    <input x-model.number="settings.initialSpeed.value" type="range" class="form-range" min="1" max="2" step="0.25" id="initialSpeed">
+                    <label x-text="'Initial Speed: ' + settings.initialSpeed.value" for="initialSpeed"
+                        class="form-label"></label>
+                    <input x-model.number="settings.initialSpeed.value" type="range" class="form-range" min="0.5" max="2"
+                        step="0.25" id="initialSpeed">
                 </div>
             </div>
             <div
-                x-bind:class="selectedActionId != 'runScript' ? 'input-group input-group-lg' : 'input-group input-group-sm'">
+                x-bind:class="selectedActionId != 'runScript' ? 'input-group input-group-lg m-2' : 'input-group input-group-sm m-2'">
                 <button type="submit" class="btn btn-primary">Load</button>
                 <input x-show="selectedActionId != 'runScript'" x-model="queryText" x-bind:placeholder="getPlaceholder"
                     x-on:focus="$el.select()" type="text" class="form-control">
