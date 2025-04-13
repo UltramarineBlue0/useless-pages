@@ -43,6 +43,12 @@
                 <script defer type="module">${command[1]}${decodeURIComponent('%3C%2Fscript%3E')}
                 <style>html, body { background: black; color: white; }</style>
                 </head>`;
+            } else if (command[0] == 2) {
+                iframe.srcdoc = `
+                <head>
+                <style>html, body { background: black; color: white; }</style>
+                </head>
+                <body>${command[1]}</body>`;
             }
 
             document.body.appendChild(iframe);

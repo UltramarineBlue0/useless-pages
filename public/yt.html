@@ -30,7 +30,7 @@
     <script defer type="module">
         try {
             const command = JSON.parse(decodeURIComponent(location.hash.substring(1)));
-            if (command.length != 2) {
+            if (command.length != 4) {
                 throw "Bad command: " + location.hash;
             }
 
@@ -49,15 +49,21 @@
                 playerVars.listType = 'playlist';
             }
 
-            window.onYouTubeIframeAPIReady = () => {
+            const setInitialParams = event => {
+                setTimeout(() => {
+                    event.target.setVolume(command[2]);
+                    event.target.setPlaybackRate(command[3]);
+                }, 9);
+            };
+
+            globalThis.onYouTubeIframeAPIReady = () => {
                 new YT.Player('player', {
                     playerVars: playerVars,
                     events: {
-                        onReady: event => event.target.setVolume(10),
+                        onReady: setInitialParams,
                     },
                 });
             };
-
         } catch (error) {
             console.error(error);
         }

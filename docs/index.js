@@ -1,6 +1,6 @@
 "use strict";
 
-document.title = (Math.random() * 65536).toString(2);
+document.title = 'Test Page ' + ((Math.random() * 65536).toString(2).split('.')[0]);
 
 (names => {
     for (const name of names) {
@@ -14,7 +14,7 @@ document.title = (Math.random() * 65536).toString(2);
 const blankPage = 'about:blank';
 
 /**
- * Settings applied to / set by the functions pages
+ * Settings applied to / set by the functions pages. Not all settings are used by every page
  */
 class Settings {
     allowEncryptedMedia;
@@ -44,8 +44,8 @@ class Settings {
     }
 
     /**
-     * @returns The defaults are immutable. Mutable deep copy is created to
-     * bind to the UI
+     * @returns The defaults are immutable. A mutable copy is created so that it can
+     * be modified by the UI
      */
     newCopy() {
         return new Settings({ ...this.allowEncryptedMedia },
@@ -55,29 +55,30 @@ class Settings {
     }
 
     static ytDefault = new Settings(
-        {value: true, show: false},
-        {value: true, show: false},
-        {value: 10, show: true},
-        {value: 2, show: true},
+        { value: true, show: false },
+        { value: true, show: false },
+        { value: 10, show: true },
+        { value: 2, show: true },
     );
     static ttvDefault = new Settings(
-        {value: true, show: false},
-        {value: true, show: false},
-        {value: 10, show: true},
-        {value: 2, show: true},
+        { value: true, show: false },
+        { value: true, show: false },
+        { value: 10, show: true },
+        { value: 1, show: false },
     );
     static othersDefault = new Settings(
-        {value: false, show: true},
-        {value: true, show: true},
+        { value: false, show: true },
+        { value: true, show: true },
     );
+    static safeDefault = new Settings();
 }
 
 /**
- * Definition of one possible function which the user can choose
+ * Definition of one possible function which the user can choose. Deeply immutable
  */
 class Action {
-    static #urlPrefix = 'https://ultramarineblue.gitlab.io/useless-pages/';
-    //static #urlPrefix = 'http://localhost:8000/public/';
+    //static #urlPrefix = 'https://ultramarineblue.gitlab.io/useless-pages/';
+    static #urlPrefix = 'http://localhost:8000/public/';
     static #ytPage = 'yt.html';
     static #ttvPage = 'ttv.html';
     static #testPage = 'test.html';
@@ -128,7 +129,7 @@ class Action {
     }
 
     /**
-     * @returns Copy of defaults
+     * @returns Mutable copy of defaults
      */
     getDefaults() {
         return this.#defaultSettings.newCopy();
@@ -140,16 +141,20 @@ class Action {
             'YouTube Video',
             'Video URL',
             Action.#ytPage,
-            (queryText) => {
+            (queryText, settings) => {
+                const volume = settings.initialVolume.value;
+                const speed = settings.initialSpeed.value;
                 const url = new URL(queryText);
+                let videoId;
                 if (url.hostname.toLowerCase().endsWith('youtu.be')) {
                     // url format: https://youtu.be/{video id}
                     const pathArray = url.pathname.split("/");
-                    return [0, pathArray[1]];
+                    videoId = pathArray[1];
                 } else {
                     // url format: https://www.youtube.com/watch?v={video id}
-                    return [0, url.searchParams.get('v')];
+                    videoId = url.searchParams.get('v');
                 }
+                return [0, videoId, volume, speed];
             },
             Settings.ytDefault
         ),
@@ -158,10 +163,12 @@ class Action {
             'YouTube Playlist',
             'Playlist URL',
             Action.#ytPage,
-            (queryText) => {
+            (queryText, settings) => {
+                const volume = settings.initialVolume.value;
+                const speed = settings.initialSpeed.value;
                 // url format: https://www.youtube.com/playlist?list={long string}
                 const url = new URL(queryText);
-                return [1, url.searchParams.get('list')];
+                return [1, url.searchParams.get('list'), volume, speed];
             },
             Settings.ytDefault
         ),
@@ -183,15 +190,26 @@ class Action {
             (queryText) => {
                 return [1, queryText];
             },
-            new Settings()
+            Settings.safeDefault
+        ),
+        new Action(
+            'showHtml',
+            'Render HTML fragment',
+            'HTML',
+            Action.#testPage,
+            (queryText) => {
+                return [2, queryText];
+            },
+            Settings.safeDefault
         ),
         new Action(
             'ttvChannel',
             'Twitch Channel',
             'Channel name',
             Action.#ttvPage,
-            (queryText) => {
-                return [0, queryText];
+            (queryText, settings) => {
+                const volume = settings.initialVolume.value / 100;
+                return [0, queryText, volume];
             },
             Settings.ttvDefault
         ),
@@ -200,7 +218,8 @@ class Action {
             'Twitch VOD',
             'VOD URL',
             Action.#ttvPage,
-            (queryText) => {
+            (queryText, settings) => {
+                const volume = settings.initialVolume.value / 100;
                 // url format: https://www.twitch.tv/videos/{a large number}
                 const url = new URL(queryText);
                 const pathArray = url.pathname.split("/");
@@ -208,7 +227,7 @@ class Action {
                 if (!lastPath.startsWith('v')) {
                     lastPath = 'v' + lastPath;
                 }
-                return [1, lastPath];
+                return [1, lastPath, volume];
             },
             Settings.ttvDefault
         ),
@@ -245,21 +264,30 @@ class Action {
  * (srcdoc is useless here, since with both allow-scripts and allow-same-origin the document is considered to be from the same origin as
  * the parent document.) This way their script can't access the embedding element via window.parent.document.querySelectorAll('iframe').
  *
- * So: Top level page -> iframe from a different domain, in which Youtube / Twitch script is used -> iframe from Youtube / Twitch with the
- * actual video content
+ * So: Top level page -> iframe from a different domain, in which third party scripts are used -> iframe with the actual (video or other
+ * types of) content
  *
- * This is not good: iframe-ception, slower loading time, more complex code and deployment
- * But I can't think of a better way to do it
+ * This is not good: iframe-ception, slower loading time, more complex code and deployment... But I can't think of a better way to do it
+ *
+ * Sadly, on both Safari and Chromium-based browsers, a nested iframe can get the origin of every parent browsing contexts using
+ * location.ancestorOrigins. All this effort and some limited form of tracking is still possible. At least it's only the origin of the
+ * top level page, not the full URL or other data on that page.
+ *
+ * Both YouTube and Twitch embedding script sends the full URL of the page where their script is included and executed to their server.
+ * Besides the fact that this alone can leak PII to Google / Amazon, if there are any PII in the full URL, I do wonder just how much of
+ * the deep web Google can detect and track. (Google Tag Manager, YouTube's script and possibly even Google Maps embedding script)
  */
 class EmbedPage {
     static #actionsMap = new Map(
         Action.actions.map(elem => [elem.id, elem])
     );
+    static #multiLineInputActionIds = new Set(['runScript', 'showHtml']);
 
     actions = Action.actions;
-
     showIframe = false;
     showDialog = true;
+    showTextArea = false;
+
     sandboxAttr = '';
     allowAttr = '';
     srcAttr = blankPage;
@@ -314,8 +342,9 @@ class EmbedPage {
         return EmbedPage.#actionsMap.get(this.selectedActionId).placeholder;
     }
 
-    fillSettingWithDefaults() {
+    actionSelectionChanged() {
         this.settings = EmbedPage.#actionsMap.get(this.selectedActionId).getDefaults();
+        this.showTextArea = EmbedPage.#multiLineInputActionIds.has(this.selectedActionId);
     }
 }
 

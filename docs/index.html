@@ -9,8 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="dark">
     <meta name="theme-color" content="black">
-    <!--Unfortunately, crossorigin="anonymous" is required to use resource integrity check. The browser will send the "Origin"
-    header to the cdn, allowing for a very limited form of tracking-->
+    <!--Unfortunately, crossorigin="anonymous" is required to use resource integrity check. The browser will send
+    the "Origin" header to the cdn, enabling the cdn providers for some limited form of tracking-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
         integrity="sha256-PI8n5gCcz9cQqQXm3PEtDuPG8qx9oFsFctPg0S5zb8g=" crossorigin="anonymous" />
 
@@ -23,7 +23,7 @@
 
 <body class="w-100 h-100 position-absolute top-0 start-0 m-0 p-0">
     <!--In order for the element to exactly fill out the visible area without scroll bars, explicit height, width and
-    position on body and child element is necessary. The same styles are applied manually on the function pages-->
+    position on body and child element is necessary. Similar fixes are applied manually on the function pages-->
     <main x-data="embed" class="vstack gap-0 w-100 h-100 position-relative overflow-hidden top-0 start-0 z-1">
         <noscript class="h1">Please enable javascript</noscript>
 
@@ -37,17 +37,11 @@
                 class="w-100 h-100 bg-black" referrerpolicy="no-referrer" credentialless></iframe>
         </template>
 
-        <form x-show="showDialog" x-on:submit.prevent="loadIframe"
-            class="border border-1 border-secondary mt-auto position-relative" action="about:blank" novalidate
-            autocapitalize="off" autocomplete="off" rel="nofollow noreferrer">
-            <!--The close button is positioned relative to the form element: form relative -> button absolute
-            (it needs to be inside the form element)-->
-            <div class="position-absolute top-0 end-0 z-2">
-                <button x-show="showDialog" x-on:click="showDialog = false" class="btn-close" type="button"></button>
-            </div>
+        <form x-show="showDialog" x-on:submit.prevent="loadIframe" class="border border-1 border-secondary mt-auto"
+            action="about:blank" novalidate autocapitalize="off" autocomplete="off" rel="nofollow noreferrer">
             <div class="row gx-2 m-1 align-items-center">
-                <div class="col-11 col-lg-2">
-                    <select x-model="selectedActionId" x-on:change="fillSettingWithDefaults" class="form-select">
+                <div class="col-auto">
+                    <select x-model="selectedActionId" x-on:change="actionSelectionChanged" class="form-select">
                         <template x-for="action in actions" :key="action.id">
                             <option x-bind:value="action.id" x-text="action.name"></option>
                         </template>
@@ -80,25 +74,28 @@
                         max="2" step="0.25" id="initialSpeed">
                 </div>
             </div>
-            <!--We don't need multi-line input except for running js code-->
-            <template x-if="selectedActionId != 'runScript'">
-                <div class="input-group input-group-lg m-1 flex-nowrap">
+            <!--For some reason margin doesn't work with input-group. Only padding can add space to the right of
+            the input-->
+            <template x-if="!showTextArea">
+                <div class="input-group input-group-lg p-1">
                     <button type="submit" class="btn btn-primary">Load</button>
                     <input x-model="queryText" x-bind:placeholder="getPlaceholder" x-on:focus="$el.select()" type="text"
                         class="form-control">
                 </div>
             </template>
-            <template x-if="selectedActionId == 'runScript'">
-                <div class="input-group input-group-sm m-1 flex-nowrap">
+            <template x-if="showTextArea">
+                <div class="input-group input-group-sm p-1">
                     <button type="submit" class="btn btn-primary">Load</button>
-                    <textarea x-model="queryText" x-bind:placeholder="getPlaceholder" x-on:focus="$el.select()"
+                    <textarea x-model="queryText" x-bind:placeholder="getPlaceholder" x-on:focus="$el.select()" rows="2"
                         class="form-control"></textarea>
                 </div>
             </template>
         </form>
-        <div class="position-absolute bottom-0 end-0 z-3 pb-1 pe-1 btn-group btn-group-sm">
+        <div class="position-absolute bottom-0 end-0 z-3 pb-1 pe-1 btn-group-vertical btn-group-sm">
             <button x-show="!showDialog" x-on:click="showDialog = true" class="btn btn-outline-light fw-bold"
-                type="button">&ltrif;</button>
+                type="button">&xutri;</button>
+            <button x-show="showDialog" x-on:click="showDialog = false" class="btn btn-outline-light fw-bold"
+                type="button">&xdtri;</button>
             <button x-on:click="toggleFullscreen" class="btn btn-outline-light fw-bold" type="button">&#x2921;</button>
         </div>
     </main>
