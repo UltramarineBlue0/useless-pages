@@ -1,6 +1,6 @@
 "use strict";
 
-document.title = 'Test Page ' + ((Math.random() * 65536).toString(2).split('.')[0]);
+document.title = 'Test Page ' + (Math.random().toString(2).split('.')[1]);
 
 (names => {
     for (const name of names) {
