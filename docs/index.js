@@ -77,8 +77,8 @@ class Settings {
  * Definition of one possible function which the user can choose. Deeply immutable
  */
 class Action {
-    //static #urlPrefix = 'https://ultramarineblue.gitlab.io/useless-pages/';
-    static #urlPrefix = 'http://localhost:8000/public/';
+    static #urlPrefix = 'https://ultramarineblue.gitlab.io/useless-pages/';
+    //static #urlPrefix = 'http://localhost:8000/public/';
     static #ytPage = 'yt.html';
     static #ttvPage = 'ttv.html';
     static #testPage = 'test.html';
@@ -95,7 +95,7 @@ class Action {
      * @param {string} name
      * @param {string} placeholder
      * @param {string} functionPage
-     * @param {(queryText: string, settings: Settings) => [number, string]} queryToCommand
+     * @param {(queryText: string, settings: Settings) => (number|string)[]} queryToCommand
      * @param {Settings} defaultSettings
      */
     constructor(id, name, placeholder, functionPage, queryToCommand, defaultSettings) {
