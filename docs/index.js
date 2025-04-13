@@ -178,7 +178,11 @@ class Action {
             'URL',
             Action.#testPage,
             (queryText) => {
-                return [0, queryText];
+                let url = queryText;
+                if ((!url.startsWith('https://')) && (!url.startsWith('//'))) {
+                    url = 'https://' + url;
+                }
+                return [0, url];
             },
             Settings.othersDefault
         ),
