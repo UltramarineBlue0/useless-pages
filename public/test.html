@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="content-security-policy"
-        content="object-src 'none'; form-action 'none'; base-uri 'none'; default-src 'self' https: 'unsafe-inline';">
+        content="object-src 'none'; form-action 'none'; base-uri 'none'; default-src http: https: 'unsafe-inline';">
     <meta name="referrer" content="no-referrer">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="dark">
@@ -28,7 +28,7 @@
     </style>
     <script defer type="module">
         try {
-            const command = JSON.parse(decodeURIComponent(location.hash.substring(1)));
+            const command = JSON.parse(decodeURI(location.hash.substring(1)));
             if (command.length != 2) {
                 throw "Bad command: " + location.hash;
             }

@@ -119,7 +119,7 @@ class Action {
     getEmbedUrl(queryText, settings) {
         try {
             const command = this.#queryToCommand(queryText?.normalize()?.trim() ?? '', settings);
-            const hash = encodeURIComponent(JSON.stringify(command));
+            const hash = encodeURI(JSON.stringify(command));
             return Action.#urlPrefix + this.#functionPage + '#' + hash;
         } catch (e) {
             alert(e);
@@ -179,7 +179,7 @@ class Action {
             Action.#testPage,
             (queryText) => {
                 let url = queryText;
-                if ((!url.startsWith('https://')) && (!url.startsWith('//'))) {
+                if ((!url.includes('://')) && (!url.startsWith('//'))) {
                     url = 'https://' + url;
                 }
                 return [0, url];
@@ -286,6 +286,8 @@ class EmbedPage {
         Action.actions.map(elem => [elem.id, elem])
     );
     static #multiLineInputActionIds = new Set(['runScript', 'showHtml']);
+    static #placeholderDocument = `<style>html, body { background: black; color: white; }</style>`;
+    placeholderDoc = EmbedPage.#placeholderDocument;
 
     actions = Action.actions;
     showIframe = false;
@@ -299,6 +301,28 @@ class EmbedPage {
 
     selectedActionId = Action.actions[0].id;
     settings = Action.actions[0].getDefaults();
+
+    init() {
+        // If there is a route in the hash, try to load it. Otherwise default to YouTube video.
+        try {
+            const route = location.hash.substring(1);
+            const index = route.indexOf('/');
+            const actionId = route.slice(0, index);
+            if (actionId && EmbedPage.#actionsMap.has(actionId)) {
+                this.selectedActionId = actionId;
+                this.queryText = route.slice(index + 1);
+                this.actionSelectionChanged();
+                this.loadIframe();
+            } else {
+                throw '';
+            }
+        } catch (e) {
+            this.selectedActionId = Action.actions[0].id;
+            this.actionSelectionChanged();
+        }
+        // By default the browser wont reload the page if a user manually changes the hash of the page
+        globalThis.addEventListener("hashchange", () => location.reload());
+    }
 
     async loadIframe() {
         const selectedAction = EmbedPage.#actionsMap.get(this.selectedActionId);
@@ -316,6 +340,11 @@ class EmbedPage {
         // sure the other attributes are present before navigation
         await this.$nextTick();
         this.srcAttr = embedUrl;
+        // preventDefault will leave the focus in the input element. Manually change focus to the content
+        this.$refs.iframeElement.focus({
+            preventScroll: false,
+            focusVisible: false,
+        });
     }
 
     setAllow() {

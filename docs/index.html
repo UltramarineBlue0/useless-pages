@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en" data-bs-theme="dark" class="w-100 h-100 position-relative top-0 start-0 m-0 p-0">
 
 <head>
     <meta charset="utf-8">
@@ -23,27 +23,30 @@
 
 <body class="w-100 h-100 position-absolute top-0 start-0 m-0 p-0">
     <!--In order for the element to exactly fill out the visible area without scroll bars, explicit height, width and
-    position on body and child element is necessary. Similar fixes are applied manually on the function pages-->
-    <main x-data="embed" class="vstack gap-0 w-100 h-100 position-relative overflow-hidden top-0 start-0 z-1">
-        <noscript class="h1">Please enable javascript</noscript>
+    position on the root and body element is necessary. Similar fixes are applied manually on the function pages-->
+    <main x-data="embed" class="vstack gap-0 w-100 h-100 overflow-hidden">
+        <noscript class="display-3">Please enable javascript</noscript>
 
         <template x-if="!showIframe">
-            <aside class="w-100 h-100 bg-black"></aside>
+            <iframe x-bind:srcdoc="placeholderDoc" x-ref="iframeElement" sandbox="" class="w-100 h-100 m-0 p-0"
+                csp="form-action 'none'; base-uri 'none'; default-src 'unsafe-inline';" referrerpolicy="no-referrer"
+                credentialless></iframe>
         </template>
         <!--Modifying the src of an iframe attached to the DOM creates an entry in the history. Removing then
         recreating the iframe element doesn't change the history-->
         <template x-if="showIframe">
-            <iframe x-bind:allow="allowAttr" x-bind:sandbox="sandboxAttr" x-bind:src="srcAttr"
-                class="w-100 h-100 bg-black" referrerpolicy="no-referrer" credentialless></iframe>
+            <iframe x-bind:allow="allowAttr" x-bind:sandbox="sandboxAttr" x-ref="iframeElement" x-bind:src="srcAttr"
+                class="w-100 h-100 m-0 p-0" referrerpolicy="no-referrer" credentialless></iframe>
         </template>
 
-        <form x-show="showDialog" x-on:submit.prevent="loadIframe" class="border border-1 border-secondary mt-auto"
-            action="about:blank" novalidate autocapitalize="off" autocomplete="off" rel="nofollow noreferrer">
+        <form x-show="showDialog" x-on:submit.prevent="loadIframe" class="mt-auto" action="about:blank" novalidate
+            autocapitalize="off" autocomplete="off" rel="nofollow noreferrer">
             <div class="row gx-2 m-1 align-items-center">
                 <div class="col-auto">
                     <select x-model="selectedActionId" x-on:change="actionSelectionChanged" class="form-select">
                         <template x-for="action in actions" :key="action.id">
-                            <option x-bind:value="action.id" x-text="action.name"></option>
+                            <option x-bind:value="action.id" x-bind:selected="action.id === selectedActionId"
+                                x-text="action.name"></option>
                         </template>
                     </select>
                 </div>
@@ -70,28 +73,21 @@
                 <div x-show="settings.initialSpeed.show" class="col-auto">
                     <label x-text="'Initial Speed: ' + settings.initialSpeed.value" for="initialSpeed"
                         class="form-label m-0"></label>
-                    <input x-model.number="settings.initialSpeed.value" type="range" class="form-range" min="0.5"
+                    <input x-model.number="settings.initialSpeed.value" type="range" class="form-range" min="0.25"
                         max="2" step="0.25" id="initialSpeed">
                 </div>
             </div>
             <!--For some reason margin doesn't work with input-group. Only padding can add space to the right of
             the input-->
-            <template x-if="!showTextArea">
-                <div class="input-group input-group-lg p-1">
-                    <button type="submit" class="btn btn-primary">Load</button>
-                    <input x-model="queryText" x-bind:placeholder="getPlaceholder" x-on:focus="$el.select()" type="text"
-                        class="form-control">
-                </div>
-            </template>
-            <template x-if="showTextArea">
-                <div class="input-group input-group-sm p-1">
-                    <button type="submit" class="btn btn-primary">Load</button>
-                    <textarea x-model="queryText" x-bind:placeholder="getPlaceholder" x-on:focus="$el.select()" rows="2"
-                        class="form-control"></textarea>
-                </div>
-            </template>
+            <div x-bind:class="'p-1 input-group input-group-' + (showTextArea ? 'sm' : 'lg')">
+                <button type="submit" class="btn btn-primary">Load</button>
+                <input x-show="!showTextArea" x-model="queryText" x-bind:placeholder="getPlaceholder"
+                    x-on:focus="$el.select()" type="text" class="form-control">
+                <textarea x-show="showTextArea" x-model="queryText" x-bind:placeholder="getPlaceholder"
+                    x-on:focus="$el.select()" rows="2" class="form-control"></textarea>
+            </div>
         </form>
-        <div class="position-absolute bottom-0 end-0 z-3 pb-1 pe-1 btn-group-vertical btn-group-sm">
+        <div class="position-absolute bottom-0 end-0 z-3 btn-group-vertical btn-group-sm">
             <button x-show="!showDialog" x-on:click="showDialog = true" class="btn btn-outline-light fw-bold"
                 type="button">&xutri;</button>
             <button x-show="showDialog" x-on:click="showDialog = false" class="btn btn-outline-light fw-bold"

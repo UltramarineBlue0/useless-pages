@@ -30,7 +30,7 @@
     <script defer src="https://embed.twitch.tv/embed/v1.js"></script>
     <script defer type="module">
         try {
-            const command = JSON.parse(decodeURIComponent(location.hash.substring(1)));
+            const command = JSON.parse(decodeURI(location.hash.substring(1)));
             if (command.length != 3) {
                 throw "Bad command: " + location.hash;
             }
