@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="content-security-policy"
-        content="object-src 'none'; form-action 'none'; base-uri 'none'; default-src http: https: 'unsafe-inline';">
+        content="object-src 'none'; form-action 'none'; base-uri 'none'; default-src http: https: 'unsafe-inline' 'unsafe-eval';">
     <meta name="referrer" content="no-referrer">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="dark">
@@ -40,7 +40,7 @@
                 // the end script tag always ends an inline script, regardless where it appears
                 iframe.srcdoc = `
                 <head>
-                <script defer type="module">${command[1]}${decodeURIComponent('%3C%2Fscript%3E')}
+                <script defer type="module">${command[1]}${decodeURI('%3C/script%3E')}
                 <style>html, body { background: black; color: white; }</style>
                 </head>`;
             } else if (command[0] == 2) {

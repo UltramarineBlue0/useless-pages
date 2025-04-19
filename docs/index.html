@@ -27,9 +27,9 @@
     <main x-data="embed" class="vstack gap-0 w-100 h-100 overflow-hidden">
         <noscript class="display-3">Please enable javascript</noscript>
 
-        <iframe x-show="!showIframe" x-bind:class="showIframe ? 'fixed-bottom' : 'w-100 h-100 m-0 p-0'"
-            x-bind:srcdoc="placeholderDoc" sandbox="" referrerpolicy="no-referrer" credentialless
-            csp="form-action 'none'; base-uri 'none'; default-src 'unsafe-inline';"></iframe>
+        <iframe x-bind:class="showIframe ? 'fixed-top d-none' : 'w-100 h-100 m-0 p-0'" x-bind:srcdoc="placeholderDoc"
+            sandbox="" credentialless height="0" width="0"
+            csp="form-action 'none'; base-uri 'none'; style-src 'unsafe-inline'; default-src 'none';"></iframe>
         <!--Modifying the src of an iframe attached to the DOM creates an entry in the history. Removing then
         recreating the iframe element doesn't change the history. Allow and sandbox attribute only apply if they are
         present before loading the iframe. It seems that alpine.js sets the attributes in the order of declaration
