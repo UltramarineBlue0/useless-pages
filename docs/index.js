@@ -327,19 +327,16 @@ class EmbedPage {
     async loadIframe() {
         const selectedAction = EmbedPage.#actionsMap.get(this.selectedActionId);
         const embedUrl = selectedAction?.getEmbedUrl(this.queryText, this.settings) ?? blankPage;
-
+        // We need to remove then recreate the iframe element
         this.showIframe = false;
         await this.$nextTick();
 
-        this.setAllow();
         this.setSandbox();
-        this.srcAttr = blankPage;
-        this.showIframe = true;
-        // Allow and sandbox attribute only apply if they are present before loading the iframe. Depending on how alpine.js
-        // sets the attributes, the navigation may start before the other attributes are set. => Delay setting src to make
-        // sure the other attributes are present before navigation
-        await this.$nextTick();
+        this.setAllow();
         this.srcAttr = embedUrl;
+        this.showIframe = true;
+
+        await this.$nextTick();
         // preventDefault will leave the focus in the input element. Manually change focus to the content
         this.$refs.iframeElement.focus({
             preventScroll: false,

@@ -27,15 +27,15 @@
     <main x-data="embed" class="vstack gap-0 w-100 h-100 overflow-hidden">
         <noscript class="display-3">Please enable javascript</noscript>
 
-        <template x-if="!showIframe">
-            <iframe x-bind:srcdoc="placeholderDoc" x-ref="iframeElement" sandbox="" class="w-100 h-100 m-0 p-0"
-                csp="form-action 'none'; base-uri 'none'; default-src 'unsafe-inline';" referrerpolicy="no-referrer"
-                credentialless></iframe>
-        </template>
+        <iframe x-show="!showIframe" x-bind:class="showIframe ? 'fixed-bottom' : 'w-100 h-100 m-0 p-0'"
+            x-bind:srcdoc="placeholderDoc" sandbox="" referrerpolicy="no-referrer" credentialless
+            csp="form-action 'none'; base-uri 'none'; default-src 'unsafe-inline';"></iframe>
         <!--Modifying the src of an iframe attached to the DOM creates an entry in the history. Removing then
-        recreating the iframe element doesn't change the history-->
+        recreating the iframe element doesn't change the history. Allow and sandbox attribute only apply if they are
+        present before loading the iframe. It seems that alpine.js sets the attributes in the order of declaration
+        on the element: Need to retest when updating alpine.js to a new version-->
         <template x-if="showIframe">
-            <iframe x-bind:allow="allowAttr" x-bind:sandbox="sandboxAttr" x-ref="iframeElement" x-bind:src="srcAttr"
+            <iframe x-ref="iframeElement" x-bind:sandbox="sandboxAttr" x-bind:allow="allowAttr" x-bind:src="srcAttr"
                 class="w-100 h-100 m-0 p-0" referrerpolicy="no-referrer" credentialless></iframe>
         </template>
 
@@ -88,11 +88,11 @@
             </div>
         </form>
         <div class="position-absolute bottom-0 end-0 z-3 btn-group-vertical btn-group-sm">
-            <button x-show="!showDialog" x-on:click="showDialog = true" class="btn btn-outline-light fw-bold"
+            <button x-show="!showDialog" x-on:click="showDialog = true" class="btn btn-outline-info fw-bold"
                 type="button">&xutri;</button>
-            <button x-show="showDialog" x-on:click="showDialog = false" class="btn btn-outline-light fw-bold"
+            <button x-show="showDialog" x-on:click="showDialog = false" class="btn btn-outline-info fw-bold"
                 type="button">&xdtri;</button>
-            <button x-on:click="toggleFullscreen" class="btn btn-outline-light fw-bold" type="button">&#x2921;</button>
+            <button x-on:click="toggleFullscreen" class="btn btn-outline-info fw-bold" type="button">&#x2921;</button>
         </div>
     </main>
 </body>
