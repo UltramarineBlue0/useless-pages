@@ -255,6 +255,22 @@ class Action {
             Settings.othersDefault
         ),
     ]);
+
+    static #actionsMap = new Map(
+        Action.actions.map(elem => [elem.id, elem])
+    );
+
+    /**
+     * @param {string?} actionId
+     * @returns Throws if id is null or unknown
+     */
+    static getById(actionId) {
+        const action = Action.#actionsMap.get(actionId);
+        if (action == null) {
+            throw new Error("Unknown action id");
+        }
+        return action;
+    }
 }
 
 /**
@@ -292,13 +308,11 @@ class Action {
  */
 class EmbedPage {
     static #blankPage = 'about:blank';
-    static #actionsMap = new Map(
-        Action.actions.map(elem => [elem.id, elem])
-    );
     static #multiLineInputActionIds = new Set(['runScript', 'showHtml']);
     static #placeholderDocument = `<style>html, body { background: black; color: white; }</style>`;
+
     placeholderDoc = EmbedPage.#placeholderDocument;
-    rndStr = Math.random().toString(2);
+    rndStr = Math.random().toString(36);
 
     actions = Action.actions;
     showIframe = false;
@@ -322,17 +336,13 @@ class EmbedPage {
             const route = location.hash.substring(1);
             const index = route.indexOf('/');
             const actionId = route.slice(0, index);
-            if (actionId && EmbedPage.#actionsMap.has(actionId)) {
-                this.selectedActionId = actionId;
-                this.actionSelectionChanged();
-                const selectedAction = EmbedPage.#actionsMap.get(this.selectedActionId);
+            const selectedAction = Action.getById(actionId);
+            this.selectedActionId = selectedAction.id;
+            this.actionSelectionChanged();
 
-                this.queryText = decodeURI(route.slice(index + 1));
-                const embedUrl = selectedAction.getEmbedUrl(this.queryText, this.settings);
-                this.setAttributesForNavigation(embedUrl);
-            } else {
-                throw 'Reset';
-            }
+            this.queryText = decodeURI(route.slice(index + 1));
+            const embedUrl = selectedAction.getEmbedUrl(this.queryText, this.settings);
+            this.setAttributesForNavigation(embedUrl);
         } catch (e) {
             //console.log(e);
             this.resetIframe();
@@ -344,7 +354,7 @@ class EmbedPage {
         this.sandboxAttr = '';
         this.allowAttr = '';
         this.srcAttr = EmbedPage.#blankPage;
-        this.rndStr = Math.random().toString(2);
+        this.rndStr = Math.random().toString(36);
     }
 
     init() {
@@ -354,8 +364,7 @@ class EmbedPage {
 
     async loadIframe() {
         try {
-            const selectedAction = EmbedPage.#actionsMap.get(this.selectedActionId);
-            const embedUrl = selectedAction.getEmbedUrl(this.queryText, this.settings);
+            const embedUrl = Action.getById(this.selectedActionId).getEmbedUrl(this.queryText, this.settings);
             // We need to remove then recreate the iframe element
             this.resetIframe();
             await this.$nextTick();
@@ -400,11 +409,11 @@ class EmbedPage {
     }
 
     getPlaceholder() {
-        return EmbedPage.#actionsMap.get(this.selectedActionId).placeholder;
+        return Action.getById(this.selectedActionId).placeholder;
     }
 
     actionSelectionChanged() {
-        this.settings = EmbedPage.#actionsMap.get(this.selectedActionId).getDefaults();
+        this.settings = Action.getById(this.selectedActionId).getDefaults();
         this.showTextArea = EmbedPage.#multiLineInputActionIds.has(this.selectedActionId);
     }
 }
