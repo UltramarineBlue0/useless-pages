@@ -325,21 +325,17 @@ class EmbedPage {
             if (actionId && EmbedPage.#actionsMap.has(actionId)) {
                 this.selectedActionId = actionId;
                 this.actionSelectionChanged();
-                this.queryText = decodeURI(route.slice(index + 1));
                 const selectedAction = EmbedPage.#actionsMap.get(this.selectedActionId);
+
+                this.queryText = decodeURI(route.slice(index + 1));
                 const embedUrl = selectedAction.getEmbedUrl(this.queryText, this.settings);
-                this.setSandbox();
-                this.setAllow();
-                this.srcAttr = embedUrl;
-                this.showIframe = true;
+                this.setAttributesForNavigation(embedUrl);
             } else {
                 throw 'Reset';
             }
         } catch (e) {
-            console.log(e);
+            //console.log(e);
             this.resetIframe();
-            this.selectedActionId = Action.actions[0].id;
-            this.actionSelectionChanged();
         }
     }
 
@@ -363,11 +359,7 @@ class EmbedPage {
             // We need to remove then recreate the iframe element
             this.resetIframe();
             await this.$nextTick();
-
-            this.setSandbox();
-            this.setAllow();
-            this.srcAttr = embedUrl;
-            this.showIframe = true;
+            this.setAttributesForNavigation(embedUrl);
 
             await this.$nextTick();
             // preventDefault will leave the focus in the input element. Manually change focus to the content
@@ -382,20 +374,21 @@ class EmbedPage {
         }
     }
 
-    setAllow() {
+    setAttributesForNavigation(iframeUrl) {
+        this.sandboxAttr = 'allow-scripts ';
+        if (this.settings.enableSameOrigin.value) {
+            this.sandboxAttr = this.sandboxAttr.concat('allow-same-origin ');
+        }
+
         this.allowAttr = "accelerometer 'none'; ambient-light-sensor 'none'; attribution-reporting 'none'; autoplay 'none'; bluetooth 'none'; browsing-topics 'none'; camera 'none'; compute-pressure 'none'; cross-origin-isolated 'none'; display-capture 'none'; document-domain 'none'; fullscreen 'none'; gamepad 'none'; geolocation 'none'; gyroscope 'none'; hid 'none'; identity-credentials-get 'none'; idle-detection 'none'; local-fonts 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; otp-credentials 'none'; payment 'none'; picture-in-picture 'none'; publickey-credentials-create 'none'; publickey-credentials-get 'none'; screen-wake-lock 'none'; serial 'none'; speaker-selection 'none'; storage-access 'none'; usb 'none'; web-share 'none'; window-management 'none'; xr-spatial-tracking 'none'; ";
         if (this.settings.allowEncryptedMedia.value) {
             this.allowAttr = this.allowAttr.concat(" encrypted-media * ;");
         } else {
             this.allowAttr = this.allowAttr.concat(" encrypted-media 'none';");
         }
-    }
 
-    setSandbox() {
-        this.sandboxAttr = 'allow-scripts ';
-        if (this.settings.enableSameOrigin.value) {
-            this.sandboxAttr = this.sandboxAttr.concat('allow-same-origin ');
-        }
+        this.srcAttr = iframeUrl;
+        this.showIframe = true;
     }
 
     toggleFullscreen() {
