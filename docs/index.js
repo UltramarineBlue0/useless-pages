@@ -11,7 +11,6 @@ document.title = 'Test Page ' + (Math.random().toString(2).split('.')[1]);
     }
 })(['application-name', 'author', 'description', 'generator', 'keywords', 'creator', 'publisher']);
 
-const blankPage = 'about:blank';
 
 /**
  * Settings applied to / set by the functions pages. Not all settings are used by every page
@@ -112,20 +111,14 @@ class Action {
     /**
      * Think of this as some form of IPC: the embedded pages are functions and their calling
      * parameters are encoded as JSON array in the hash of the URL
-     * @param {string?} queryText
+     * @param {string} queryText
      * @param {Settings} settings
      * @returns {string}
      */
     getEmbedUrl(queryText, settings) {
-        try {
-            const command = this.#queryToCommand(queryText?.normalize()?.trim() ?? '', settings);
-            const hash = encodeURI(JSON.stringify(command));
-            return Action.#urlPrefix + this.#functionPage + '#' + hash;
-        } catch (e) {
-            alert(e);
-            console.error(e);
-            return blankPage;
-        }
+        const command = this.#queryToCommand(queryText.normalize().trim(), settings);
+        const hash = encodeURI(JSON.stringify(command));
+        return Action.#urlPrefix + this.#functionPage + '#' + hash;
     }
 
     /**
@@ -133,6 +126,16 @@ class Action {
      */
     getDefaults() {
         return this.#defaultSettings.newCopy();
+    }
+
+    /**
+     * @param {string?} value Must contain at least 1 non whitespace character
+     * @param {string} errorMsg
+     */
+    static #errorIfEmpty(value, errorMsg) {
+        if (value == null || value.trim().length == 0) {
+            throw new Error(`Invalid input: ${errorMsg}`);
+        }
     }
 
     static actions = Object.freeze([
@@ -154,6 +157,7 @@ class Action {
                     // url format: https://www.youtube.com/watch?v={video id}
                     videoId = url.searchParams.get('v');
                 }
+                Action.#errorIfEmpty(videoId, 'Video ID empty');
                 return [0, videoId, volume, speed];
             },
             Settings.ytDefault
@@ -168,7 +172,9 @@ class Action {
                 const speed = settings.initialSpeed.value;
                 // url format: https://www.youtube.com/playlist?list={long string}
                 const url = new URL(queryText);
-                return [1, url.searchParams.get('list'), volume, speed];
+                const playlistId = url.searchParams.get('list');
+                Action.#errorIfEmpty(playlistId, 'Playlist ID empty');
+                return [1, playlistId, volume, speed];
             },
             Settings.ytDefault
         ),
@@ -179,7 +185,7 @@ class Action {
             Action.#testPage,
             (queryText) => {
                 let url = queryText;
-                if ((!url.includes('://')) && (!url.startsWith('//'))) {
+                if ((!url.includes('://')) && (!url.startsWith('//')) && (url.length > 1)) {
                     url = 'https://' + url;
                 }
                 return [0, url];
@@ -213,6 +219,7 @@ class Action {
             Action.#ttvPage,
             (queryText, settings) => {
                 const volume = settings.initialVolume.value / 100;
+                Action.#errorIfEmpty(queryText, 'Channel name empty');
                 return [0, queryText, volume];
             },
             Settings.ttvDefault
@@ -228,6 +235,7 @@ class Action {
                 const url = new URL(queryText);
                 const pathArray = url.pathname.split("/");
                 let lastPath = pathArray[pathArray.length - 1];
+                Action.#errorIfEmpty(lastPath, 'VOD ID empty');
                 if (!lastPath.startsWith('v')) {
                     lastPath = 'v' + lastPath;
                 }
@@ -241,6 +249,7 @@ class Action {
             'Search location',
             Action.#testPage,
             (queryText) => {
+                Action.#errorIfEmpty(queryText, 'Location empty');
                 return [0, `https://maps.google.com/maps?hl=en&q=${encodeURIComponent(queryText)}&t=m&z=12&ie=UTF8&iwloc=B&output=embed`];
             },
             Settings.othersDefault
@@ -282,12 +291,14 @@ class Action {
  * the deep web Google can detect and track. (Google Tag Manager, YouTube's script and possibly even Google Maps embedding script)
  */
 class EmbedPage {
+    static #blankPage = 'about:blank';
     static #actionsMap = new Map(
         Action.actions.map(elem => [elem.id, elem])
     );
     static #multiLineInputActionIds = new Set(['runScript', 'showHtml']);
     static #placeholderDocument = `<style>html, body { background: black; color: white; }</style>`;
     placeholderDoc = EmbedPage.#placeholderDocument;
+    rndStr = Math.random().toString(2);
 
     actions = Action.actions;
     showIframe = false;
@@ -296,52 +307,79 @@ class EmbedPage {
 
     sandboxAttr = '';
     allowAttr = '';
-    srcAttr = blankPage;
+    srcAttr = EmbedPage.#blankPage;
     queryText = '';
 
     selectedActionId = Action.actions[0].id;
     settings = Action.actions[0].getDefaults();
 
-    init() {
-        // If there is a route in the hash, try to load it. Otherwise default to YouTube video.
+    /**
+     * The route in the hash is the initial state, not the current state. When the page is refreshed, any navigation
+     * made by user is removed and the page is returned to the initial state
+     */
+    constructor() {
         try {
             const route = location.hash.substring(1);
             const index = route.indexOf('/');
             const actionId = route.slice(0, index);
             if (actionId && EmbedPage.#actionsMap.has(actionId)) {
                 this.selectedActionId = actionId;
-                this.queryText = route.slice(index + 1);
                 this.actionSelectionChanged();
-                this.loadIframe();
+                this.queryText = decodeURI(route.slice(index + 1));
+                const selectedAction = EmbedPage.#actionsMap.get(this.selectedActionId);
+                const embedUrl = selectedAction.getEmbedUrl(this.queryText, this.settings);
+                this.setSandbox();
+                this.setAllow();
+                this.srcAttr = embedUrl;
+                this.showIframe = true;
             } else {
-                throw '';
+                throw 'Reset';
             }
         } catch (e) {
+            console.log(e);
+            this.resetIframe();
             this.selectedActionId = Action.actions[0].id;
             this.actionSelectionChanged();
         }
+    }
+
+    resetIframe() {
+        this.showIframe = false;
+        this.sandboxAttr = '';
+        this.allowAttr = '';
+        this.srcAttr = EmbedPage.#blankPage;
+        this.rndStr = Math.random().toString(2);
+    }
+
+    init() {
         // By default the browser wont reload the page if a user manually changes the hash of the page
         globalThis.addEventListener("hashchange", () => location.reload());
     }
 
     async loadIframe() {
-        const selectedAction = EmbedPage.#actionsMap.get(this.selectedActionId);
-        const embedUrl = selectedAction?.getEmbedUrl(this.queryText, this.settings) ?? blankPage;
-        // We need to remove then recreate the iframe element
-        this.showIframe = false;
-        await this.$nextTick();
+        try {
+            const selectedAction = EmbedPage.#actionsMap.get(this.selectedActionId);
+            const embedUrl = selectedAction.getEmbedUrl(this.queryText, this.settings);
+            // We need to remove then recreate the iframe element
+            this.resetIframe();
+            await this.$nextTick();
 
-        this.setSandbox();
-        this.setAllow();
-        this.srcAttr = embedUrl;
-        this.showIframe = true;
+            this.setSandbox();
+            this.setAllow();
+            this.srcAttr = embedUrl;
+            this.showIframe = true;
 
-        await this.$nextTick();
-        // preventDefault will leave the focus in the input element. Manually change focus to the content
-        this.$refs.iframeElement.focus({
-            preventScroll: false,
-            focusVisible: false,
-        });
+            await this.$nextTick();
+            // preventDefault will leave the focus in the input element. Manually change focus to the content
+            this.$refs.iframeElement.focus({
+                preventScroll: false,
+                focusVisible: false,
+            });
+        } catch (e) {
+            this.resetIframe();
+            console.error(e);
+            alert(e);
+        }
     }
 
     setAllow() {
