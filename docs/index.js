@@ -329,7 +329,7 @@ class EmbedPage {
 
     /**
      * The route in the hash is the initial state, not the current state. When the page is refreshed, any navigation
-     * made by user is removed and the page is returned to the initial state
+     * made by the user is discarded and the page returns to the initial state
      */
     constructor() {
         try {
@@ -372,10 +372,8 @@ class EmbedPage {
 
             await this.$nextTick();
             // preventDefault will leave the focus in the input element. Manually change focus to the content
-            this.$refs.iframeElement.focus({
-                preventScroll: false,
-                focusVisible: false,
-            });
+            this.$refs.iframeElement.focus();
+            this.$refs.iframeElement.scrollIntoView(true);
         } catch (e) {
             this.resetIframe();
             console.error(e);
@@ -391,9 +389,9 @@ class EmbedPage {
 
         this.allowAttr = "accelerometer 'none'; ambient-light-sensor 'none'; attribution-reporting 'none'; autoplay 'none'; bluetooth 'none'; browsing-topics 'none'; camera 'none'; compute-pressure 'none'; cross-origin-isolated 'none'; display-capture 'none'; document-domain 'none'; fullscreen 'none'; gamepad 'none'; geolocation 'none'; gyroscope 'none'; hid 'none'; identity-credentials-get 'none'; idle-detection 'none'; local-fonts 'none'; magnetometer 'none'; microphone 'none'; midi 'none'; otp-credentials 'none'; payment 'none'; picture-in-picture 'none'; publickey-credentials-create 'none'; publickey-credentials-get 'none'; screen-wake-lock 'none'; serial 'none'; speaker-selection 'none'; storage-access 'none'; usb 'none'; web-share 'none'; window-management 'none'; xr-spatial-tracking 'none'; ";
         if (this.settings.allowEncryptedMedia.value) {
-            this.allowAttr = this.allowAttr.concat(" encrypted-media * ;");
+            this.allowAttr = this.allowAttr.concat(" encrypted-media * ");
         } else {
-            this.allowAttr = this.allowAttr.concat(" encrypted-media 'none';");
+            this.allowAttr = this.allowAttr.concat(" encrypted-media 'none'");
         }
 
         this.srcAttr = iframeUrl;

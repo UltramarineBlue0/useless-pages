@@ -29,8 +29,7 @@
         }
     </style>
     <script defer type="module">
-        try {
-            const command = JSON.parse(decodeURI(location.hash.substring(1)));
+        (command => {
             if (command.length != 4) {
                 throw "Bad command: " + location.hash;
             }
@@ -65,9 +64,8 @@
                     },
                 });
             };
-        } catch (error) {
-            console.error(error);
-        }
+
+        })(JSON.parse(decodeURI(location.hash.substring(1))));
     </script>
     <script defer src="https://www.youtube.com/iframe_api"></script>
 </head>

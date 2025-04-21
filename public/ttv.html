@@ -30,8 +30,7 @@
     </style>
     <script defer src="https://embed.twitch.tv/embed/v1.js"></script>
     <script defer type="module">
-        try {
-            const command = JSON.parse(decodeURI(location.hash.substring(1)));
+        (command => {
             if (command.length != 3) {
                 throw "Bad command: " + location.hash;
             }
@@ -58,9 +57,8 @@
             };
 
             embed.addEventListener(Twitch.Embed.VIDEO_READY, setInitialParams);
-        } catch (error) {
-            console.error(error);
-        }
+
+        })(JSON.parse(decodeURI(location.hash.substring(1))));
     </script>
 </head>
 
