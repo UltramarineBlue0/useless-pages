@@ -35,8 +35,10 @@ opacity: 0.1;
 </style>
 <script>
 onload = () => {
-const frame = document.createElement('iframe');
-frame.sandbox = 'allow-scripts';
+const frame = document.createElement("iframe");
+frame.sandbox = "allow-scripts";
+frame.credentialless = true;
+frame.referrerPolicy = "no-referrer";
 frame.srcdoc = `<!DOCTYPE html>\n` + document.documentElement.outerHTML;
 setInterval(() => document.body.appendChild(frame.cloneNode(true)), 1);
 };

