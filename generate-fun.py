@@ -4,7 +4,23 @@
 def createHtml():
     # generates a webpage that tries to exhaust resources in a few different ways. the goal is to use more resources
     # the closer the requester is to a fully featured web browser.
-    # 1. more than a million nested elements: if the requester tries to build a DOM from the html
+    # 0. the page is highly repetitive: very small file after compression. the goal is to exhaust resources of the
+    #    requester while minimizing the impact on the server
+    # 1. if the requester tries to build a DOM from the html: more than a million nested elements will use considerable
+    #    resources to build and hold in memory. additionally, the error handling is also exercised: the markup is
+    #    invalid (div elements must be closed, closing p elements is optional). browsers handles this kind of error
+    #    by closing the div right before the end of body. most browser nowadays also limit the nesting depth to ~512
+    #    by reparenting the excessively deep elements (https://bugzilla.mozilla.org/show_bug.cgi?id=256180).
+    # 2. if the requester hasn't crashed and tries to render the page: the elements are placed on top of each other
+    #    and they are also partially transparent. depending on how the requester renders the page it might use
+    #    significant gpu or cpu time to create the visual appearance of the page
+    # 3. if the requester hasn't crashed after creating the DOM and tries to run the javascript: use a fork bomb to
+    #    further exhaust resources. infinitely copy itself to child iframes, which then also infinitely copy itself
+    #    to child iframes, etc. while most modern browsers limit the nesting depth of iframes and the total amount
+    #    of browsing contexts (https://github.com/WebKit/WebKit/pull/7219), resource exhaustion will probably happen
+    #    much earlier than those limits.
+    # 4. if all that still didn't exhaust the resources of the requester: reload the page after ~1.5 min to
+    #    continuously use resources of the requester
     PREFIX = r'''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,7 +49,10 @@ overflow: hidden;
 padding: 0;
 margin: 0;
 border: 0;
-background: radial-gradient(circle, rgba(0, 0, 0, 0.01) 90%, rgba(9, 9, 9, 0.01) 99%);
+background: radial-gradient(circle, rgba(0, 0, 0, 0.1) 90%, rgba(99, 99, 99, 0.1) 99%);
+background-blend-mode: screen;
+mix-blend-mode: screen;
+opacity: 0.1;
 }
 </style>
 <script>
@@ -47,13 +66,12 @@ setInterval(() => document.body.appendChild(frame.cloneNode(true)), 30000);
 <body>
 '''
     ELEM = r'<div><p>'
-    elem_arr = [ELEM] * 99
+    elem_arr = [ELEM] * 521
     elem_str = ''.join(elem_arr)
     return PREFIX + elem_str
 
 
 if __name__ == '__main__':
-    print(createHtml())
     import os
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
