@@ -37,6 +37,7 @@ def createHtml():
 <meta name="creator" content="p">
 <meta name="publisher" content="p">
 <title>div</title>
+<link rel="icon" href="http://a.invalid/i.ico">
 <style>
 html, body, div, p, iframe {
 box-sizing: border-box;
