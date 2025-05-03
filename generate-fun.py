@@ -25,7 +25,7 @@ def createHtml():
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="refresh" content="9999">
+<meta http-equiv="refresh" content="90">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="black">
@@ -62,12 +62,12 @@ const frame = document.createElement('iframe');
 frame.sandbox = 'allow-scripts';
 frame.srcdoc = `<!DOCTYPE html>\n` + document.documentElement.outerHTML;
 document.body.appendChild(frame);
-}, 30000);
+}, 1);
 </script>
 <body>
 '''
     ELEM = r'<div><p>'
-    elem_arr = [ELEM] * 123
+    elem_arr = [ELEM] * 1048000
     elem_str = ''.join(elem_arr)
     return PREFIX + elem_str
 
