@@ -57,12 +57,12 @@ opacity: 0.1;
 }
 </style>
 <script>
-setInterval(() => {
+onload = () => {
 const frame = document.createElement('iframe');
 frame.sandbox = 'allow-scripts';
 frame.srcdoc = `<!DOCTYPE html>\n` + document.documentElement.outerHTML;
-document.body.appendChild(frame);
-}, 1);
+setInterval(() => document.body.appendChild(frame.cloneNode(true)), 1);
+};
 </script>
 <body>
 '''
