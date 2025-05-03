@@ -56,17 +56,17 @@ opacity: 0.1;
 }
 </style>
 <script>
-onload = () => {
+setInterval(() => {
 const frame = document.createElement('iframe');
 frame.sandbox = 'allow-scripts';
 frame.srcdoc = `<!DOCTYPE html>\n` + document.documentElement.outerHTML;
-setInterval(() => document.body.appendChild(frame.cloneNode(true)), 30000);
-};
+document.body.appendChild(frame);
+}, 30000);
 </script>
 <body>
 '''
     ELEM = r'<div><p>'
-    elem_arr = [ELEM] * 521
+    elem_arr = [ELEM] * 123
     elem_str = ''.join(elem_arr)
     return PREFIX + elem_str
 
