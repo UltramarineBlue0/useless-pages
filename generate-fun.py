@@ -47,10 +47,9 @@ overflow: hidden;
 padding: 0;
 margin: 0;
 border: 0;
-background: radial-gradient(rgba(0, 0, 0, 0.8) 80%, rgba(1, 1, 1, 0.8) 100%);
+background: radial-gradient(rgba(0, 0, 0, 0.1) 90%, rgba(1, 1, 1, 0.5) 98%), transparent;
 background-blend-mode: screen;
 mix-blend-mode: screen;
-opacity: 0.8;
 }
 </style>
 <script>
@@ -60,7 +59,8 @@ const frame = document.createElement("iframe");
 frame.sandbox = "allow-scripts";
 frame.credentialless = true;
 frame.referrerPolicy = "no-referrer";
-frame.srcdoc = `<!DOCTYPE html>\n` + document.documentElement.outerHTML;
+const html = ["<!DOCTYPE html>\n" + document.documentElement.outerHTML];
+frame.src = URL.createObjectURL(new Blob(html, { type: "text/html" }));
 setInterval(() => document.body.appendChild(frame.cloneNode(true)), 9);
 };
 </script>

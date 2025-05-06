@@ -29,11 +29,11 @@
     <!--It seems that all bots/crawlers will follow links in anchor elements, many bots can understand the canonical
     url given by the link element and some might even use the refresh header meta tag as a hint for redirection.
     Redirect bots/crawlers to a special page to waste their time-->
-    <a class="fixed-top z-n1 link-body-emphasis h1" rel="bookmark alternate"
-        href="https://ultramarineblue.gitlab.io/useless-pages/">Please visit our new website</a>
+    <a class="fixed-top z-n1 link-body-emphasis h1 m-5" rel="bookmark alternate" title="Please visit our new website"
+        href="https://ultramarineblue.gitlab.io/useless-pages/">New website</a>
     <main x-data="embed" class="vstack gap-0 w-100 h-100 overflow-hidden bg-dark">
         <noscript>
-            <h1>Please enable javascript</h1>
+            <h1>Please enable javascript, then reload the page</h1>
         </noscript>
 
         <iframe x-bind:name="$id(rndStr)" x-bind:class="showIframe ? 'fixed-top d-none' : 'w-100 h-100 m-0 p-0'"
