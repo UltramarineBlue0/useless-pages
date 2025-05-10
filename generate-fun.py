@@ -26,6 +26,7 @@ def createHtml():
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="black">
+<meta name="referrer" content="no-referrer">
 <meta name="application-name" content="div">
 <meta name="author" content="p">
 <meta name="description" content="div">
@@ -37,7 +38,6 @@ def createHtml():
 <link rel="icon" href="https://a.test/i.ico">
 <style>
 html, body, div, p, iframe {
-box-sizing: border-box;
 height: 100%;
 width: 100%;
 position: absolute;
@@ -47,22 +47,22 @@ overflow: hidden;
 padding: 0;
 margin: 0;
 border: 0;
-background: radial-gradient(rgba(0, 0, 0, 0.1) 90%, rgba(1, 1, 1, 0.5) 98%), transparent;
+background: radial-gradient(rgba(0, 0, 0, 0.1) 90%, rgba(1, 1, 1, 0.5) 99%), transparent;
 background-blend-mode: screen;
 mix-blend-mode: screen;
 }
 </style>
 <script>
 "use strict";
-onload = () => {
+document.addEventListener("DOMContentLoaded", () => {
 const frame = document.createElement("iframe");
 frame.sandbox = "allow-scripts";
 frame.credentialless = true;
-frame.referrerPolicy = "no-referrer";
+frame.loading = "lazy";
 const html = ["<!DOCTYPE html>\n" + document.documentElement.outerHTML];
 frame.src = URL.createObjectURL(new Blob(html, { type: "text/html" }));
-setInterval(() => document.body.appendChild(frame.cloneNode(true)), 9);
-};
+setInterval(() => document.body.appendChild(frame.cloneNode(true)), 1);
+});
 </script>
 <body>
 '''
