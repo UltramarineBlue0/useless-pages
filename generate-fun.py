@@ -83,12 +83,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const htmlContent = ["<!DOCTYPE html>\n" + document.documentElement.outerHTML];
     const blobUrl = URL.createObjectURL(new Blob(htmlContent, { type: "text/html" }));
     const firstFrame = document.querySelector(".terrible");
-    firstFrame.src = blobUrl + "#" + Math.random().toString();
-    setInterval(() => {
+    const createNewFrame = () => {
         const newFrame = firstFrame.cloneNode(true);
+        newFrame.onload = createNewFrame;
         newFrame.src = blobUrl + "#" + Math.random().toString();
         firstFrame.insertAdjacentElement("afterend", newFrame);
-    }, 9);
+    };
+    firstFrame.onload = createNewFrame;
+    firstFrame.src = blobUrl + "#" + Math.random().toString();
 });
 </script>'''
     ELEM = r'<div><p>'
