@@ -29,24 +29,25 @@ border: 0;
 background: radial-gradient(rgba(0, 0, 0, 0.1) 90%, rgba(1, 1, 1, 0.5) 99%), transparent;
 background-blend-mode: screen;
 mix-blend-mode: screen;
+z-index: 0;
 }
 iframe.terrible {
 z-index: -1;
-transform: scale(0.99) rotate(1grad);
+transform: scale(0.99) skew(1grad) rotate(1grad);
 opacity: 0.99;
 animation: 9s ease-in-out 9s infinite alternate pain;
 }
 @keyframes pain {
 0% {
-transform: scale(0.99) rotate(1grad);
+transform: scale(0.99) skew(1grad) rotate(1grad);
 opacity: 0.99;
 }
 50% {
-transform: scale(1) rotate(0);
+transform: scale(1) skew(0) rotate(0);
 opacity: 1;
 }
 100% {
-transform: scale(0.99) rotate(-1grad);
+transform: scale(0.99) skew(-1grad) rotate(-1grad);
 opacity: 0.99;
 }
 }
@@ -61,13 +62,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const htmlContent = ["<!DOCTYPE html>\n" + document.documentElement.outerHTML];
     const blobUrl = URL.createObjectURL(new Blob(htmlContent, { type: "text/html" }));
     const firstFrame = document.querySelector(".terrible");
-    const createNewFrame = () => {
+    firstFrame.src = blobUrl + "#" + Math.random().toString();
+    let frameCount = 1;
+    const taskId = setInterval(() => {
         const newFrame = firstFrame.cloneNode(true);
-        newFrame.onload = createNewFrame;
         newFrame.src = blobUrl + "#" + Math.random().toString();
         firstFrame.insertAdjacentElement("afterend", newFrame);
-    };
-    firstFrame.onload = createNewFrame;
-    firstFrame.src = blobUrl + "#" + Math.random().toString();
+        if ((++frameCount) > 9999) {
+            clearInterval(taskId);
+        }
+    }, 1);
 });
 </script>
