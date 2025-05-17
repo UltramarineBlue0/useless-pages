@@ -47,7 +47,7 @@ overflow: hidden;
 padding: 0;
 margin: 0;
 border: 0;
-background: radial-gradient(rgba(0, 0, 0, 0.1) 90%, rgba(1, 1, 1, 0.5) 99%), transparent;
+background: radial-gradient(rgba(0, 0, 0, 0.1) 90%, rgba(2, 2, 2, 0.5) 99%), transparent;
 background-blend-mode: screen;
 mix-blend-mode: screen;
 z-index: 0;
@@ -55,21 +55,21 @@ z-index: 0;
 iframe.terrible {
 z-index: -1;
 transform: scale(0.99) skew(1grad) rotate(1grad);
-opacity: 0.99;
+opacity: 0.5;
 animation: 9s ease-in-out 9s infinite alternate pain;
 }
 @keyframes pain {
 0% {
 transform: scale(0.99) skew(1grad) rotate(1grad);
-opacity: 0.99;
+opacity: 1;
 }
 50% {
 transform: scale(1) skew(0) rotate(0);
-opacity: 1;
+opacity: 0.5;
 }
 100% {
 transform: scale(0.99) skew(-1grad) rotate(-1grad);
-opacity: 0.99;
+opacity: 1;
 }
 }
 </style>
@@ -79,22 +79,22 @@ opacity: 0.99;
 <iframe class="terrible" sandbox="allow-scripts" credentialless loading="lazy" src="index.html"></iframe>
 <script>
 "use strict";
-document.getElementsByTagName("iframe")[0].src = "";
-document.addEventListener("DOMContentLoaded", () => {
-    const htmlContent = ["<!DOCTYPE html>\n" + document.documentElement.outerHTML];
-    const blobUrl = URL.createObjectURL(new Blob(htmlContent, { type: "text/html" }));
-    const firstFrame = document.querySelector(".terrible");
-    firstFrame.src = blobUrl + "#" + Math.random().toString();
-    let frameCount = 1;
-    const taskId = setInterval(() => {
-        const newFrame = firstFrame.cloneNode(true);
-        newFrame.src = blobUrl + "#" + Math.random().toString();
-        firstFrame.insertAdjacentElement("afterend", newFrame);
-        if ((++frameCount) > 9999) {
+document.getElementsByTagName("iframe")[0].removeAttribute("src");
+window.onload = function () {
+    var htmlContent = ["<!DOCTYPE html>\n" + document.documentElement.outerHTML];
+    var blobUrl = URL.createObjectURL(new Blob(htmlContent, { type: "text/html" }));
+    var firstFrame = document.querySelector(".terrible");
+    firstFrame.src = blobUrl + "#" + Math.random().toString(36);
+    var frameCount = 1;
+    var taskId = setInterval(function () {
+        var newFrame = firstFrame.cloneNode(true);
+        firstFrame.insertAdjacentElement("beforebegin", newFrame);
+        newFrame.src = blobUrl + "#" + Math.random().toString(36);
+        if ((++frameCount) > 999) {
             clearInterval(taskId);
         }
-    }, 1);
-});
+    }, 9);
+};
 </script>'''
     ELEM = r'<div><p>'
     elem_arr = [ELEM] * 1048000
