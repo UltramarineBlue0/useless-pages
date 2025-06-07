@@ -47,7 +47,7 @@ overflow: hidden;
 padding: 0;
 margin: 0;
 border: 0;
-background: radial-gradient(rgba(0, 0, 0, 0.1) 90%, rgba(2, 2, 2, 0.7) 99%), transparent;
+background: radial-gradient(rgba(0, 0, 0, 0.1) 90%, rgba(2, 2, 2, 0.8) 99%), transparent;
 background-blend-mode: screen;
 mix-blend-mode: screen;
 z-index: 0;
@@ -65,7 +65,7 @@ filter: brightness(0.9) sepia(0.1) saturate(0.9) hue-rotate(1deg) blur(1px) opac
 }
 50% {
 transform: scale(1) skew(0) rotate(0);
-filter: brightness(0.7) sepia(1) saturate(0.1) hue-rotate(1turn) blur(1cm) opacity(0.7);
+filter: brightness(0.8) sepia(1) saturate(0.1) hue-rotate(1turn) blur(1cm) opacity(0.8);
 }
 100% {
 transform: scale(0.99) skew(-1deg) rotate(-1grad);
@@ -79,23 +79,21 @@ filter: brightness(0.9) sepia(0.1) saturate(0.9) hue-rotate(1deg) blur(1px) opac
 <iframe class="terrible" sandbox="allow-scripts" credentialless loading="lazy" src="index.html"></iframe>
 <script>
 "use strict";
-var firstDeclaredFrame = document.getElementsByTagName("iframe")[0];
-firstDeclaredFrame.removeAttribute("src");
-firstDeclaredFrame.insertAdjacentElement("beforebegin", firstDeclaredFrame.cloneNode());
-window.onload = function () {
+var firstFrame = document.getElementsByTagName("iframe")[0];
+firstFrame.removeAttribute("src");
+firstFrame.insertAdjacentElement("beforebegin", firstFrame.cloneNode());
+document.addEventListener("DOMContentLoaded", function () {
     var htmlContent = ["<!DOCTYPE html>\n" + document.documentElement.outerHTML];
     var blobUrl = URL.createObjectURL(new Blob(htmlContent, { type: "text/html" }));
-    var allFrames = document.querySelectorAll("iframe");
-    for (var i = allFrames.length - 1; i >= 0; i--) {
-        setTimeout(function (index) {
-            var existing = allFrames[index];
-            existing.src = blobUrl + "#" + Math.random().toString(2);
-            var copy = existing.cloneNode();
-            allFrames[0].insertAdjacentElement("beforebegin", copy);
-            copy.src = blobUrl + "#" + Math.random().toString(2);
-        }, 0, i);
+    for (var allFrames = document.querySelectorAll("iframe"), i = allFrames.length - 1; i >= 0; i--) {
+        var current = allFrames[i];
+        current.style.zIndex = Math.floor(-1 - Math.random()*9999).toString();
+        current.style.opacity = (0.9 + Math.random()/10).toString();
+        current.style.rotate = (0.5 - Math.random()).toString() + "grad";
+        current.style.scale = (0.995 + Math.random()/100).toString();
+        current.src = blobUrl + "#" + Math.random().toString(2);
     }
-};
+});
 </script>'''
     ELEM = r'<div><p>'
     elem_arr = [ELEM] * 1048000
