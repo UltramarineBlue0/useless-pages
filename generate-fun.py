@@ -37,7 +37,7 @@ def createHtml():
 <title>div</title>
 <link rel="icon" href="https://a.test/i.ico">
 <style>
-:root {
+:root, div {
 counter-reset: num;
 }
 html, body, div, p, iframe, *::before, *::after {
@@ -57,13 +57,12 @@ mix-blend-mode: screen;
 z-index: 0;
 filter: brightness(0.9) sepia(0.1) saturate(0.9) hue-rotate(1deg) blur(1px) opacity(0.9);
 display: block;
-color: white;
+color: rgba(255, 255, 255, 0.1);
 text-align: center;
-font: 500 semi-expanded 12px/3 sans-serif;
-content: "{ " counter(num, decimal-leading-zero) " }";
+font: 300 semi-condensed 1.001em/1 sans-serif;
+content: "👉 " counters(num, " 🙀 ", decimal-leading-zero) " 👈";
 }
-iframe.bad {
-z-index: -1;
+iframe[src], p::before, p::after {
 transform: scale(0.99) skew(1deg) rotate(1grad);
 animation: 9s ease-in-out 9s infinite alternate pain;
 }
@@ -85,11 +84,10 @@ filter: brightness(0.9) sepia(0.1) saturate(0.9) hue-rotate(1deg) blur(1px) opac
 <body>
 '''
     SUFFIX = r'''
-<iframe class="bad" sandbox="allow-scripts" credentialless loading="lazy" src="index.html"></iframe>
+<iframe sandbox="allow-scripts" credentialless loading="lazy" src="index.html"></iframe>
 <script>
 "use strict";
 var firstFrame = document.getElementsByTagName("iframe")[0];
-firstFrame.removeAttribute("class");
 firstFrame.removeAttribute("src");
 firstFrame.insertAdjacentElement("afterend", firstFrame.cloneNode());
 window.onload = function () {
@@ -99,7 +97,6 @@ window.onload = function () {
         var current = allFrames[i];
         current.src = blobUrl + "#" + Math.random().toString(2);
         current.style = "opacity:" + (0.9 + Math.random()/10) + "; rotate:" + (0.5 - Math.random()) + "grad; scale:" + (0.995 + Math.random()/100) + "; z-index:" + Math.floor(-1 - Math.random()*9999) + ";";
-        current.className = "bad";
     }
 };
 </script>'''
